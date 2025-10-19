@@ -12,13 +12,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Implement `PatientViewSet` with CRUD endpoints (`/api/v1/patients/`).
   - [x] Write comprehensive tests for models, repositories, services, and the API layer.
 
-- [ ] **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud`)**
-  - [ ] Create `practitioners` Django app.
-  - [ ] Implement `Practitioner` model.
-  - [ ] Implement `PractitionerRepository`.
-  - [ ] Implement `PractitionerService`.
-  - [ ] Implement `PractitionerViewSet` (`/api/v1/practitioners/`).
-  - [ ] Write comprehensive tests for the entire vertical slice.
+- [x] **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud`)**
+  - [x] Create `practitioners` Django app.
+  - [x] Implement `Practitioner` model.
+  - [x] Implement `PractitionerRepository`.
+  - [x] Implement `PractitionerService`.
+  - [x] Implement `PractitionerViewSet` (`/api/v1/practitioners/`).
+  - [x] Write comprehensive tests for the entire vertical slice.
 
 - [ ] **Slice 3: Core Authentication (`feature/auth-jwt-setup`)**
   - [ ] Configure `djangorestframework-simplejwt` for token-based authentication.
