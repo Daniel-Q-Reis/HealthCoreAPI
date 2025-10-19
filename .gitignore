@@ -272,8 +272,3 @@ pyrightconfig.json
 
 # Log files
 /logs/*.log
-
-# Gemini files
-GEMINI.md
-STATUS.md
-.geminiignore
