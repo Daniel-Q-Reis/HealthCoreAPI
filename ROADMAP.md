@@ -4,13 +4,13 @@ This document outlines the tactical, sequential plan for implementing the featur
 
 ## Phase 1: Core Domain Implementation
 
-- [ ] **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
-  - [ ] Create `patients` Django app.
-  - [ ] Implement `Patient` model, inheriting from core abstract models.
-  - [ ] Implement `PatientRepository` for data access.
-  - [ ] Implement `PatientService` for business logic orchestration.
-  - [ ] Implement `PatientViewSet` with CRUD endpoints (`/api/v1/patients/`).
-  - [ ] Write comprehensive tests for models, repositories, services, and the API layer.
+- [x] **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
+  - [x] Create `patients` Django app.
+  - [x] Implement `Patient` model, inheriting from core abstract models.
+  - [x] Implement `PatientRepository` for data access.
+  - [x] Implement `PatientService` for business logic orchestration.
+  - [x] Implement `PatientViewSet` with CRUD endpoints (`/api/v1/patients/`).
+  - [x] Write comprehensive tests for models, repositories, services, and the API layer.
 
 - [ ] **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud`)**
   - [ ] Create `practitioners` Django app.
