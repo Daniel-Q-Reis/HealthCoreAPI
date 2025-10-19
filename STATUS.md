@@ -1,12 +1,16 @@
 # Project Status
 
-**Last Updated:** 2024-10-26
+**Last Updated:** 2025-10-26
 **Owner:** Daniel Reis
 
-## Current State
+## Concluded
+- **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
+  - Created `patients` Django app.
+  - Implemented `Patient` model, inheriting from core abstract models.
+  - Implemented `PatientRepository` for data access.
+  - Implemented `PatientService` for business logic orchestration.
+  - Implemented `PatientViewSet` with CRUD endpoints (`/api/v1/patients/`).
+  - Wrote comprehensive tests for models, repositories, services, and the API layer.
 
-The foundational setup of the project is complete. This includes:
-- A robust, multi-stage Docker setup for development and production.
-- A comprehensive CI pipeline in GitHub Actions that performs linting, type checking, security scanning, and runs tests against live database and cache services.
-- A fully configured Dev Container for a consistent and isolated development experience.
-- Branch protection rules are in place for `main` and `develop` to ensure code quality and stability.
+## In Progress
+- None
