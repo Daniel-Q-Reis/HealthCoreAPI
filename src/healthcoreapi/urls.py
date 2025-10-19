@@ -39,5 +39,6 @@ urlpatterns = [
     # API v1 routes (ready for your apps)
     # path("api/v1/", include("src.apps.your_app.urls")),
     path("api/v1/patients/", include("src.apps.patients.urls")),
+    path("api/v1/practitioners/", include("src.apps.practitioners.urls")),
     # Add your apps' urls here
 ]
