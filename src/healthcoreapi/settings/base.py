@@ -65,6 +65,7 @@ if "yes" == "yes":
 LOCAL_APPS = [
     "src.apps.core",
     "src.apps.patients",
+    "src.apps.practitioners",
     # Your local apps go here
 ]
 

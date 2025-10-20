@@ -23,6 +23,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
@@ -36,8 +37,12 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    # API authentication
+    path("api/v1/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/v1/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # API v1 routes (ready for your apps)
     # path("api/v1/", include("src.apps.your_app.urls")),
     path("api/v1/patients/", include("src.apps.patients.urls")),
+    path("api/v1/practitioners/", include("src.apps.practitioners.urls")),
     # Add your apps' urls here
 ]
