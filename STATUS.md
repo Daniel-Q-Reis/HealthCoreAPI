@@ -4,6 +4,7 @@
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 4: Scheduling MVP (`feature/scheduling-mvp`)**
 - **Slice 3: Core Authentication (`feature/auth-jwt-setup`)**
 - **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud`)**
 - **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
