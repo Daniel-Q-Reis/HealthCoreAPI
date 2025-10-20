@@ -20,11 +20,11 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Implement `PractitionerViewSet` (`/api/v1/practitioners/`).
   - [x] Write comprehensive tests for the entire vertical slice.
 
-- [ ] **Slice 3: Core Authentication (`feature/auth-jwt-setup`)**
-  - [ ] Configure `djangorestframework-simplejwt` for token-based authentication.
-  - [ ] Implement token obtain and refresh endpoints.
-  - [ ] Secure core endpoints, requiring authentication.
-  - [ ] Update API tests to handle authenticated requests.
+- [x] **Slice 3: Core Authentication (`feature/auth-jwt-setup`)**
+  - [x] Configure `djangorestframework-simplejwt` for token-based authentication.
+  - [x] Implement token obtain and refresh endpoints.
+  - [x] Secure core endpoints, requiring authentication.
+  - [x] Update API tests to handle authenticated requests.
 
 ## Phase 2: Scheduling and Admissions
 
