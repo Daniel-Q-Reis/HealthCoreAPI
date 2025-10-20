@@ -4,7 +4,7 @@ API Views for the Practitioners bounded context.
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated  # Manter esta linha
 
 from . import services
 from .models import Practitioner
@@ -15,12 +15,13 @@ from .serializers import PractitionerSerializer
 class PractitionerViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing Practitioners.
+    Requires authentication for all operations.
     """
 
     queryset = Practitioner.objects.active()
     serializer_class = PractitionerSerializer
     lookup_field = "id"
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Manter esta linha
 
     def perform_create(self, serializer):
         """
