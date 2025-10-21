@@ -1,9 +1,10 @@
 # Project Status
 
-**Last Updated:** 2025-10-20
+**Last Updated:** 2025-10-21
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Fix: Implement Django Admin Registration (`fix/admin-registration`)**
 - **Slice 4: Scheduling MVP (`feature/scheduling-mvp`)**
 - **Slice 3: Core Authentication (`feature/auth-jwt-setup`)**
 - **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud`)**
