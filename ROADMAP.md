@@ -35,9 +35,19 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Write tests.
 
 - [x] **Slice 5: Admissions & Beds MVP (`feature/admissions-beds-mvp`)**
-  - [ ] Implement `Admission`, `Bed`, and `Ward` models.
-  - [ ] Implement services for patient admission and bed assignment.
-  - [ ] Expose admissions and bed management endpoints.
-  - [ ] Write tests.
+  - [x] Implement `Admission`, `Bed`, and `Ward` models.
+  - [x] Implement services for patient admission and bed assignment.
+  - [x] Expose admissions and bed management endpoints.
+  - [x] Create `admin.py` for all new models.
+  - [x] Write tests.
+
+## Phase 3: Results & Imaging
+
+- [x] **Slice 6: Results & Imaging MVP (`feature/results-imaging-mvp`)**
+  - [x] Implement `DiagnosticReport` and `Observation` models.
+  - [x] Implement services for creating reports with associated observations.
+  - [x] Expose API endpoints for report management.
+  - [x] Create `admin.py` for all new models.
+  - [x] Write tests.
 
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*

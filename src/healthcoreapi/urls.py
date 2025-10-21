@@ -46,5 +46,6 @@ urlpatterns = [
     path("api/v1/practitioners/", include("src.apps.practitioners.urls")),
     path("api/v1/scheduling/", include("src.apps.scheduling.urls")),
     path("api/v1/admissions/", include("src.apps.admissions.urls")),
+    path("api/v1/results/", include("src.apps.results.urls")),
     # Add your apps' urls here
 ]
