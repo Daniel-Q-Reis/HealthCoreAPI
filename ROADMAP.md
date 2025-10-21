@@ -34,7 +34,7 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Expose scheduling endpoints via the API.
   - [x] Write tests.
 
-- [ ] **Slice 5: Admissions & Beds MVP (`feature/admissions-beds-mvp`)**
+- [x] **Slice 5: Admissions & Beds MVP (`feature/admissions-beds-mvp`)**
   - [ ] Implement `Admission`, `Bed`, and `Ward` models.
   - [ ] Implement services for patient admission and bed assignment.
   - [ ] Expose admissions and bed management endpoints.

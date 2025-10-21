@@ -67,6 +67,7 @@ LOCAL_APPS = [
     "src.apps.patients",
     "src.apps.practitioners",
     "src.apps.scheduling",
+    "src.apps.admissions",
     # Your local apps go here
 ]
 
