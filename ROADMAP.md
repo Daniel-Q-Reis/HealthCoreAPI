@@ -50,4 +50,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create `admin.py` for all new models.
   - [x] Write tests.
 
+## Phase 4: 24x7 Shifts, Specialties, and Patient Experience
+
+- [x] **Slice 7: Shifts & Availability MVP (`feature/shifts-availability-mvp`)**
+  - [x] Implement `Shift` model for staffing.
+  - [x] Implement services for creating and managing shifts.
+  - [x] Expose API endpoints for shift management.
+  - [x] Create `admin.py` for the new models.
+  - [x] Write tests.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
