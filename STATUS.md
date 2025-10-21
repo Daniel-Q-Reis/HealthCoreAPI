@@ -4,6 +4,7 @@
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 8: Patient Experience MVP (`feature/patient-experience-mvp`)**
 - **Slice 7: Shifts & Availability MVP (`feature/shifts-availability-mvp`)**
 - **Slice 6: Results & Imaging MVP (`feature/results-imaging-mvp`)**
 - **Slice 5: Admissions & Beds MVP (`feature/admissions-beds-mvp`)**

@@ -70,6 +70,7 @@ LOCAL_APPS = [
     "src.apps.admissions",
     "src.apps.results",
     "src.apps.shifts",
+    "src.apps.experience",
     # Your local apps go here
 ]
 

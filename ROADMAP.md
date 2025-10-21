@@ -59,4 +59,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create `admin.py` for the new models.
   - [x] Write tests.
 
+## Phase 4: 24x7 Shifts, Specialties, and Patient Experience
+
+- [x] **Slice 8: Patient Experience MVP (`feature/patient-experience-mvp`)**
+  - [x] Implement `PatientFeedback` and `PatientComplaint` models.
+  - [x] Implement services for submitting feedback and complaints.
+  - [x] Expose API endpoints for submissions.
+  - [x] Create `admin.py` for the new models.
+  - [x] Write tests.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
