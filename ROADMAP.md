@@ -28,11 +28,11 @@ This document outlines the tactical, sequential plan for implementing the featur
 
 ## Phase 2: Scheduling and Admissions
 
-- [ ] **Slice 4: Scheduling MVP (`feature/scheduling-mvp`)**
-  - [ ] Implement `Appointment` and `Slot` models.
-  - [ ] Implement services for booking and viewing appointments.
-  - [ ] Expose scheduling endpoints via the API.
-  - [ ] Write tests.
+- [x] **Slice 4: Scheduling MVP (`feature/scheduling-mvp`)**
+  - [x] Implement `Appointment` and `Slot` models.
+  - [x] Implement services for booking and viewing appointments.
+  - [x] Expose scheduling endpoints via the API.
+  - [x] Write tests.
 
 - [ ] **Slice 5: Admissions & Beds MVP (`feature/admissions-beds-mvp`)**
   - [ ] Implement `Admission`, `Bed`, and `Ward` models.
