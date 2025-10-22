@@ -81,4 +81,10 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Expose a `/metrics` endpoint.
   - [x] Add basic tests to verify the endpoint.
 
+## Documentation & Process
+
+- [x] **Chore: Add Initial Architecture Decision Records (`docs/add-initial-adrs`)**
+  - Establish ADR process for documenting architectural decisions.
+  - Document key decisions from Slices 1-10 (modular monolith, JWT, Celery/Redis, Prometheus).
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
