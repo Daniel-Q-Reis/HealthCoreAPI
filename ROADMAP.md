@@ -74,4 +74,11 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create `admin.py` for the new models.
   - [x] Write tests.
 
+## Phase 5: Observability, APM, Performance
+
+- [x] **Slice 10: Observability Foundational Setup (`feature/observability-foundations-mvp`)**
+  - [x] Integrate `django-prometheus` for application metrics.
+  - [x] Expose a `/metrics` endpoint.
+  - [x] Add basic tests to verify the endpoint.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*

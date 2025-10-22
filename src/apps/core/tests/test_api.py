@@ -71,6 +71,16 @@ def test_health_check_api_view_response_data(api_client):
 
 
 @pytest.mark.django_db
+def test_metrics_endpoint_is_available(api_client):
+    """Asserts that the /metrics endpoint is available and returns a 200 OK status."""
+    url = "/metrics"
+    response = api_client.get(url)
+    assert response.status_code == 200
+    # Check for a known Prometheus metric in the response content
+    assert b"django_http_requests_total_by_method_total" in response.content
+
+
+@pytest.mark.django_db
 class TestPostAPI:
     """Tests for the Post API endpoints."""
 
