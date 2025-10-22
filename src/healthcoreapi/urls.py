@@ -27,6 +27,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    # Observability
+    path("", include("django_prometheus.urls")),
     # Core functionality (health checks, etc)
     path("", include("src.apps.core.urls")),
     # API docs
