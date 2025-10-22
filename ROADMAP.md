@@ -59,6 +59,12 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create `admin.py` for the new models.
   - [x] Write tests.
 
+- [x] **Slice 9: Departments & Specialties MVP (`feature/departments-specialties-mvp`)**
+  - [x] Implement `Department` and `SpecialtyRule` models.
+  - [x] Implement services and API for managing Departments.
+  - [x] Create `admin.py` for the new models.
+  - [x] Write tests.
+
 ## Phase 4: 24x7 Shifts, Specialties, and Patient Experience
 
 - [x] **Slice 8: Patient Experience MVP (`feature/patient-experience-mvp`)**
