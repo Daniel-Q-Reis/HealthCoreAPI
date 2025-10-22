@@ -70,3 +70,17 @@ class TestDepartmentsAPI:
         department.refresh_from_db()
         assert response.status_code == 204
         assert department.is_active is False
+
+    def test_department_list_returns_cached_response(
+        self, authenticated_client, department_data
+    ):
+        """
+        Verify that the list endpoint for departments returns a successful response (caching is present).
+        """
+        services.create_new_department(**department_data)
+        url = "/api/v1/hospital/departments/"
+
+        # Make request to the cached endpoint
+        response = authenticated_client.get(url)
+        assert response.status_code == 200
+        assert "results" in response.json()

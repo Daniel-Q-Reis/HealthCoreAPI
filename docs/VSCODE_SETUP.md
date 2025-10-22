@@ -348,7 +348,7 @@ Use the PostgreSQL extension to run queries directly in VS Code.
 
 ## 🔗 Useful Links
 
-- [Django Master Template Repository](https://github.com/CFBruna/master-tamplate)
+- [Django Master Template Repository](https://github.com/Daniel-Q-Reis/master-tamplate)
 - [VS Code Python Documentation](https://code.visualstudio.com/docs/python/python-tutorial)
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Django Documentation](https://docs.djangoproject.com/)
