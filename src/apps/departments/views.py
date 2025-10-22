@@ -2,6 +2,8 @@
 API Views for the Departments & Specialties bounded context.
 """
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +22,10 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.filter(is_active=True)
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
+
+    @method_decorator(cache_page(60 * 5))  # Cache for 5 minutes
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         """

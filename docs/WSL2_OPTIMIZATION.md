@@ -56,13 +56,13 @@ CACHES = {
 #### ❌ Slow Setup (Windows Filesystem)
 ```bash
 # DON'T DO THIS - 10x slower I/O
-C:\Users\bruna\Projects\django-project\
+C:\Users\daniel\Projects\django-project\
 ```
 
 #### ✅ Fast Setup (Linux Filesystem)
 ```bash
 # DO THIS - Native Linux I/O performance
-/home/bruna/projects/django-project/
+/home/daniel/projects/django-project/
 
 # Or use ~/projects/
 ~/projects/django-project/
@@ -204,7 +204,7 @@ mkdir -p ~/projects
 cd ~/projects
 
 # 3. Clone your project here
-git clone https://github.com/CFBruna/master-tamplate.git django-senior
+git clone https://github.com/Daniel-Q-Reis/master-tamplate.git django-senior
 cd django-senior
 git checkout senior-template-improvements
 ```
@@ -227,7 +227,7 @@ Update your IDE to work with WSL2 projects:
 #### **VS Code**
 1. Install "Remote - WSL" extension
 2. Open WSL2 project: `Ctrl+Shift+P` → "Remote-WSL: Open Folder in WSL"
-3. Select `/home/bruna/projects/django-senior`
+3. Select `/home/daniel/projects/django-senior`
 
 #### **PyCharm**
 1. Use WSL2 interpreter: Settings → Python Interpreter → Add → WSL

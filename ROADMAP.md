@@ -81,6 +81,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Expose a `/metrics` endpoint.
   - [x] Add basic tests to verify the endpoint.
 
+## Phase 6: Resilience, Caching, Events
+
+- [x] **Slice 11: Resilience and Caching MVP (`feature/resilience-caching-mvp`)**
+  - [x] Implement a request timeout middleware for resilience.
+  - [x] Apply view-level caching to a read-only endpoint.
+  - [x] Write tests to validate both patterns.
+
 ## Documentation & Process
 
 - [x] **Chore: Add Initial Architecture Decision Records (`docs/add-initial-adrs`)**
