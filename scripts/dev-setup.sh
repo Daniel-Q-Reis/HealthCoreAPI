@@ -105,15 +105,10 @@ done
 if [ "$FULL_RESET" = true ]; then
     log_step "Performing full reset..."
 
-    log "Stopping all containers..."
-    docker-compose down -v --remove-orphans
-
-    log "Removing project volumes..."
-    docker volume rm master-tamplate_postgres_data master-tamplate_static_volume master-tamplate_media_volume 2>/dev/null || true
-
-    log "Removing project images..."
-    docker images | grep master-tamplate | awk '{print $3}' | xargs docker rmi -f 2>/dev/null || true
-
+    log "Stopping containers, removing volumes, and images..."
+    # --rmi all: Removes all images used by any service.
+    # -v: Removes named volumes declared in the `volumes` section of the Compose file.
+    docker-compose down --rmi all -v --remove-orphans
     log "Pruning Docker system..."
     docker system prune -f
 

@@ -1,7 +1,6 @@
 """Custom middleware for the application."""
 
 import logging
-import signal  # Added for TimeoutMiddleware
 import time
 import uuid
 
@@ -126,23 +125,24 @@ class TimeoutMiddleware(MiddlewareMixin):
     """
 
     def process_request(self, request):
-        def handler(signum, frame):
-            # In a real app, this should raise a specific exception that
-            # can be caught and converted to a 503 or 504 response.
-            # For this MVP, we'll log and let it terminate.
-            logger.warning(f"Request timed out: {request.path}")
-            raise TimeoutError("Request processing timed out.")
-
-        # Set a 10-second alarm for the request
-        # This is a simple implementation; production systems might use wsgi server timeouts (e.g., gunicorn --timeout)
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(10)
-
+        # NOTE: The signal-based timeout is disabled because it is not compatible
+        # with multi-threaded servers like Django's runserver or Gunicorn, as
+        # `signal` can only be used in the main thread.
+        # The proper way to handle timeouts is at the web server level (e.g., Gunicorn's --timeout flag).
+        #
+        # def handler(signum, frame):
+        #     logger.warning(f"Request timed out: {request.path}")
+        #     raise TimeoutError("Request processing timed out.")
+        #
+        # signal.signal(signal.SIGALRM, handler)
+        # signal.alarm(10)
         return None
 
     def process_response(self, request, response):
-        # Disable the alarm if the response is generated in time
-        signal.alarm(0)
+        # NOTE: Corresponding alarm cancellation is disabled as the alarm itself is disabled.
+        #
+        # # Disable the alarm if the response is generated in time
+        # signal.alarm(0)
         return response
 
 
