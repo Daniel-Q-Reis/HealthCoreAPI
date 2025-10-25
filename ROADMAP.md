@@ -95,3 +95,9 @@ This document outlines the tactical, sequential plan for implementing the featur
   - Document key decisions from Slices 1-10 (modular monolith, JWT, Celery/Redis, Prometheus).
 
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
+
+- [ ] **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**
+  - [ ] Implement a model to store idempotency keys.
+  - [ ] Create an idempotency middleware to handle `Idempotency-Key` headers.
+  - [ ] Apply the middleware pattern to a critical POST endpoint.
+  - [ ] Write tests to verify duplicate requests are handled correctly.
