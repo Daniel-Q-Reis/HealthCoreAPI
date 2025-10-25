@@ -1,5 +1,8 @@
 """Base models and managers for the application."""
 
+import uuid
+
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -162,3 +165,22 @@ class Post(ActivatableModel, SluggedModel):
     def name(self):
         """Provides the 'name' property for the SluggedModel to use."""
         return self.title
+
+
+class IdempotencyKey(models.Model):
+    """
+    Stores idempotency keys to prevent duplicate operations.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    idempotency_key = models.UUIDField()
+    request_path = models.CharField(max_length=255)
+    response_code = models.PositiveSmallIntegerField()
+    response_body = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Idempotency Key"
+        verbose_name_plural = "Idempotency Keys"
+        unique_together = ("user", "idempotency_key")

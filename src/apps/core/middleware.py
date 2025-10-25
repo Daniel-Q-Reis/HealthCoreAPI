@@ -1,12 +1,15 @@
 """Custom middleware for the application."""
 
+import json
 import logging
-import signal  # Added for TimeoutMiddleware
 import time
 import uuid
 
+from django.http import JsonResponse
 from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
+
+from .models import IdempotencyKey
 
 logger = logging.getLogger(__name__)
 
@@ -123,26 +126,26 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
 class TimeoutMiddleware(MiddlewareMixin):
     """
     Middleware to enforce a request timeout.
+
+    NOTE: The signal-based timeout implementation has been disabled because
+    it doesn't work properly in multi-threaded environments (e.g., Django's runserver).
+    Timeout handling is now managed at the WSGI server level (Gunicorn with --timeout).
     """
 
     def process_request(self, request):
-        def handler(signum, frame):
-            # In a real app, this should raise a specific exception that
-            # can be caught and converted to a 503 or 504 response.
-            # For this MVP, we'll log and let it terminate.
-            logger.warning(f"Request timed out: {request.path}")
-            raise TimeoutError("Request processing timed out.")
-
-        # Set a 10-second alarm for the request
-        # This is a simple implementation; production systems might use wsgi server timeouts (e.g., gunicorn --timeout)
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(10)
+        # COMMENTED OUT: signal-based timeout doesn't work in threads
+        # def handler(signum, frame):
+        #     logger.warning(f"Request timed out: {request.path}")
+        #     raise TimeoutError("Request processing timed out.")
+        #
+        # signal.signal(signal.SIGALRM, handler)
+        # signal.alarm(10)
 
         return None
 
     def process_response(self, request, response):
-        # Disable the alarm if the response is generated in time
-        signal.alarm(0)
+        # COMMENTED OUT: corresponding cleanup
+        # signal.alarm(0)
         return response
 
 
@@ -159,3 +162,62 @@ class HealthCheckMiddleware(MiddlewareMixin):
             # Mark request as health check to skip other middleware
             request._is_health_check = True
         return None
+
+
+class IdempotencyMiddleware(MiddlewareMixin):
+    """
+    Handles idempotency for POST requests using an 'Idempotency-Key' header.
+    """
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        # Only apply to POST requests with the header
+        idempotency_key = request.headers.get("Idempotency-Key")
+        if not all(
+            [request.method == "POST", idempotency_key, request.user.is_authenticated]
+        ):
+            return None
+
+        try:
+            key_obj = IdempotencyKey.objects.get(
+                user=request.user, idempotency_key=idempotency_key
+            )
+            # Parse JSON antes de retornar
+            try:
+                response_data = (
+                    json.loads(key_obj.response_body) if key_obj.response_body else {}
+                )
+            except (json.JSONDecodeError, TypeError):
+                response_data = {}
+
+            return JsonResponse(response_data, status=key_obj.response_code, safe=False)
+        except IdempotencyKey.DoesNotExist:
+            # Store the key to be processed in the response phase
+            request.idempotency_key = idempotency_key
+            return None
+
+    def process_response(self, request, response):
+        idempotency_key = getattr(request, "idempotency_key", None)
+        # Only store if it's a successful creation and the key was new
+        if not all(
+            [
+                idempotency_key,
+                request.method == "POST",
+                request.user.is_authenticated,
+                200 <= response.status_code < 300,
+            ]
+        ):
+            return response
+
+        try:
+            IdempotencyKey.objects.create(
+                user=request.user,
+                idempotency_key=idempotency_key,
+                request_path=request.path,
+                response_code=response.status_code,
+                response_body=response.content.decode("utf-8"),
+            )
+        except Exception:
+            # Avoid crashing if the key was created by a concurrent request
+            pass
+
+        return response

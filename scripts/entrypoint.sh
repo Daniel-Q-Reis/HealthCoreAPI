@@ -31,6 +31,9 @@ DB_USER="${DB_USER:-postgres}"
 DB_PASSWORD="${DB_PASSWORD:-postgres}"
 DB_NAME="${DB_NAME:-master_template_db}"
 
+# Application environment: 'development' or 'production'
+APP_ENV="${APP_ENV:-development}"
+
 # Debugging configuration
 DEBUGPY="${DEBUGPY:-0}"
 DEBUGPY_WAIT_FOR_CLIENT="${DEBUGPY_WAIT_FOR_CLIENT:-0}"
@@ -122,27 +125,30 @@ else:
 " 2>/dev/null || log_warning "Could not create/check superuser (non-critical)"
 }
 
-start_django_server() {
-    if [[ "${DEBUGPY}" == "1" ]]; then
-        log "Starting Django with debugpy on ${DEBUGPY_HOST}:${DEBUGPY_PORT}"
-        log "VS Code can attach to debugpy for remote debugging"
-
-        if [[ "${DEBUGPY_WAIT_FOR_CLIENT}" == "1" ]]; then
-            log_warning "Waiting for debugger client to attach..."
-        fi
-
-        wait_for_client_arg=()
-        if [[ "${DEBUGPY_WAIT_FOR_CLIENT}" == "1" ]]; then
-            wait_for_client_arg+=(--wait-for-client)
-        fi
-
-        exec python -m debugpy \
-            --listen "${DEBUGPY_HOST}:${DEBUGPY_PORT}" \
-            "${wait_for_client_arg[@]}" \
-            manage.py runserver 0.0.0.0:8000
+start_server() {
+    if [ "${APP_ENV}" = "production" ]; then
+        log "Starting Gunicorn server for production..."
+        exec gunicorn src.config.wsgi:application \
+            --bind 0.0.0.0:8000 \
+            --workers 3 \
+            --timeout 15 \
+            --log-level info \
+            --access-logfile '-' \
+            --error-logfile '-'
     else
         log "Starting Django development server..."
-        exec python manage.py runserver 0.0.0.0:8000
+        if [[ "${DEBUGPY}" == "1" ]]; then
+            log "Debugger (debugpy) is enabled on ${DEBUGPY_HOST}:${DEBUGPY_PORT}"
+            if [[ "${DEBUGPY_WAIT_FOR_CLIENT}" == "1" ]]; then
+                log_warning "Waiting for debugger client to attach..."
+            fi
+            exec python -m debugpy \
+                --listen "${DEBUGPY_HOST}:${DEBUGPY_PORT}" \
+                $([[ "${DEBUGPY_WAIT_FOR_CLIENT}" == "1" ]] && echo "--wait-for-client" || echo "") \
+                manage.py runserver 0.0.0.0:8000 --noreload
+        else
+            exec python manage.py runserver 0.0.0.0:8000
+        fi
     fi
 }
 
@@ -164,7 +170,7 @@ main() {
     log "🌟 Access your application at: http://localhost:8000"
     log "🔐 Admin panel: http://localhost:8000/admin/ (admin/admin123)"
 
-    start_django_server
+    start_server
 }
 
 # Handle signals gracefully

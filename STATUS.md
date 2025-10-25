@@ -19,4 +19,4 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud)**
 
 ## In Progress
-- None
+- **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**

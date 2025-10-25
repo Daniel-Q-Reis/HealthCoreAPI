@@ -11,6 +11,9 @@ from src.apps.core.middleware import TimeoutMiddleware
 
 
 @pytest.mark.django_db
+@pytest.mark.skip(
+    reason="TimeoutMiddleware is disabled due to incompatibility with multi-threaded servers."
+)
 def test_timeout_middleware_raises_exception_on_timeout():
     """
     Conceptually tests that the timeout middleware would raise an exception.

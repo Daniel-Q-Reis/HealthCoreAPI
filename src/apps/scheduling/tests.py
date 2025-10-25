@@ -2,6 +2,7 @@
 Comprehensive test suite for the Scheduling bounded context.
 """
 
+import uuid
 from datetime import timedelta
 
 import pytest
@@ -28,12 +29,6 @@ def api_client():
 @pytest.fixture
 def test_user():
     return User.objects.create_user(username="testuser", password="password123")
-
-
-@pytest.fixture
-def authenticated_client(api_client, test_user):
-    api_client.force_authenticate(user=test_user)
-    return api_client
 
 
 @pytest.fixture
@@ -186,3 +181,37 @@ class TestSchedulingAPI:
         assert response.status_code == 204
         assert appointment.is_active is False
         assert Appointment.objects.active().count() == 0
+
+
+@pytest.mark.django_db
+class TestIdempotency:
+    def test_duplicate_appointment_creation_is_prevented(
+        self, authenticated_client, patient, available_slot
+    ):
+        """
+        Verify that sending the same POST request with the same Idempotency-Key
+        only creates one object and returns the original response.
+        """
+        url = "/api/v1/scheduling/appointments/"
+        idempotency_key = str(uuid.uuid4())
+        # CORREÇÃO: usar "patient" e "slot" (não "patient_id" e "slot_id")
+        data = {"patient": str(patient.id), "slot": str(available_slot.id)}
+
+        # First request: should create the appointment
+        response1 = authenticated_client.post(
+            url, data=data, format="json", HTTP_IDEMPOTENCY_KEY=idempotency_key
+        )
+
+        assert response1.status_code == 201
+        assert Appointment.objects.count() == 1
+
+        # Second request: should not create a new appointment and return the same result
+        response2 = authenticated_client.post(
+            url, data=data, format="json", HTTP_IDEMPOTENCY_KEY=idempotency_key
+        )
+
+        assert response2.status_code == 201
+        assert Appointment.objects.count() == 1  # Still 1
+
+        # The body of the responses should be identical
+        assert response1.json()["id"] == response2.json()["id"]
