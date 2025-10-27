@@ -101,3 +101,9 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [ ] Create an idempotency middleware to handle `Idempotency-Key` headers.
   - [ ] Apply the middleware pattern to a critical POST endpoint.
   - [ ] Write tests to verify duplicate requests are handled correctly.
+
+- [x] **Slice 13: Resilience - Circuit Breaker MVP (`feature/resilience-circuit-breaker-mvp`)**
+  - [x] Document the Circuit Breaker pattern in a new ADR.
+  - [x] Integrate the `pybreaker` library.
+  - [x] Apply the pattern to a service to protect against downstream failures.
+  - [x] Write tests to verify the open/closed states of the breaker.
