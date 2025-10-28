@@ -66,7 +66,7 @@ ENTRYPOINT ["/bin/bash", "/opt/docker/scripts/entrypoint.sh"]
 # Development Stage
 #
 # Builds a feature-rich image for local development. Includes all dev tools,
-# installs dev packages, and sets up Oh My Zsh.
+# installs dev packages.
 # ==============================================================================
 FROM base AS development
 
@@ -100,23 +100,11 @@ RUN pip install --upgrade pip setuptools wheel \
   && pip install -r requirements-dev.txt \
   && pip install debugpy
 
-# Change user's default shell to zsh
-RUN chsh -s /bin/zsh $USERNAME
-
 # Switch to the non-root user
 USER $USERNAME
 
 # Set path for user-installed packages
 ENV PATH="/usr/local/bin:/home/appuser/.local/bin:$PATH"
-
-# Install Oh My Zsh and plugins
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-RUN echo 'export ZSH="$HOME/.oh-my-zsh"' > ~/.zshrc && \
-  echo 'ZSH_THEME="robbyrussell"' >> ~/.zshrc && \
-  echo 'plugins=(git python docker docker-compose pip virtualenv colored-man-pages command-not-found zsh-autosuggestions zsh-syntax-highlighting)' >> ~/.zshrc && \
-  echo 'source $ZSH/oh-my-zsh.sh' >> ~/.zshrc
 
 # Copy application code
 COPY --chown=$USERNAME:$USERNAME . .
