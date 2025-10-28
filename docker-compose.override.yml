@@ -8,6 +8,16 @@ services:
     ports:
       - "8000:8000"
 
+  celery_worker:
+    environment:
+      - DJANGO_SETTINGS_MODULE=healthcoreapi.settings.development
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-healthcoreapi_db}
+
+  celery_beat:
+    environment:
+      - DJANGO_SETTINGS_MODULE=healthcoreapi.settings.development
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-healthcoreapi_db}
+
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:

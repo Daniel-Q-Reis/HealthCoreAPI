@@ -212,6 +212,8 @@ psutil==7.1.0
     #   safety
 psycopg2-binary==2.9.10
     # via -r requirements.in
+pybreaker==1.2.0
+    # via -r requirements.in
 pycparser==2.23
     # via cffi
 pydantic==2.9.2

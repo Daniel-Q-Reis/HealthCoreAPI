@@ -18,5 +18,10 @@
 - **Slice 2: Practitioners CRUD (`feature/practitioners-core-crud)**
 - **Slice 1: Patients CRUD (`feature/patients-core-crud)**
 
-## In Progress
 - **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**
+
+## Concluded
+- **Slice 13: Resilience - Circuit Breaker MVP (`feature/resilience-circuit-breaker-mvp`)**
+
+## In Progress
+- None

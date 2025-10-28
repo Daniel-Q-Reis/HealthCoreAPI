@@ -116,6 +116,8 @@ psutil==6.1.1
     # via -r requirements.in
 psycopg2-binary==2.9.10
     # via -r requirements.in
+pybreaker==1.2.0
+    # via -r requirements.in
 pyjwt==2.10.1
     # via djangorestframework-simplejwt
 python-crontab==3.3.0

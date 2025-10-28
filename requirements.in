@@ -27,3 +27,4 @@ sentry-sdk[django]
 psutil
 python-json-logger
 django-prometheus
+pybreaker
