@@ -107,3 +107,10 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Integrate the `pybreaker` library.
   - [x] Apply the pattern to a service to protect against downstream failures.
   - [x] Write tests to verify the open/closed states of the breaker.
+
+## Phase 7: Kubernetes/AKS Delivery
+
+- [x] **Slice 14: Kubernetes - Helm Charts MVP (`feature/kubernetes-helm-charts-mvp`)**
+  - [x] Document the adoption of Helm in a new ADR.
+  - [x] Create the basic Helm chart structure (`charts/healthcoreapi`).
+  - [x] Implement initial templates for Deployment, Service, and Ingress.

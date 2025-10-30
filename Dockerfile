@@ -84,6 +84,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && echo "appuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/appuser \
   && rm -rf /var/lib/apt/lists/*
 
+# Install Kubernetes tools (Helm + kubectl)
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/ && \
+    curl -fsSL https://get.helm.sh/helm-v3.13.1-linux-amd64.tar.gz | tar -xzv && \
+    mv linux-amd64/helm /usr/local/bin/helm && \
+    rm -rf linux-amd64
+
 # Install GitHub CLI (gh)
 RUN mkdir -p -m 755 /etc/apt/keyrings && \
   curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && \
