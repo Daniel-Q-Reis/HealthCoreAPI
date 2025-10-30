@@ -19,9 +19,8 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud)**
 
 - **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**
-
-## Concluded
 - **Slice 13: Resilience - Circuit Breaker MVP (`feature/resilience-circuit-breaker-mvp`)**
+- **Slice 14: Kubernetes - Helm Charts MVP (`feature/kubernetes-helm-charts-mvp`)**
 
 ## In Progress
 - None
