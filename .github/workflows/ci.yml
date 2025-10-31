@@ -68,6 +68,32 @@ jobs:
         echo "SECRET_KEY=a-secret-key-for-testing-purposes-only" >> $GITHUB_ENV
         echo "DEBUG=False" >> $GITHUB_ENV
 
+    - name: Check for Missing Migrations
+      run: python manage.py makemigrations --check --dry-run --verbosity 2
+
+    - name: Validate Requirements Files
+      run: |
+        echo "🔍 Checking requirements files..."
+
+        # Check if requirements files exist
+        [ -f requirements.in ] && echo "✅ requirements.in exists" || { echo "❌ requirements.in missing"; exit 1; }
+        [ -f requirements-dev.in ] && echo "✅ requirements-dev.in exists" || { echo "❌ requirements-dev.in missing"; exit 1; }
+        [ -f requirements.txt ] && echo "✅ requirements.txt exists" || { echo "❌ requirements.txt missing"; exit 1; }
+        [ -f requirements-dev.txt ] && echo "✅ requirements-dev.txt exists" || { echo "❌ requirements-dev.txt missing"; exit 1; }
+
+        # Check if .txt files are newer than .in files
+        if [ requirements.txt -ot requirements.in ]; then
+          echo "❌ requirements.txt is older than requirements.in - run pip-compile"
+          exit 1
+        fi
+
+        if [ requirements-dev.txt -ot requirements-dev.in ]; then
+          echo "❌ requirements-dev.txt is older than requirements-dev.in - run pip-compile"
+          exit 1
+        fi
+
+        echo "✅ All requirements files are up to date"
+
     - name: Run Ruff Linter
       run: ruff check .
 
