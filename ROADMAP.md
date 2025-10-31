@@ -114,3 +114,10 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Document the adoption of Helm in a new ADR.
   - [x] Create the basic Helm chart structure (`charts/healthcoreapi`).
   - [x] Implement initial templates for Deployment, Service, and Ingress.
+
+## Phase 8: CI/CD and Compliance
+
+- [x] **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
+  - [x] Add a CI step to validate database migrations.
+  - [x] Add a CI step to check for dependency conflicts.
+  - [x] Ensure the test suite runs against all created apps.
