@@ -115,6 +115,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create the basic Helm chart structure (`charts/healthcoreapi`).
   - [x] Implement initial templates for Deployment, Service, and Ingress.
 
+## Phase 7: Kubernetes/AKS Delivery
+
+- [x] **Slice 16: Terraform + AKS Foundational Setup (`feature/iac-terraform-aks-mvp`)**
+  - [x] Document the adoption of Terraform for IaC in a new ADR.
+  - [x] Create the foundational Terraform structure for Azure.
+  - [x] Define initial resources for a Resource Group and AKS cluster.
+
 ## Phase 8: CI/CD and Compliance
 
 - [x] **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
