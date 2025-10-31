@@ -221,10 +221,16 @@ enable_k8s_prompt="${DEV_KUBERNETES_CONTEXT_IN_PROMPT:-true}"
 # Create .bashrc content with conditional features
 cat >> /home/appuser/.bashrc << EOF
 
-# Git branch in prompt
+# --- Git branch in prompt (DYNAMIC VERSION) ---
 parse_git_branch() {
     git symbolic-ref --short HEAD 2>/dev/null | sed 's/\(.*\)/(\1)/'
 }
+
+# Force PS1 to be evaluated every time (CRITICAL!)
+export PS1='appuser@\h:\w$(parse_git_branch)\$ '
+
+# Also add to bashrc for persistence
+echo 'export PS1="appuser@\h:\w\$(parse_git_branch)\$ "' >> /home/appuser/.bashrc
 
 # Kubernetes context in prompt (configurable)
 parse_kube_context() {
