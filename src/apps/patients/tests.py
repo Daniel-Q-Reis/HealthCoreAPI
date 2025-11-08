@@ -5,6 +5,7 @@ Covers models, repositories, services, and API endpoints with authentication.
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from faker import Faker
 from rest_framework.test import APIClient
 
@@ -17,19 +18,29 @@ User = get_user_model()
 
 @pytest.fixture
 def api_client():
+    """Base API client without authentication."""
     return APIClient()
 
 
 @pytest.fixture
+def doctor_user():
+    """Create a doctor user with Doctor group for RBAC."""
+    user = User.objects.create_user(username="doctor_test", password="pass123")
+    doctor_group, _ = Group.objects.get_or_create(name="Doctors")
+    user.groups.add(doctor_group)
+    return user
+
+
+@pytest.fixture
 def test_user():
-    """Creates a standard test user."""
+    """Creates a standard test user (deprecated - use doctor_user for RBAC tests)."""
     return User.objects.create_user(username="testuser", password="testpassword123")
 
 
 @pytest.fixture
-def authenticated_client(api_client, test_user):
-    """Provides an API client authenticated with a JWT token."""
-    api_client.force_authenticate(user=test_user)
+def authenticated_client(api_client, doctor_user):
+    """Provides an API client authenticated with a doctor user (RBAC-compliant)."""
+    api_client.force_authenticate(user=doctor_user)
     return api_client
 
 
@@ -55,7 +66,7 @@ class TestPatientAPIAuth:
         assert response.status_code == 403
 
     def test_create_patient_authenticated(self, authenticated_client, patient_data):
-        """Verify an authenticated user can create a patient."""
+        """Verify an authenticated medical staff user can create a patient."""
         url = "/api/v1/patients/"
         response = authenticated_client.post(url, data=patient_data, format="json")
         assert response.status_code == 201
@@ -63,7 +74,7 @@ class TestPatientAPIAuth:
         assert Patient.objects.first().mrn == patient_data["mrn"]
 
     def test_list_patients_authenticated(self, authenticated_client, patient_data):
-        """Verify listing patients requires authentication."""
+        """Verify listing patients requires authentication with medical staff role."""
         services.register_new_patient(**patient_data)
         url = "/api/v1/patients/"
         response = authenticated_client.get(url)
@@ -80,7 +91,7 @@ class TestPatientAPIAuth:
     def test_soft_delete_patient_authenticated(
         self, authenticated_client, patient_data
     ):
-        """Verify an authenticated user can soft-delete a patient."""
+        """Verify an authenticated medical staff user can soft-delete a patient."""
         patient = services.register_new_patient(**patient_data)
         url = f"/api/v1/patients/{patient.id}/"
         response = authenticated_client.delete(url)
