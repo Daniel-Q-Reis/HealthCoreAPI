@@ -84,8 +84,8 @@ def test_metrics_endpoint_is_available(api_client):
 class TestPostAPI:
     """Tests for the Post API endpoints."""
 
-    def test_list_posts(self, api_client, user_data):
-        """Asserts that the API can list posts."""
+    def test_list_posts(self, authenticated_client, user_data):
+        """Asserts that authenticated user can list posts."""
         create_post(
             author=user_data["user"], title=fake.sentence(), content=fake.paragraph()
         )
@@ -93,7 +93,7 @@ class TestPostAPI:
             author=user_data["user"], title=fake.sentence(), content=fake.paragraph()
         )
 
-        response = api_client.get("/api/posts/")
+        response = authenticated_client.get("/api/posts/")
 
         assert response.status_code == 200
         assert len(response.data["results"]) == 2
@@ -118,13 +118,13 @@ class TestPostAPI:
 
         assert response.status_code == 403
 
-    def test_retrieve_post(self, api_client, user_data):
-        """Asserts that a post can be retrieved by its slug."""
+    def test_retrieve_post(self, authenticated_client, user_data):
+        """Asserts that authenticated user can retrieve a post by its slug."""
         post = create_post(
             author=user_data["user"], title=fake.sentence(), content=fake.paragraph()
         )
 
-        response = api_client.get(f"/api/posts/{post.slug}/")
+        response = authenticated_client.get(f"/api/posts/{post.slug}/")
 
         assert response.status_code == 200
         assert response.data["title"] == post.title

@@ -100,10 +100,20 @@ run_migrations() {
     fi
 }
 
+load_rbac_fixtures() {
+    log "Loading RBAC role fixtures..."
+
+    if python manage.py loaddata roles 2>/dev/null; then
+        log_success "RBAC roles loaded successfully"
+    else
+        log_warning "RBAC roles already loaded or fixture not found (non-critical)"
+    fi
+}
+
 collect_static_files() {
     if [[ "${COLLECTSTATIC:-0}" == "1" ]]; then
         log "Collecting static files..."
-        if python manage.py collectstatic --noinput; then
+        if python manage.py collectstatic --noinput --clear; then
             log_success "Static files collected successfully"
         else
             log_warning "Static files collection failed (non-critical)"
@@ -160,11 +170,13 @@ main() {
         chown -R appuser:appuser .git || log_warning "Could not change .git ownership. Pre-commit might fail."
     fi
 
+    # CORRECT ORDER:
     wait_for_postgres
     create_database_if_needed
-    run_migrations
-    collect_static_files
-    create_superuser_if_needed
+    run_migrations              # ← 1. Migrations first
+    load_rbac_fixtures          # ← 2. THEN load fixtures
+    collect_static_files        # ← 3. Then static files
+    create_superuser_if_needed  # ← 4. Finally superuser
 
     log_success "Django setup completed successfully!"
     log "🌟 Access your application at: http://localhost:8000"

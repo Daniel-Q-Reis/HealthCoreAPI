@@ -48,3 +48,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
                 instance.practitioner
             ).data
         return representation
+
+    def create(self, validated_data):
+        """
+        Override create to automatically set practitioner from slot.
+        """
+        slot = validated_data.get("slot")
+        if slot and slot.practitioner:
+            validated_data["practitioner"] = slot.practitioner
+        return super().create(validated_data)

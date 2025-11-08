@@ -8,9 +8,14 @@ from .models import Appointment, Slot
 
 
 def get_slot_by_id(slot_id: str) -> Optional[Slot]:
-    """Retrieves an active, unbooked slot by its UUID."""
+    """
+    Retrieves an active slot by its UUID.
+
+    Note: Does NOT filter by is_booked to allow validation in service layer.
+    Service layer is responsible for checking availability.
+    """
     try:
-        return Slot.objects.get(id=slot_id, is_active=True, is_booked=False)
+        return Slot.objects.get(id=slot_id, is_active=True)
     except Slot.DoesNotExist:
         return None
 
