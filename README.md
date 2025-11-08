@@ -4,7 +4,7 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Django 5.2](https://img.shields.io/badge/django-5.2-green.svg)](https://docs.djangoproject.com/)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Coverage: 93.31%](https://img.shields.io/badge/coverage-93.31%25-brightgreen.svg)]()
+[![Coverage: 92.41%](https://img.shields.io/badge/coverage-92.41%25-brightgreen.svg)]()
 [![Kubernetes Ready](https://img.shields.io/badge/kubernetes-ready-blue.svg)](https://kubernetes.io/)
 [![Helm Chart](https://img.shields.io/badge/helm-chart-0f1689.svg)](https://helm.sh/)
 [![Terraform](https://img.shields.io/badge/terraform-ready-7b42bc.svg)](https://www.terraform.io/)
@@ -17,7 +17,7 @@
 ## 🏆 Project Highlights
 
 ### **Enterprise Architecture & Quality**
-- **93.31% Test Coverage** with 106+ comprehensive tests
+- **92.41% Test Coverage** with 130+ comprehensive tests
 - **Domain-Driven Design** with 8+ bounded contexts
 - **Clean Architecture** principles with service/repository patterns
 - **Production-ready** CI/CD pipeline with automated quality gates
@@ -65,7 +65,10 @@ HealthCoreAPI/
 │   │   ├── 0004-prometheus-monitoring.md
 │   │   ├── 0005-circuit-breaker-resilience.md
 │   │   ├── 0006-kubernetes-helm-deployment.md
-│   │   └── 0007-terraform-infrastructure-code.md
+│   │   ├── 0007-terraform-infrastructure-code.md
+│   │   └── 0008-rbac-implementation.md
+│   ├── CCP_IMPLEMENTATION_STATUS.md  # Critical Control Points implementation status
+│   ├── CRITICAL_CONTROL_POINTS.md    # HIPAA/healthcare compliance critical controls
 │   ├── DOCKER.md                 # Docker configuration and best practices
 │   ├── VSCODE_SETUP.md           # VS Code development environment guide
 │   └── WSL2_OPTIMIZATION.md      # WSL2 performance optimization guide
@@ -79,6 +82,8 @@ HealthCoreAPI/
 │   ├── apps/                     # Django applications (Bounded Contexts)
 │   │   ├── admissions/           # Hospital admissions and bed management
 │   │   ├── core/                 # Shared core functionality and base models
+│   │   │   └── fixtures/         # Initial data fixtures
+│   │   │       └── roles.json    # RBAC role definitions (Admins, Doctors, Nurses, Patients)
 │   │   ├── departments/          # Department and medical specialty management
 │   │   ├── experience/           # Patient experience and feedback systems
 │   │   ├── patients/             # Patient data management and electronic records
@@ -100,11 +105,13 @@ HealthCoreAPI/
 ├── .gitignore                    # Git ignore patterns
 ├── .pre-commit-config.yaml       # Automated code quality and security checks
 ├── ARCHITECTURE.md               # System architecture and design documentation
+├── CONTRIBUTING.md               # Contribution guidelines and development workflow
 ├── Dockerfile                    # Multi-stage Docker image with security hardening
 ├── LICENSE                       # Apache-2.0 License
 ├── Makefile                      # Development workflow automation
 ├── README.md                     # This file
 ├── ROADMAP.md                    # Project roadmap and feature development plan
+├── SECURITY.md                   # Security policies and vulnerability reporting
 ├── STATUS.md                     # Current project status and completed features
 ├── deploy.sh                     # Production deployment automation script
 ├── docker-compose.yml            # Development environment orchestration
@@ -247,6 +254,7 @@ The system implements a **comprehensive healthcare management platform** with th
    - ✅ Enhanced terminal with git branch display
    - ✅ Pre-commit hooks for code quality
    - ✅ Database migrations applied automatically
+   - ✅ RBAC roles loaded from fixtures
 
 #### **Option 2: Standard Docker Development**
 
@@ -259,7 +267,7 @@ The system implements a **comprehensive healthcare management platform** with th
    - **API Documentation**: [http://127.0.0.1:8000/api/docs/](http://127.0.0.1:8000/api/docs/)
    - **Django Admin**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/) (admin/admin123)
    - **Health Monitoring**: [http://127.0.0.1:8000/health/](http://127.0.0.1:8000/health/)
-   - **Prometheus Metrics**: [http://127.0.0.1:8000/metrics/](http://127.0.0.1:8000/metrics/)
+   - **Prometheus Metrics**: [http://127.0.0.1:8000/metrics](http://127.0.0.1:8000/metrics)
 
 ---
 
@@ -306,7 +314,7 @@ All development workflows are automated through `make` commands. Execute `make h
 ### **Comprehensive Testing Strategy**
 This project implements **enterprise-grade quality assurance** with multiple testing layers:
 
-- **Unit Tests**: Business logic validation with 93.31% coverage
+- **Unit Tests**: Business logic validation with 92.41% coverage
 - **Integration Tests**: API endpoint testing with authentication
 - **Service Tests**: Domain service behavior validation
 - **Repository Tests**: Data access layer verification
@@ -319,7 +327,7 @@ make quality
 ```
 
 This automated pipeline includes:
-- **pytest**: 106+ tests with comprehensive coverage reporting
+- **pytest**: 130+ tests with comprehensive coverage reporting
 - **ruff**: Code formatting and linting with automatic fixes
 - **mypy**: Static type checking for type safety
 - **bandit**: Security vulnerability detection
@@ -487,20 +495,21 @@ ALLOWED_HOSTS=api.yourdomain.com,your-load-balancer.com
 
 ## 🔮 Strategic Roadmap & Vision
 
-### **Current Status: Phase 7 Completed** ✅
+### **Current Status: Phase 8 Completed** ✅
 - **Enterprise Backend**: Complete Django API with domain-driven design
-- **Quality Assurance**: 93.31% test coverage with comprehensive testing strategy
+- **Quality Assurance**: 92.41% test coverage with comprehensive testing strategy
 - **DevOps Pipeline**: Hardened CI/CD with automated quality gates and security scanning
 - **Cloud Infrastructure**: Production-ready Kubernetes deployment and Terraform automation
 - **Observability**: Health monitoring, metrics export, and error tracking integration
+- **Security & Compliance**: RBAC implementation with HIPAA-aligned access controls
 
 ### **Upcoming Development Phases**
 | Phase | Focus Area | Strategic Value |
 |-------|------------|-----------------|
-| **Phase 8** | **Advanced CI/CD & Compliance** | Security automation, compliance scanning, multi-environment deployment |
-| **Phase 9** | **Microservices Extraction** | Strangler Fig pattern implementation beginning with Notifications service |
-| **Phase 10** | **Advanced Observability** | Distributed tracing, APM integration, and advanced monitoring dashboards |
-| **Phase 11** | **Multi-Cloud Strategy** | Cloud provider abstraction and disaster recovery automation |
+| **Phase 9** | **Advanced CI/CD & Compliance** | Security automation, compliance scanning, multi-environment deployment |
+| **Phase 10** | **Microservices Extraction** | Strangler Fig pattern implementation beginning with Notifications service |
+| **Phase 11** | **Advanced Observability** | Distributed tracing, APM integration, and advanced monitoring dashboards |
+| **Phase 12** | **Multi-Cloud Strategy** | Cloud provider abstraction and disaster recovery automation |
 
 **Detailed roadmap**: See [ROADMAP.md](ROADMAP.md) for complete feature development timeline.
 
@@ -509,7 +518,7 @@ ALLOWED_HOSTS=api.yourdomain.com,your-load-balancer.com
 ## 📊 Quality & Performance Metrics
 
 ### **Code Quality Standards**
-- **Test Coverage**: 93.31% with comprehensive unit and integration testing
+- **Test Coverage**: 92.41% with comprehensive unit and integration testing
 - **Code Analysis**: Zero critical security vulnerabilities (Bandit + Safety)
 - **Type Safety**: Full MyPy static type checking compliance
 - **Code Style**: Enforced formatting and linting standards with Ruff
@@ -533,6 +542,78 @@ ALLOWED_HOSTS=api.yourdomain.com,your-load-balancer.com
 - **Vulnerability Scanning**: Automated security scanning in CI/CD pipeline
 - **Container Security**: Non-root containers with minimal base images
 
+### **Authorization (RBAC)**
+
+HealthCoreAPI implements **Role-Based Access Control (RBAC)** with four healthcare roles:
+
+| Role | Description | Permissions |
+|------|-------------|-------------|
+| **Admin** | System administrators | Full system access including user management |
+| **Doctor** | Licensed physicians | View all patients, create appointments, diagnostics, prescriptions |
+| **Nurse** | Nursing staff | View patients, update vitals, administer medications |
+| **Patient** | Registered patients | View own records only (read-only) |
+
+#### Permission Classes
+
+All endpoints are protected with role-based permissions:
+
+```
+from src.apps.core.permissions import IsDoctor, IsMedicalStaff, IsPatientOwner
+
+# Example: Doctors only
+class DiagnosticReportViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsDoctor]
+
+# Example: Medical staff (Doctors OR Nurses)
+class PatientViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated, IsMedicalStaff]
+
+# Example: Patients can only access own records
+class PatientPortalViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, IsPatientOwner]
+
+    def get_queryset(self):
+        return Patient.objects.filter(user=self.request.user)
+```
+
+#### Loading Roles
+
+Roles are defined in fixtures and loaded automatically during container startup:
+
+```
+# Roles are loaded automatically in entrypoint.sh
+# Manual loading if needed:
+python manage.py loaddata roles
+
+# Assign role to user (in Django shell)
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+
+User = get_user_model()
+user = User.objects.get(username='johndoe')
+doctor_group = Group.objects.get(name='Doctors')
+user.groups.add(doctor_group)
+```
+
+#### Testing Permissions
+
+```
+# Run RBAC test suite
+pytest src/apps/core/tests/test_rbac_permissions.py -v
+
+# Test specific role
+pytest src/apps/core/tests/test_rbac_permissions.py::TestIsDoctorPermission -v
+```
+
+#### HIPAA Compliance
+
+This RBAC implementation supports HIPAA Security Rule requirements:
+- **§ 164.308(a)(4)**: Role-based access control
+- **§ 164.308(a)(3)**: Minimum necessary access
+- **§ 164.312(a)(1)**: Access control technical safeguards
+
+See [ADR-0008](docs/adr/0008-rbac-implementation.md) for architectural decisions and [docs/CRITICAL_CONTROL_POINTS.md](docs/CRITICAL_CONTROL_POINTS.md) for compliance details.
+
 ### **Healthcare Compliance Readiness**
 - **Audit Trail**: Comprehensive logging for all data access and modifications
 - **Data Integrity**: Database constraints and validation for medical data accuracy
@@ -545,7 +626,11 @@ ALLOWED_HOSTS=api.yourdomain.com,your-load-balancer.com
 
 ### **Comprehensive Documentation Suite**
 - **[ARCHITECTURE.md](ARCHITECTURE.md)**: System design principles and strategic architectural vision
+- **[CONTRIBUTING.md](CONTRIBUTING.md)**: Contribution guidelines and development workflow
+- **[SECURITY.md](SECURITY.md)**: Security policies and vulnerability reporting procedures
 - **[docs/adr/](docs/adr/)**: Architecture Decision Records documenting technical choices
+- **[docs/CRITICAL_CONTROL_POINTS.md](docs/CRITICAL_CONTROL_POINTS.md)**: HIPAA/healthcare compliance critical controls
+- **[docs/CCP_IMPLEMENTATION_STATUS.md](docs/CCP_IMPLEMENTATION_STATUS.md)**: Implementation status of compliance controls
 - **[docs/DOCKER.md](docs/DOCKER.md)**: Docker configuration best practices and troubleshooting
 - **[docs/VSCODE_SETUP.md](docs/VSCODE_SETUP.md)**: Complete VS Code development environment guide
 - **[docs/WSL2_OPTIMIZATION.md](docs/WSL2_OPTIMIZATION.md)**: Performance optimization for Windows development
@@ -580,6 +665,8 @@ Licensed under the **Apache-2.0 License** - see [LICENSE](LICENSE) file for comp
 - Follow existing architectural patterns and conventions
 - Update ADRs for significant architectural decisions
 
+For detailed contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ---
 
 **🏥 Built with Enterprise Architecture Principles for Healthcare Technology Excellence**
@@ -588,6 +675,5 @@ Licensed under the **Apache-2.0 License** - see [LICENSE](LICENSE) file for comp
 
 **Author**: Daniel de Queiroz Reis
 **Email**: [danielqreis@gmail.com](mailto:danielqreis@gmail.com)
-**LinkedIn**: [Daniel Q. Reis](https://https://www.linkedin.com/in/danielqreis)
+**LinkedIn**: [Daniel Q. Reis](https://www.linkedin.com/in/danielqreis)
 **Portfolio**: Professional Healthcare Software Development & Cloud Architecture
-```

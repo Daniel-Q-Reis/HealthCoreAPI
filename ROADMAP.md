@@ -65,8 +65,6 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create `admin.py` for the new models.
   - [x] Write tests.
 
-## Phase 4: 24x7 Shifts, Specialties, and Patient Experience
-
 - [x] **Slice 8: Patient Experience MVP (`feature/patient-experience-mvp`)**
   - [x] Implement `PatientFeedback` and `PatientComplaint` models.
   - [x] Implement services for submitting feedback and complaints.
@@ -88,19 +86,11 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Apply view-level caching to a read-only endpoint.
   - [x] Write tests to validate both patterns.
 
-## Documentation & Process
-
-- [x] **Chore: Add Initial Architecture Decision Records (`docs/add-initial-adrs`)**
-  - Establish ADR process for documenting architectural decisions.
-  - Document key decisions from Slices 1-10 (modular monolith, JWT, Celery/Redis, Prometheus).
-
-*(This roadmap will be updated as slices are completed and new priorities are defined.)*
-
-- [ ] **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**
-  - [ ] Implement a model to store idempotency keys.
-  - [ ] Create an idempotency middleware to handle `Idempotency-Key` headers.
-  - [ ] Apply the middleware pattern to a critical POST endpoint.
-  - [ ] Write tests to verify duplicate requests are handled correctly.
+- [x] **Slice 12: Idempotency for Mutating Endpoints (`feature/idempotency-mvp`)**
+  - [x] Implement a model to store idempotency keys.
+  - [x] Create an idempotency middleware to handle `Idempotency-Key` headers.
+  - [x] Apply the middleware pattern to a critical POST endpoint.
+  - [x] Write tests to verify duplicate requests are handled correctly.
 
 - [x] **Slice 13: Resilience - Circuit Breaker MVP (`feature/resilience-circuit-breaker-mvp`)**
   - [x] Document the Circuit Breaker pattern in a new ADR.
@@ -115,16 +105,32 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Create the basic Helm chart structure (`charts/healthcoreapi`).
   - [x] Implement initial templates for Deployment, Service, and Ingress.
 
-## Phase 7: Kubernetes/AKS Delivery
+- [x] **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
+  - [x] Add a CI step to validate database migrations.
+  - [x] Add a CI step to check for dependency conflicts.
+  - [x] Ensure the test suite runs against all created apps.
 
 - [x] **Slice 16: Terraform + AKS Foundational Setup (`feature/iac-terraform-aks-mvp`)**
   - [x] Document the adoption of Terraform for IaC in a new ADR.
   - [x] Create the foundational Terraform structure for Azure.
   - [x] Define initial resources for a Resource Group and AKS cluster.
 
-## Phase 8: CI/CD and Compliance
+## Phase 8: Security & Compliance
 
-- [x] **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
-  - [x] Add a CI step to validate database migrations.
-  - [x] Add a CI step to check for dependency conflicts.
-  - [x] Ensure the test suite runs against all created apps.
+- [x] **Slice 17: RBAC Implementation (`feature/rbac-implementation`)**
+  - [x] Document RBAC architecture and healthcare role requirements in ADR-0008.
+  - [x] Create Django Groups fixture for healthcare roles (Admins, Doctors, Nurses, Patients).
+  - [x] Implement permission classes (`IsDoctor`, `IsMedicalStaff`, `IsPatientOwner`).
+  - [x] Apply RBAC to Patient, Scheduling, and Core API endpoints.
+  - [x] Update Django Admin to display and manage user roles.
+  - [x] Integrate role loading into container entrypoint for automated setup.
+  - [x] Write comprehensive RBAC permission tests.
+  - [x] Document HIPAA compliance alignment in Critical Control Points.
+
+## Documentation & Process
+
+- [x] **Chore: Add Initial Architecture Decision Records (`docs/add-initial-adrs`)**
+  - Establish ADR process for documenting architectural decisions.
+  - Document key decisions from Slices 1-10 (modular monolith, JWT, Celery/Redis, Prometheus).
+
+*(This roadmap will be updated as slices are completed and new priorities are defined.)*

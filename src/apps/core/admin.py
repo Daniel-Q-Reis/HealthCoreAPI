@@ -1,9 +1,12 @@
 """Admin configuration for core app."""
 
+from typing import Any
+
 from django.contrib import admin
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
+from django.http import HttpRequest
 
 from .models import IdempotencyKey, Post
 
@@ -24,29 +27,17 @@ class RoleGroupAdmin(BaseGroupAdmin):
     search_fields = ["name"]
     ordering = ["name"]
 
-    def user_count(self, obj):
+    def user_count(self, obj: Group) -> int:
         """Display count of users in this role."""
         return obj.user_set.count()
 
-    user_count.short_description = "Users"
+    user_count.short_description = "Users"  # type: ignore[attr-defined]
 
-    def permissions_count(self, obj):
+    def permissions_count(self, obj: Group) -> int:
         """Display count of permissions assigned to this role."""
         return obj.permissions.count()
 
-    permissions_count.short_description = "Permissions"
-
-
-# Customize User admin to show roles
-class RoleInline(admin.TabularInline):
-    """
-    Inline admin for displaying and managing user roles (groups).
-    """
-
-    model = User.groups.through
-    extra = 1
-    verbose_name = "Role"
-    verbose_name_plural = "Roles (RBAC)"
+    permissions_count.short_description = "Permissions"  # type: ignore[attr-defined]
 
 
 # Unregister default User admin to customize it
@@ -76,24 +67,12 @@ class CustomUserAdmin(BaseUserAdmin):
     search_fields = ["username", "email", "first_name", "last_name"]
     ordering = ["-date_joined"]
 
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (
-            "RBAC Roles",
-            {
-                "fields": ("groups",),
-                "description": "Assign healthcare roles: Admins, Doctors, Nurses, or Patients",
-            },
-        ),
-    )
-
-    filter_horizontal = BaseUserAdmin.filter_horizontal + ("groups",)
-
-    def get_roles(self, obj):
+    def get_roles(self, obj: User) -> str:
         """Display user's roles as comma-separated list."""
         roles = obj.groups.values_list("name", flat=True)
         return ", ".join(roles) if roles else "No roles"
 
-    get_roles.short_description = "Roles"
+    get_roles.short_description = "Roles"  # type: ignore[attr-defined]
 
 
 @admin.register(Post)
@@ -148,15 +127,15 @@ class IdempotencyKeyAdmin(admin.ModelAdmin):
     ]
     ordering = ["-created_at"]
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request: HttpRequest) -> bool:
         """Disable manual creation of idempotency keys."""
         return False
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         """Allow deletion for cleanup."""
         return True
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(self, request: HttpRequest, obj: Any = None) -> bool:
         """Disable editing of idempotency keys."""
         return False
 
