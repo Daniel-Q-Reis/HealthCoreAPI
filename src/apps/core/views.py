@@ -6,7 +6,7 @@ from datetime import datetime
 from django.conf import settings
 from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -47,6 +47,10 @@ class PostViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows posts to be viewed or edited.
 
+    Permissions:
+    - List/Retrieve: Any authenticated user can read posts
+    - Create/Update/Delete: Only post owner can modify (via IsOwnerOrReadOnly)
+
     Provides a full CRUD interface for the Post model.
     - `list`: Returns a list of all active posts.
     - `create`: Creates a new post. Requires authentication.
@@ -58,7 +62,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     queryset = repositories.get_active_posts()
     serializer_class = PostSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     lookup_field = "slug"
 
     @extend_schema(
