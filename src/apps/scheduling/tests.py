@@ -7,6 +7,7 @@ from datetime import timedelta
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.utils import timezone
 from faker import Faker
 from rest_framework.test import APIClient
@@ -23,12 +24,30 @@ User = get_user_model()
 
 @pytest.fixture
 def api_client():
+    """Base API client without authentication."""
     return APIClient()
 
 
 @pytest.fixture
+def doctor_user():
+    """Create a doctor user with Doctor group for RBAC."""
+    user = User.objects.create_user(username="doctor_sched", password="pass123")
+    doctor_group, _ = Group.objects.get_or_create(name="Doctors")
+    user.groups.add(doctor_group)
+    return user
+
+
+@pytest.fixture
 def test_user():
+    """Creates a standard test user (deprecated - use doctor_user for RBAC tests)."""
     return User.objects.create_user(username="testuser", password="password123")
+
+
+@pytest.fixture
+def authenticated_client(api_client, doctor_user):
+    """Provides an API client authenticated with a doctor user (RBAC-compliant)."""
+    api_client.force_authenticate(user=doctor_user)
+    return api_client
 
 
 @pytest.fixture
@@ -111,6 +130,7 @@ class TestSchedulingAPI:
     def test_create_appointment_api_success(
         self, authenticated_client, patient, available_slot
     ):
+        """Verify authenticated doctor can create appointment."""
         url = "/api/v1/scheduling/appointments/"
         data = {"patient": str(patient.id), "slot": str(available_slot.id)}
         response = authenticated_client.post(url, data=data, format="json")
@@ -125,16 +145,17 @@ class TestSchedulingAPI:
     def test_create_appointment_unauthenticated(
         self, api_client, patient, available_slot
     ):
+        """Verify unauthenticated users cannot create appointments."""
         url = "/api/v1/scheduling/appointments/"
         data = {"patient": str(patient.id), "slot": str(available_slot.id)}
         response = api_client.post(url, data=data, format="json")
-        assert (
-            response.status_code == 403
-        )  # DRF returns 403 for unauthenticated requests with IsAuthenticated permission
+        # DRF returns 403 for unauthenticated requests with IsAuthenticated permission
+        assert response.status_code == 403
 
     def test_create_appointment_with_booked_slot(
         self, authenticated_client, patient, available_slot
     ):
+        """Verify double-booking prevention."""
         # Book the slot via service first
         services.book_appointment(patient=patient, slot_id=available_slot.id)
 
@@ -148,6 +169,7 @@ class TestSchedulingAPI:
     def test_list_appointments(
         self, authenticated_client, patient, practitioner, available_slot
     ):
+        """Verify authenticated medical staff can list appointments."""
         services.book_appointment(patient=patient, slot_id=available_slot.id)
         url = "/api/v1/scheduling/appointments/"
         response = authenticated_client.get(url)
@@ -157,6 +179,7 @@ class TestSchedulingAPI:
     def test_retrieve_appointment(
         self, authenticated_client, patient, practitioner, available_slot
     ):
+        """Verify authenticated medical staff can retrieve appointment details."""
         appointment = services.book_appointment(
             patient=patient, slot_id=available_slot.id
         )
@@ -169,6 +192,7 @@ class TestSchedulingAPI:
     def test_soft_delete_appointment(
         self, authenticated_client, patient, practitioner, available_slot
     ):
+        """Verify authenticated doctor can soft-delete appointments."""
         appointment = services.book_appointment(
             patient=patient, slot_id=available_slot.id
         )
@@ -194,7 +218,6 @@ class TestIdempotency:
         """
         url = "/api/v1/scheduling/appointments/"
         idempotency_key = str(uuid.uuid4())
-        # CORREÇÃO: usar "patient" e "slot" (não "patient_id" e "slot_id")
         data = {"patient": str(patient.id), "slot": str(available_slot.id)}
 
         # First request: should create the appointment
