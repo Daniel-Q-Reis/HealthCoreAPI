@@ -4,11 +4,13 @@ import json
 import logging
 import time
 import uuid
+from typing import Any
 
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
 
+from .logging import correlation_id_context
 from .models import IdempotencyKey
 
 logger = logging.getLogger(__name__)
@@ -17,31 +19,66 @@ logger = logging.getLogger(__name__)
 class RequestLoggingMiddleware(MiddlewareMixin):
     """Middleware to log request/response information for monitoring.
 
+    Handles correlation ID propagation for distributed tracing:
+    - Accepts correlation ID from headers (X-Correlation-ID or Correlation-ID)
+    - Generates UUID if not provided
+    - Stores correlation ID in contextvars for logging context
+    - Adds correlation ID to response headers
+    - Maintains backward compatibility with request_id
+
     Logs:
     - Request method, path, user agent
     - Response status code and duration
-    - Request ID for tracing
+    - Request ID and correlation ID for tracing
     - User information if authenticated
     """
 
-    def process_request(self, request):
-        """Add request metadata and start timer."""
-        request.start_time = time.time()
-        request.request_id = str(uuid.uuid4())[:8]
+    def process_request(self, request: HttpRequest) -> None:
+        """Add request metadata, correlation ID, and start timer."""
+        request.start_time = time.time()  # type: ignore[attr-defined]
+        request.request_id = str(uuid.uuid4())[:8]  # type: ignore[attr-defined]
 
-        # Add request ID to response headers for debugging
-        request._request_id = request.request_id
+        # Get correlation ID from headers or generate one
+        correlation_id = (
+            request.headers.get("X-Correlation-ID")
+            or request.headers.get("Correlation-ID")
+            or str(uuid.uuid4())
+        )
+
+        # Store correlation ID in request object
+        request.correlation_id = correlation_id  # type: ignore[attr-defined]
+        request._correlation_id = correlation_id  # type: ignore[attr-defined]
+
+        # Store correlation ID in context variable for logging
+        correlation_id_context.set(correlation_id)
+
+        # Add request ID to response headers for debugging (backward compatibility)
+        request._request_id = request.request_id  # type: ignore[attr-defined]
 
         return None
 
-    def process_response(self, request, response):
+    def process_response(
+        self, request: HttpRequest, response: HttpResponse
+    ) -> HttpResponse:
         """Log request completion with timing and response info."""
+        # Always add correlation ID and request ID to response headers
+        # even if logging is skipped for certain paths
+        if hasattr(request, "request_id"):
+            response["X-Request-ID"] = request.request_id
+
+        correlation_id = getattr(request, "correlation_id", None)
+        if correlation_id:
+            response["X-Correlation-ID"] = correlation_id
+
+        # Clear correlation ID from context after request
+        correlation_id_context.set(None)
+
+        # Skip logging for static files and health checks
         if not hasattr(request, "start_time"):
             return response
 
         duration = time.time() - request.start_time
 
-        # Skip logging for static files and health checks
         skip_paths = ["/static/", "/media/", "/favicon.ico"]
         if any(request.path.startswith(path) for path in skip_paths):
             return response
@@ -49,6 +86,7 @@ class RequestLoggingMiddleware(MiddlewareMixin):
         # Prepare log data
         log_data = {
             "request_id": getattr(request, "request_id", "unknown"),
+            "correlation_id": getattr(request, "correlation_id", "unknown"),
             "method": request.method,
             "path": request.path,
             "status_code": response.status_code,
@@ -82,18 +120,15 @@ class RequestLoggingMiddleware(MiddlewareMixin):
         else:
             logger.info(f"Request completed: {log_data}")
 
-        # Add request ID to response headers for debugging
-        response["X-Request-ID"] = request.request_id
-
         return response
 
-    def _get_client_ip(self, request):
+    def _get_client_ip(self, request: HttpRequest) -> str:
         """Extract client IP address from request."""
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        x_forwarded_for: Any = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:
-            ip = x_forwarded_for.split(",")[0]
+            ip = str(x_forwarded_for).split(",")[0]
             return ip.strip()
-        return request.META.get("REMOTE_ADDR", "unknown")
+        return str(request.META.get("REMOTE_ADDR", "unknown"))
 
 
 class SecurityHeadersMiddleware(MiddlewareMixin):
@@ -103,7 +138,9 @@ class SecurityHeadersMiddleware(MiddlewareMixin):
     common web vulnerabilities.
     """
 
-    def process_response(self, request, response):
+    def process_response(
+        self, request: HttpRequest, response: HttpResponse
+    ) -> HttpResponse:
         """Add security headers to response."""
         # Prevent page from being displayed in a frame/iframe
         response["X-Frame-Options"] = "DENY"
@@ -132,7 +169,7 @@ class TimeoutMiddleware(MiddlewareMixin):
     Timeout handling is now managed at the WSGI server level (Gunicorn with --timeout).
     """
 
-    def process_request(self, request):
+    def process_request(self, request: HttpRequest) -> None:
         # COMMENTED OUT: signal-based timeout doesn't work in threads
         # def handler(signum, frame):
         #     logger.warning(f"Request timed out: {request.path}")
@@ -143,7 +180,9 @@ class TimeoutMiddleware(MiddlewareMixin):
 
         return None
 
-    def process_response(self, request, response):
+    def process_response(
+        self, request: HttpRequest, response: HttpResponse
+    ) -> HttpResponse:
         # COMMENTED OUT: corresponding cleanup
         # signal.alarm(0)
         return response
@@ -156,11 +195,11 @@ class HealthCheckMiddleware(MiddlewareMixin):
     to ensure fast response times for load balancers.
     """
 
-    def process_request(self, request):
+    def process_request(self, request: HttpRequest) -> None:
         """Skip processing for health check endpoints."""
         if request.path in ["/health/", "/health", "/ping"]:
             # Mark request as health check to skip other middleware
-            request._is_health_check = True
+            request._is_health_check = True  # type: ignore[attr-defined]
         return None
 
 
@@ -169,17 +208,37 @@ class IdempotencyMiddleware(MiddlewareMixin):
     Handles idempotency for POST requests using an 'Idempotency-Key' header.
     """
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    def process_view(
+        self,
+        request: HttpRequest,
+        view_func: Any,
+        view_args: Any,
+        view_kwargs: Any,
+    ) -> JsonResponse | None:
         # Only apply to POST requests with the header
-        idempotency_key = request.headers.get("Idempotency-Key")
+        idempotency_key: str | None = request.headers.get("Idempotency-Key")
         if not all(
             [request.method == "POST", idempotency_key, request.user.is_authenticated]
         ):
             return None
 
         try:
+            # Convert idempotency_key to UUID if it's a string
+            idempotency_key_uuid: uuid.UUID
+            if isinstance(idempotency_key, str):
+                try:
+                    idempotency_key_uuid = uuid.UUID(idempotency_key)
+                except ValueError:
+                    # If it's not a valid UUID, return None to proceed with request
+                    request.idempotency_key = idempotency_key  # type: ignore[attr-defined]
+                    return None
+            else:
+                request.idempotency_key = idempotency_key  # type: ignore[attr-defined]
+                return None
+
             key_obj = IdempotencyKey.objects.get(
-                user=request.user, idempotency_key=idempotency_key
+                user=request.user,  # type: ignore[misc]
+                idempotency_key=idempotency_key_uuid,
             )
             # Parse JSON antes de retornar
             try:
@@ -192,11 +251,13 @@ class IdempotencyMiddleware(MiddlewareMixin):
             return JsonResponse(response_data, status=key_obj.response_code, safe=False)
         except IdempotencyKey.DoesNotExist:
             # Store the key to be processed in the response phase
-            request.idempotency_key = idempotency_key
+            request.idempotency_key = idempotency_key  # type: ignore[attr-defined]
             return None
 
-    def process_response(self, request, response):
-        idempotency_key = getattr(request, "idempotency_key", None)
+    def process_response(
+        self, request: HttpRequest, response: HttpResponse
+    ) -> HttpResponse:
+        idempotency_key: str | None = getattr(request, "idempotency_key", None)
         # Only store if it's a successful creation and the key was new
         if not all(
             [
@@ -209,9 +270,20 @@ class IdempotencyMiddleware(MiddlewareMixin):
             return response
 
         try:
+            # Convert idempotency_key to UUID if it's a string
+            idempotency_key_uuid: uuid.UUID
+            if isinstance(idempotency_key, str):
+                try:
+                    idempotency_key_uuid = uuid.UUID(idempotency_key)
+                except ValueError:
+                    # If it's not a valid UUID string, generate a new one
+                    idempotency_key_uuid = uuid.uuid4()
+            else:
+                idempotency_key_uuid = uuid.uuid4()
+
             IdempotencyKey.objects.create(
-                user=request.user,
-                idempotency_key=idempotency_key,
+                user=request.user,  # type: ignore[misc]
+                idempotency_key=idempotency_key_uuid,
                 request_path=request.path,
                 response_code=response.status_code,
                 response_body=response.content.decode("utf-8"),
