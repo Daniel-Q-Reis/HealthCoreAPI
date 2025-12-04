@@ -87,6 +87,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "src.apps.core.middleware.RequestLoggingMiddleware",
     "src.apps.core.middleware.TimeoutMiddleware",
     "src.apps.core.middleware.IdempotencyMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -253,6 +254,7 @@ if not DEBUG:
         "dnt",
         "origin",
         "user-agent",
+        "x-correlation-id",
         "x-csrftoken",
         "x-requested-with",
     ]
@@ -304,8 +306,13 @@ LOGGING = {
             "format": "%(asctime)s %(name)s %(levelname)s %(module)s %(funcName)s %(lineno)d %(process)d %(thread)d %(message)s",
         },
         "verbose": {
-            "format": "{levelname} {asctime} {name} {module} {funcName} {lineno} {process:d} {thread:d} {message}",
+            "format": "{levelname} {asctime} {name} {module} {funcName} {lineno} {process:d} {thread:d} [correlation_id={correlation_id}] {message}",
             "style": "{",
+        },
+    },
+    "filters": {
+        "correlation_id": {
+            "()": "src.apps.core.logging.CorrelationIDFilter",
         },
     },
     "handlers": {
@@ -313,6 +320,7 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "json" if not DEBUG else "verbose",
+            "filters": ["correlation_id"],
         },
     },
     "root": {
