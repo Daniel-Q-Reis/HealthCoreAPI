@@ -79,6 +79,17 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Expose a `/metrics` endpoint.
   - [x] Add basic tests to verify the endpoint.
 
+- [x] **Slice 18: Correlation ID Logging (`feature/correlation-id-logging`)**
+  - [x] Create logging context filter using `contextvars` for correlation ID propagation.
+  - [x] Enhance `RequestLoggingMiddleware` to accept correlation ID from headers (`X-Correlation-ID` or `Correlation-ID`).
+  - [x] Generate correlation ID automatically if not provided in request headers.
+  - [x] Store correlation ID in context variables for logging context.
+  - [x] Add correlation ID to response headers for distributed tracing.
+  - [x] Update logging configuration to include correlation ID in all log records.
+  - [x] Add `RequestLoggingMiddleware` to middleware stack with proper ordering.
+  - [x] Update CORS headers to allow `X-Correlation-ID` in production.
+  - [x] Write comprehensive tests for correlation ID functionality (26 tests covering all scenarios).
+
 ## Phase 6: Resilience, Caching, Events
 
 - [x] **Slice 11: Resilience and Caching MVP (`feature/resilience-caching-mvp`)**

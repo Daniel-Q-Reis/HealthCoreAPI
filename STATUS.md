@@ -1,9 +1,10 @@
 # Project Status
 
-**Last Updated:** 2025-11-07
+**Last Updated:** 2025-01-04
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 18: Correlation ID Logging (`feature/correlation-id-logging`)**
 - **Slice 17: RBAC Implementation (`feature/rbac-implementation`)**
 - **Slice 16: Terraform + AKS Foundational Setup (`feature/iac-terraform-aks-mvp`)**
 - **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
