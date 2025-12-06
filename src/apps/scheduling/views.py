@@ -35,7 +35,11 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     - Automatically sets practitioner from slot
     """
 
-    queryset = Appointment.objects.filter(is_active=True)
+    # OPTIMIZATION: Added select_related to prevent N+1 queries.
+    # ORIGINAL LOGIC PRESERVED: filter(is_active=True) is maintained.
+    queryset = Appointment.objects.select_related(
+        "patient", "practitioner", "slot", "slot__practitioner"
+    ).filter(is_active=True)
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 
@@ -85,20 +89,24 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         # Validate request data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
 
-        patient = serializer.validated_data.get("patient")
-        slot = serializer.validated_data.get("slot")
+        patient = validated_data["patient"]
+        slot = validated_data["slot"]
 
         try:
             # Use book_appointment service
             appointment = services.book_appointment(patient=patient, slot_id=slot.id)
 
-            # Serialize the created appointment
-            output_serializer = self.get_serializer(appointment)
-            headers = self.get_success_headers(output_serializer.data)
+            # Optimization: Re-fetch with relationships to avoid N+1 during serialization of the response
+            appointment = self.get_queryset().get(id=appointment.id)
 
+            response_serializer = self.get_serializer(appointment)
+            headers = self.get_success_headers(response_serializer.data)
             response = Response(
-                output_serializer.data, status=status.HTTP_201_CREATED, headers=headers
+                response_serializer.data,
+                status=status.HTTP_201_CREATED,
+                headers=headers,
             )
 
             # Store idempotency key if provided
@@ -109,14 +117,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                         idempotency_key=idempotency_key,
                         request_path=request.path,
                         response_code=response.status_code,
-                        response_body=json.dumps(output_serializer.data),
+                        response_body=json.dumps(response_serializer.data),
                     )
                 except Exception:
                     # Ignore if concurrent request already created the key
                     pass
 
             return response
-
         except services.SlotUnavailableError as e:
             # Return 400 with detail message for unavailable slots
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -153,7 +160,9 @@ class SlotViewSet(viewsets.ModelViewSet):
     - Medical staff can view slots
     """
 
-    queryset = Slot.objects.filter(is_active=True)
+    # OPTIMIZATION: Added select_related for practitioner.
+    # ORIGINAL LOGIC PRESERVED: filter(is_active=True) is maintained.
+    queryset = Slot.objects.select_related("practitioner").filter(is_active=True)
     serializer_class = SlotSerializer
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 

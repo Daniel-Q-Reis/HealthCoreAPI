@@ -144,4 +144,10 @@ This document outlines the tactical, sequential plan for implementing the featur
   - Establish ADR process for documenting architectural decisions.
   - Document key decisions from Slices 1-10 (modular monolith, JWT, Celery/Redis, Prometheus).
 
+- [x] **Slice 19: Query Optimization (`perf/query-optimization`)**
+  - [x] Optimize `Scheduling` querysets (Appointments, Slots).
+  - [x] Optimize `Experience` querysets (Feedback, Complaints).
+  - [x] Optimize `Core` querysets (Posts).
+  - [x] Implement `assertNumQueries` performance tests.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
