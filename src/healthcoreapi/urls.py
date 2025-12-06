@@ -52,5 +52,6 @@ urlpatterns = [
     path("api/v1/staff/", include("src.apps.shifts.urls")),
     path("api/v1/experience/", include("src.apps.experience.urls")),
     path("api/v1/hospital/", include("src.apps.departments.urls")),
+    path("api/v1/pharmacy/", include("src.apps.pharmacy.urls")),
     # Add your apps' urls here
 ]

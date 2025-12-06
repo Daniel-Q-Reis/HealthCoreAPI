@@ -30,4 +30,5 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
 
 ## In Progress
-- None
+- **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**
+  - Implement Pharmacy domain with Inventory and Dispensation tracking.
