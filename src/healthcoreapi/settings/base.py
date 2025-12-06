@@ -72,6 +72,7 @@ LOCAL_APPS = [
     "src.apps.shifts",
     "src.apps.experience",
     "src.apps.departments",
+    "src.apps.pharmacy",
     # Your local apps go here
 ]
 

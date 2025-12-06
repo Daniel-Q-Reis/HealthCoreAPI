@@ -150,4 +150,14 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Optimize `Core` querysets (Posts).
   - [x] Implement `assertNumQueries` performance tests.
 
+## Phase 10: Clinical Support & Logistics
+
+- [x] **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**
+  - [x] Create ADR-0009 for Pharmacy Module.
+  - [x] Implement `Medication` model (Brand, SKU, Expiry, Stock).
+  - [x] Implement `Dispensation` model (Audit log of withdrawals).
+  - [x] Implement service logic for stock deduction and low-stock alerts (50/25 units).
+  - [x] Secure endpoints with RBAC (Doctors/Nurses only).
+  - [x] Create `admin.py` and comprehensive tests.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
