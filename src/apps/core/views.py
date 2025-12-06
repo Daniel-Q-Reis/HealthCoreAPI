@@ -60,7 +60,9 @@ class PostViewSet(viewsets.ModelViewSet):
     - `destroy`: Soft-deletes a post. Requires authentication.
     """
 
-    queryset = repositories.get_active_posts()
+    # OPTIMIZATION: Add select_related for author.
+    # NOTE: We use the repository getter but chain select_related to it.
+    queryset = repositories.get_active_posts().select_related("author")
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     lookup_field = "slug"

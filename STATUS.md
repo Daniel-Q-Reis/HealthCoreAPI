@@ -1,11 +1,16 @@
 # Project Status
 
-**Last Updated:** 2025-01-04
+**Last Updated:** 12/06/2025
 **Owner:** Daniel Reis
 
 ## Concluded
-- **Slice 18: Correlation ID Logging (`feature/correlation-id-logging`)**
-- **Slice 17: RBAC Implementation (`feature/rbac-implementation`)**
+- **Slice 19: Query Optimization (`perf/query-optimization`)**
+  - Optimize `Scheduling` querysets (Appointments, Slots).
+  - Optimize `Experience` querysets (Feedback, Complaints).
+  - Optimize `Core` querysets (Posts).
+  - Implement `assertNumQueries` performance tests.
+- **Slice 18: Correlation ID Logging**
+- **Slice 17: Microservices Extraction Prep - Notifications MVP (`feature/notifications-mvp`)**
 - **Slice 16: Terraform + AKS Foundational Setup (`feature/iac-terraform-aks-mvp`)**
 - **Slice 15: CI/CD Pipeline Hardening (`feature/cicd-hardening`)**
 - **Slice 14: Kubernetes - Helm Charts MVP (`feature/kubernetes-helm-charts-mvp`)**

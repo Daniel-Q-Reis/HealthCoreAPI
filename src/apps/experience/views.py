@@ -16,7 +16,10 @@ class PatientFeedbackViewSet(viewsets.ModelViewSet):
     API endpoint for submitting and viewing patient feedback.
     """
 
-    queryset = PatientFeedback.objects.all()
+    # OPTIMIZATION: Added select_related for nested relationships.
+    queryset = PatientFeedback.objects.select_related(
+        "patient", "admission", "admission__bed", "admission__bed__ward"
+    ).all()
     serializer_class = PatientFeedbackSerializer
     permission_classes = [IsAuthenticated]  # Or AllowAny depending on requirements
     http_method_names = ["get", "post", "head", "options"]
@@ -28,7 +31,10 @@ class PatientComplaintViewSet(viewsets.ModelViewSet):
     API endpoint for submitting and viewing patient complaints.
     """
 
-    queryset = PatientComplaint.objects.all()
+    # OPTIMIZATION: Added select_related for nested relationships.
+    queryset = PatientComplaint.objects.select_related(
+        "patient", "admission", "admission__bed", "admission__bed__ward"
+    ).all()
     serializer_class = PatientComplaintSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ["get", "post", "head", "options"]
