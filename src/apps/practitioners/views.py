@@ -4,7 +4,9 @@ API Views for the Practitioners bounded context.
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated  # Manter esta linha
+from rest_framework.serializers import Serializer
+
+from src.apps.core.permissions import IsAdmin
 
 from . import services
 from .models import Practitioner
@@ -15,21 +17,24 @@ from .serializers import PractitionerSerializer
 class PractitionerViewSet(viewsets.ModelViewSet):
     """
     API endpoint for managing Practitioners.
-    Requires authentication for all operations.
+
+    Permissions:
+    - Admin only - requires human validation of professional credentials
+    - Ensures proper verification of medical licenses and qualifications
     """
 
     queryset = Practitioner.objects.active()
     serializer_class = PractitionerSerializer
     lookup_field = "id"
-    permission_classes = [IsAuthenticated]  # Manter esta linha
+    permission_classes = [IsAdmin]
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Serializer) -> None:
         """
         Uses the service layer to create a new practitioner.
         """
         services.register_new_practitioner(**serializer.validated_data)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: Practitioner) -> None:
         """
         Performs a soft delete on the practitioner instance.
         """
