@@ -32,9 +32,17 @@ def test_user():
 
 
 @pytest.fixture
-def authenticated_client(api_client, test_user):
-    """Provides an API client authenticated with a user."""
-    api_client.force_authenticate(user=test_user)
+def authenticated_client(api_client):
+    """
+    Authenticated API client with Admin role for RBAC compliance.
+    Required since PractitionerViewSet uses IsAdmin permission.
+    """
+    from django.contrib.auth.models import Group
+
+    user = User.objects.create_user(username="admin_test", password="testpass")
+    admin_group, _ = Group.objects.get_or_create(name="Admins")
+    user.groups.add(admin_group)
+    api_client.force_authenticate(user=user)
     return api_client
 
 
