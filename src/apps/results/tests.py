@@ -24,8 +24,16 @@ def test_user():
 
 @pytest.fixture
 def authenticated_client():
+    """
+    Authenticated API client with Doctor role for RBAC compliance.
+    Required since DiagnosticReportViewSet uses IsMedicalStaff permission.
+    """
+    from django.contrib.auth.models import Group
+
     api_client = APIClient()
-    user = User.objects.create_user(username="testuser", password="password123")
+    user = User.objects.create_user(username="doctor_test", password="password123")
+    doctor_group, _ = Group.objects.get_or_create(name="Doctors")
+    user.groups.add(doctor_group)
     api_client.force_authenticate(user=user)
     return api_client
 

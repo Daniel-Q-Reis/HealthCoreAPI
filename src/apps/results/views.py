@@ -7,6 +7,8 @@ from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from src.apps.core.permissions import IsMedicalStaff
+
 from . import services
 from .models import DiagnosticReport
 from .serializers import CreateDiagnosticReportSerializer, DiagnosticReportSerializer
@@ -16,6 +18,14 @@ from .serializers import CreateDiagnosticReportSerializer, DiagnosticReportSeria
 class DiagnosticReportViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing and creating Diagnostic Reports.
+
+    Permissions:
+    - Medical staff (Doctors, Nurses) can access diagnostic reports
+    - Admins can access all diagnostic reports
+
+    HIPAA Compliance:
+    This endpoint implements role-based access control per HIPAA
+    Security Rule requirements for protected health information (PHI).
     """
 
     queryset = (
@@ -23,7 +33,7 @@ class DiagnosticReportViewSet(viewsets.ModelViewSet):
         .prefetch_related("observations")
         .filter(is_active=True)
     )
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsMedicalStaff]
     http_method_names = ["get", "post", "head", "options"]
 
     def get_serializer_class(self):
