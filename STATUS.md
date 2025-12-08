@@ -1,9 +1,11 @@
 # Project Status
 
-**Last Updated:** 12/06/2025
+**Last Updated:** 12/07/2025
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**:
+  - Implement Pharmacy domain with Inventory and Dispensation tracking.
 - **Slice 19: Query Optimization (`perf/query-optimization`)**
   - Optimize `Scheduling` querysets (Appointments, Slots).
   - Optimize `Experience` querysets (Feedback, Complaints).
@@ -30,5 +32,5 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
 
 ## In Progress
-- **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**
-  - Implement Pharmacy domain with Inventory and Dispensation tracking.
+- **Slice 21: Equipment Flow & Logistics (`feature/equipment-logistics`)**
+  - Implement Equipment tracking, QR handoffs, and maintenance workflows.
