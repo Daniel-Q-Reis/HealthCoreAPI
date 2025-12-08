@@ -160,4 +160,12 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Secure endpoints with RBAC (Doctors/Nurses only).
   - [x] Create `admin.py` and comprehensive tests.
 
+- [x] **Slice 21: Equipment Flow & Logistics (`feature/equipment-logistics`)**
+  - [x] Create ADR-0010 for Equipment Module.
+  - [x] Implement `Equipment` domain models.
+  - [x] Implement `IsMedicalStaff` RBAC permission.
+  - [x] Implement service logic: Handoffs, Maintenance Triggers, Reservations.
+  - [x] API Endpoints secured for Medical Staff only.
+  - [x] Comprehensive tests with RBAC simulation.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
