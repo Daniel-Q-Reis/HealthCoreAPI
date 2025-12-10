@@ -74,6 +74,7 @@ LOCAL_APPS = [
     "src.apps.departments",
     "src.apps.pharmacy",
     "src.apps.equipment",
+    "src.apps.orders",
     # Your local apps go here
 ]
 

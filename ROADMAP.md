@@ -168,4 +168,12 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] API Endpoints secured for Medical Staff only.
   - [x] Comprehensive tests with RBAC simulation.
 
+- [x] **Slice 22: Clinical Orders & Service Requests (`feature/clinical-orders`)**
+  - [x] Create ADR-0011 for Clinical Ordering (FHIR ServiceRequest alignment).
+  - [x] Implement `ClinicalOrder` model (Patient, Requester, Priority, Status).
+  - [x] Implement RBAC `IsMedicalStaff` for all endpoints.
+  - [x] Implement Service Layer: Order Creation Validation, Status Transitions.
+  - [x] API Endpoints (Create, List, Cancel, Complete).
+  - [x] Comprehensive Integration Tests (14 tests).
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
