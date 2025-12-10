@@ -5,6 +5,7 @@
 [![Django 5.2](https://img.shields.io/badge/django-5.2-green.svg)](https://docs.djangoproject.com/)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Coverage: 92.23%](https://img.shields.io/badge/coverage-92.23%25-brightgreen.svg)]()
+[![OpenAI Powered](https://img.shields.io/badge/OpenAI-Powered-412991.svg)](https://openai.com/)
 [![Kubernetes Ready](https://img.shields.io/badge/kubernetes-ready-blue.svg)](https://kubernetes.io/)
 [![Helm Chart](https://img.shields.io/badge/helm-chart-0f1689.svg)](https://helm.sh/)
 [![Terraform](https://img.shields.io/badge/terraform-ready-7b42bc.svg)](https://www.terraform.io/)
@@ -17,7 +18,7 @@
 ## 🏆 Project Highlights
 
 ### **Enterprise Architecture & Quality**
-- **92.23% Test Coverage** with 191 comprehensive tests
+- **91.17% Test Coverage** with 200+ comprehensive tests
 - **Domain-Driven Design** with 12+ bounded contexts
 - **Clean Architecture** principles with service/repository patterns
 - **Production-ready** CI/CD pipeline with automated quality gates
@@ -196,6 +197,12 @@ The system implements a **comprehensive healthcare management platform** with th
 - **Observability**: Prometheus metrics export and monitoring integration
 - **Resilience**: Circuit breaker patterns for fault tolerance and system stability
 - **Security**: Authentication, authorization, and audit logging
+
+### **🤖 AI-Powered Features** *(NEW)*
+- **Pharmacy AI**: Drug information assistant with interactions, dosages, and contraindications
+- **Experience AI**: Patient feedback analyzer with sentiment detection and actionable insights
+- **Unified AIClient**: Centralized OpenAI integration with graceful degradation
+- See [AI_INTEGRATION.md](AI_INTEGRATION.md) for complete documentation
 
 ---
 

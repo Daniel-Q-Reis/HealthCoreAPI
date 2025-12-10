@@ -176,4 +176,13 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] API Endpoints (Create, List, Cancel, Complete).
   - [x] Comprehensive Integration Tests (14 tests).
 
+- [x] **Slice 23: AI Integration with OpenAI (`feature/ai-integration-openai`)**
+  - [x] Create ADR-0012 for AI Integration Strategy.
+  - [x] Create AI_INTEGRATION.md in project root.
+  - [x] Implement unified `AIClient` in `src/apps/core/ai_client.py`.
+  - [x] Implement Pharmacy AI: Drug Information Assistant.
+  - [x] Implement Experience AI: Patient Feedback Analyzer.
+  - [x] API Endpoints: `/api/v1/pharmacy/ai/drug-info/`, `/api/v1/experience/ai/analyze/`.
+  - [x] Comprehensive mocked tests for CI/CD compatibility.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
