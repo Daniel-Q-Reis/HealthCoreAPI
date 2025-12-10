@@ -1,9 +1,11 @@
 # Project Status
 
-**Last Updated:** 12/07/2025
+**Last Updated:** 12/09/2025
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 21: Equipment Flow & Logistics (`feature/equipment-logistics`)**
+  - Implement Equipment tracking, QR handoffs, and maintenance workflows.
 - **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**:
   - Implement Pharmacy domain with Inventory and Dispensation tracking.
 - **Slice 19: Query Optimization (`perf/query-optimization`)**
@@ -32,5 +34,8 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
 
 ## In Progress
-- **Slice 21: Equipment Flow & Logistics (`feature/equipment-logistics`)**
-  - Implement Equipment tracking, QR handoffs, and maintenance workflows.
+- **Slice 22: Clinical Orders & Service Requests (`feature/clinical-orders`)**
+  - Implement the central ordering engine linking Patients, Practitioners, and Departments.
+  - ClinicalOrder model aligned with FHIR ServiceRequest.
+  - IsMedicalStaff RBAC applied to all endpoints.
+  - ADR-0011 documented.
