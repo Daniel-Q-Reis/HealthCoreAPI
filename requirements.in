@@ -28,3 +28,6 @@ psutil
 python-json-logger
 django-prometheus
 pybreaker
+
+# AI Integration
+openai>=1.50.0

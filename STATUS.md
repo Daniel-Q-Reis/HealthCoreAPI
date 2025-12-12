@@ -1,9 +1,12 @@
 # Project Status
 
-**Last Updated:** 12/09/2025
+**Last Updated:** 12/10/2025
 **Owner:** Daniel Reis
 
 ## Concluded
+- **Slice 22: Clinical Orders & Service Requests (`feature/clinical-orders`)**
+  - Implement the ordering engine linking Patients, Practitioners, and Departments.
+  - ClinicalOrder model aligned with FHIR ServiceRequest.
 - **Slice 21: Equipment Flow & Logistics (`feature/equipment-logistics`)**
   - Implement Equipment tracking, QR handoffs, and maintenance workflows.
 - **Slice 20: Pharmacy & Inventory MVP (`feature/pharmacy-inventory-mvp`)**:
@@ -34,8 +37,8 @@
 - **Slice 1: Patients CRUD (`feature/patients-core-crud`)**
 
 ## In Progress
-- **Slice 22: Clinical Orders & Service Requests (`feature/clinical-orders`)**
-  - Implement the central ordering engine linking Patients, Practitioners, and Departments.
-  - ClinicalOrder model aligned with FHIR ServiceRequest.
-  - IsMedicalStaff RBAC applied to all endpoints.
-  - ADR-0011 documented.
+- **Slice 23: AI Integration with OpenAI (`feature/ai-integration-openai`)**
+  - Pharmacy AI: Drug Information Assistant
+  - Experience AI: Patient Feedback Analyzer
+  - Unified AIClient with OpenAI SDK
+  - ADR-0012 and AI_INTEGRATION.md documented

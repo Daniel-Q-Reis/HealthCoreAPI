@@ -4,9 +4,13 @@ API Views for Pharmacy.
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.request import Request
 from rest_framework.response import Response
 
-from . import services
+from src.apps.core.permissions import IsMedicalStaff
+
+from . import ai_service, services
 from .models import Dispensation, Medication
 from .serializers import (
     CreateDispensationSerializer,
@@ -15,30 +19,11 @@ from .serializers import (
 )
 
 
-class IsMedicalStaff(permissions.BasePermission):
-    """
-    Custom permission to only allow medical staff (Doctors/Nurses) to modify inventory.
-    """
-
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return request.user and request.user.is_authenticated
-
-        # Check if user is in 'Doctors' or 'Nurses' group
-        # This assumes Groups are set up. For MVP, we'll check is_staff as fallback or group presence.
-        return request.user.is_authenticated and (
-            request.user.is_staff
-            or request.user.groups.filter(name__in=["Doctors", "Nurses"]).exists()
-        )
-
-
 @extend_schema(tags=["Pharmacy"])
 class MedicationViewSet(viewsets.ModelViewSet):
     queryset = Medication.objects.filter(is_active=True)
     serializer_class = MedicationSerializer
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]  # Read allowed for all auth users
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update", "destroy"]:
@@ -52,7 +37,7 @@ class DispensationViewSet(viewsets.ModelViewSet):
         "medication", "patient", "practitioner"
     ).filter(is_active=True)
     serializer_class = DispensationSerializer
-    permission_classes = [IsMedicalStaff]  # Only medical staff can dispense
+    permission_classes = [IsMedicalStaff]
 
     @extend_schema(request=CreateDispensationSerializer)
     def create(self, request, *args, **kwargs):
@@ -66,3 +51,61 @@ class DispensationViewSet(viewsets.ModelViewSet):
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         except services.PharmacyError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Pharmacy AI"],
+    request={
+        "application/json": {
+            "type": "object",
+            "properties": {
+                "medication_name": {"type": "string", "example": "Metformin"},
+                "patient_context": {
+                    "type": "string",
+                    "example": "65-year-old with Type 2 diabetes",
+                },
+            },
+            "required": ["medication_name"],
+        }
+    },
+    responses={200: {"description": "Drug information response"}},
+)
+@api_view(["POST"])
+@permission_classes([IsMedicalStaff])
+def drug_info_view(request: Request) -> Response:
+    """
+    AI-powered drug information assistant.
+
+    Provides comprehensive drug information including interactions,
+    dosages, side effects, and contraindications.
+
+    Requires IsMedicalStaff permission.
+    """
+    medication_name = request.data.get("medication_name")
+    patient_context = request.data.get("patient_context", "")
+
+    if not medication_name:
+        return Response(
+            {"error": "medication_name is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    result = ai_service.get_drug_information(
+        medication_name=medication_name,
+        patient_context=patient_context,
+    )
+
+    if not result.success:
+        return Response(
+            {"error": result.error_message},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    return Response(
+        {
+            "medication_name": result.medication_name,
+            "information": result.information,
+            "model_used": result.model_used,
+        },
+        status=status.HTTP_200_OK,
+    )

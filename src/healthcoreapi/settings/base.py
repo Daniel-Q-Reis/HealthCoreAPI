@@ -399,3 +399,13 @@ if SENTRY_DSN:
         environment=config("SENTRY_ENVIRONMENT", default="development"),
         release=VERSION,
     )
+
+# AI Integration Configuration
+# ------------------------------------------------------------------------------
+# Gemini (Default - Free Tier Available)
+GEMINI_API_KEY = config("GEMINI_API_KEY", default=None)
+GEMINI_MODEL = config("GEMINI_MODEL", default="models/gemini-2.5-flash")
+
+# OpenAI (Alternative - Requires Paid Credits)
+OPENAI_API_KEY = config("OPENAI_API_KEY", default=None)
+OPENAI_MODEL = config("OPENAI_MODEL", default="gpt-3.5-turbo")
