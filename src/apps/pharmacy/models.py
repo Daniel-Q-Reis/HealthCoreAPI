@@ -33,11 +33,11 @@ class Medication(ActivatableModel):
             models.Index(fields=["expiry_date"]),
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.brand}) - Stock: {self.stock_quantity}"
 
     @property
-    def is_expired(self):
+    def is_expired(self) -> bool:
         from django.utils import timezone
 
         return self.expiry_date < timezone.now().date()
@@ -66,5 +66,5 @@ class Dispensation(ActivatableModel):
         verbose_name_plural = "Dispensations"
         ordering = ["-dispensed_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.quantity}x {self.medication.name} to {self.patient.given_name} by {self.practitioner.given_name}"

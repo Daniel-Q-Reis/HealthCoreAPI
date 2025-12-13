@@ -10,6 +10,7 @@ from src.apps.patients.repositories import get_patient_by_id
 from src.apps.practitioners.repositories import get_practitioner_by_id
 
 from . import repositories
+from .models import Dispensation
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ def dispense_medication(
     practitioner_id: int,
     quantity: int,
     notes: str = "",
-):
+) -> Dispensation:
     """
     Dispenses medication, updates stock, and logs the event.
     Triggers alerts if stock falls below thresholds.

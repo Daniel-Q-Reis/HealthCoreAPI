@@ -8,7 +8,7 @@ from .models import PatientComplaint, PatientFeedback
 
 
 @admin.register(PatientFeedback)
-class PatientFeedbackAdmin(admin.ModelAdmin):
+class PatientFeedbackAdmin(admin.ModelAdmin[PatientFeedback]):
     list_display = ("patient", "admission", "overall_rating", "created_at")
     list_filter = ("overall_rating",)
     search_fields = ("patient__mrn", "patient__family_name", "comments")
@@ -17,7 +17,7 @@ class PatientFeedbackAdmin(admin.ModelAdmin):
 
 
 @admin.register(PatientComplaint)
-class PatientComplaintAdmin(admin.ModelAdmin):
+class PatientComplaintAdmin(admin.ModelAdmin[PatientComplaint]):
     list_display = ("patient", "category", "status", "created_at")
     list_filter = ("category", "status")
     search_fields = ("patient__mrn", "patient__family_name", "description")

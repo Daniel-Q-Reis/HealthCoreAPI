@@ -1,5 +1,5 @@
 """
-API Views for the Departments & Specialties bounded context.
+Views for the Departments API.
 """
 
 from typing import Any
@@ -9,7 +9,7 @@ from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.request import Request
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import BaseSerializer
 
 from src.apps.core.permissions import IsAdmin
 
@@ -19,7 +19,7 @@ from .serializers import DepartmentSerializer
 
 
 @extend_schema(tags=["Departments & Specialties"])
-class DepartmentViewSet(viewsets.ModelViewSet):
+class DepartmentViewSet(viewsets.ModelViewSet[Department]):
     """
     API endpoint for managing Departments.
 
@@ -33,10 +33,10 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdmin]
 
     @method_decorator(cache_page(60 * 5))  # Cache for 5 minutes
-    def list(self, request: Request, *args: Any, **kwargs: Any):  # type: ignore[override]
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Any:
         return super().list(request, *args, **kwargs)
 
-    def perform_create(self, serializer: Serializer) -> None:
+    def perform_create(self, serializer: BaseSerializer[Department]) -> None:
         """
         Uses the service layer to create a new department.
         """

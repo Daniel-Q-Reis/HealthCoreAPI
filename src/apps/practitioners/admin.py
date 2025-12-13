@@ -8,7 +8,7 @@ from .models import Practitioner
 
 
 @admin.register(Practitioner)
-class PractitionerAdmin(admin.ModelAdmin):
+class PractitionerAdmin(admin.ModelAdmin[Practitioner]):
     """
     Admin interface options for the Practitioner model.
     """

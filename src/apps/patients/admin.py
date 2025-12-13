@@ -8,7 +8,7 @@ from .models import Patient
 
 
 @admin.register(Patient)
-class PatientAdmin(admin.ModelAdmin):
+class PatientAdmin(admin.ModelAdmin[Patient]):
     """
     Admin interface options for the Patient model.
     """

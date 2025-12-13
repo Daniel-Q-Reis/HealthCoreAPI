@@ -1,13 +1,15 @@
 """
-Serializers for Clinical Orders API.
+Serializers for Clinical Orders.
 """
+
+from typing import Any
 
 from rest_framework import serializers
 
 from .models import ClinicalOrder
 
 
-class ClinicalOrderSerializer(serializers.ModelSerializer):
+class ClinicalOrderSerializer(serializers.ModelSerializer[ClinicalOrder]):
     """Serializer for ClinicalOrder with related data."""
 
     patient_name = serializers.CharField(
@@ -47,7 +49,7 @@ class ClinicalOrderSerializer(serializers.ModelSerializer):
         return f"{obj.requester.given_name} {obj.requester.family_name}"
 
 
-class CreateClinicalOrderSerializer(serializers.Serializer):
+class CreateClinicalOrderSerializer(serializers.Serializer[Any]):
     """Serializer for creating clinical orders."""
 
     patient_id = serializers.IntegerField(required=True)

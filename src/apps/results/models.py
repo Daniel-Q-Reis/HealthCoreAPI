@@ -37,7 +37,7 @@ class DiagnosticReport(ActivatableModel):
         verbose_name_plural = "Diagnostic Reports"
         ordering = ["-issued_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Report for {self.patient} on {self.issued_at.strftime('%Y-%m-%d')}"
 
 
@@ -62,5 +62,5 @@ class Observation(ActivatableModel):
         verbose_name_plural = "Observations"
         ordering = ["-created_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Observation {self.code}: {self.value_text}"

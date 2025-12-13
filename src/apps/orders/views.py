@@ -19,7 +19,7 @@ from .serializers import ClinicalOrderSerializer, CreateClinicalOrderSerializer
 
 
 @extend_schema(tags=["Clinical Orders"])
-class ClinicalOrderViewSet(viewsets.ModelViewSet):
+class ClinicalOrderViewSet(viewsets.ModelViewSet[ClinicalOrder]):
     """
     API endpoint for managing clinical orders (ServiceRequests).
 
@@ -49,7 +49,7 @@ class ClinicalOrderViewSet(viewsets.ModelViewSet):
         "patient__family_name",
     ]
 
-    def get_serializer_class(self):  # type: ignore[override]
+    def get_serializer_class(self) -> type[Any]:
         if self.action == "create":
             return CreateClinicalOrderSerializer
         return ClinicalOrderSerializer

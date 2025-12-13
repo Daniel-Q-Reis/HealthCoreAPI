@@ -2,6 +2,8 @@
 Service layer for the Shifts & Availability bounded context.
 """
 
+from typing import Any
+
 from src.apps.practitioners.repositories import get_practitioner_by_id
 
 from . import repositories
@@ -12,7 +14,7 @@ class ServiceValidationError(Exception):
     pass
 
 
-def create_shift_for_practitioner(**data) -> Shift:
+def create_shift_for_practitioner(**data: Any) -> Shift:
     """
     Orchestrates the creation of a new shift.
     """

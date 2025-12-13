@@ -2,6 +2,8 @@
 Serializers for Equipment API.
 """
 
+from typing import Any
+
 from rest_framework import serializers
 
 from .models import (
@@ -12,7 +14,7 @@ from .models import (
 )
 
 
-class EquipmentSerializer(serializers.ModelSerializer):
+class EquipmentSerializer(serializers.ModelSerializer[Equipment]):
     class Meta:
         model = Equipment
         fields = "__all__"
@@ -25,7 +27,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
         ]
 
 
-class EquipmentReservationSerializer(serializers.ModelSerializer):
+class EquipmentReservationSerializer(serializers.ModelSerializer[EquipmentReservation]):
     class Meta:
         model = EquipmentReservation
         fields = "__all__"
@@ -39,7 +41,7 @@ class EquipmentReservationSerializer(serializers.ModelSerializer):
         ]
 
 
-class EquipmentMovementSerializer(serializers.ModelSerializer):
+class EquipmentMovementSerializer(serializers.ModelSerializer[EquipmentMovement]):
     actor_name = serializers.CharField(source="actor.username", read_only=True)
 
     class Meta:
@@ -48,7 +50,7 @@ class EquipmentMovementSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "timestamp", "actor"]
 
 
-class EquipmentIncidentSerializer(serializers.ModelSerializer):
+class EquipmentIncidentSerializer(serializers.ModelSerializer[EquipmentIncident]):
     class Meta:
         model = EquipmentIncident
         fields = "__all__"
@@ -64,18 +66,18 @@ class EquipmentIncidentSerializer(serializers.ModelSerializer):
 
 
 # Action Serializers
-class HandoffSerializer(serializers.Serializer):
+class HandoffSerializer(serializers.Serializer[Any]):
     to_location = serializers.CharField(max_length=255)
     method = serializers.ChoiceField(choices=["SCAN", "MANUAL"], default="SCAN")
     notes = serializers.CharField(required=False, allow_blank=True)
 
 
-class ReportIncidentSerializer(serializers.Serializer):
+class ReportIncidentSerializer(serializers.Serializer[Any]):
     severity = serializers.ChoiceField(choices=["LOW", "MEDIUM", "HIGH"])
     description = serializers.CharField()
 
 
-class ReserveSerializer(serializers.Serializer):
+class ReserveSerializer(serializers.Serializer[Any]):
     start_time = serializers.DateTimeField()
     end_time = serializers.DateTimeField()
     purpose = serializers.CharField()

@@ -2,9 +2,12 @@
 Data access layer for the Admissions & Beds bounded context.
 """
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from .models import Admission, Bed
+
+if TYPE_CHECKING:
+    from src.apps.patients.models import Patient
 
 
 def find_available_bed_in_ward(ward_id: str) -> Optional[Bed]:
@@ -14,12 +17,12 @@ def find_available_bed_in_ward(ward_id: str) -> Optional[Bed]:
     ).first()
 
 
-def create_admission(patient, bed: Optional[Bed] = None) -> Admission:
+def create_admission(patient: "Patient", bed: Optional[Bed] = None) -> Admission:
     """Creates an admission record for a patient."""
     return Admission.objects.create(patient=patient, bed=bed)
 
 
-def occupy_bed(bed: Bed):
+def occupy_bed(bed: Bed) -> None:
     """Marks a bed as occupied."""
     bed.is_occupied = True
     bed.save(update_fields=["is_occupied", "updated_at"])

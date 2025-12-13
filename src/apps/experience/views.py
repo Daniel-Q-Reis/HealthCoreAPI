@@ -15,7 +15,7 @@ from .serializers import PatientComplaintSerializer, PatientFeedbackSerializer
 
 
 @extend_schema(tags=["Patient Experience"])
-class PatientFeedbackViewSet(viewsets.ModelViewSet):
+class PatientFeedbackViewSet(viewsets.ModelViewSet[PatientFeedback]):
     """
     API endpoint for submitting and viewing patient feedback.
     """
@@ -30,7 +30,7 @@ class PatientFeedbackViewSet(viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["Patient Experience"])
-class PatientComplaintViewSet(viewsets.ModelViewSet):
+class PatientComplaintViewSet(viewsets.ModelViewSet[PatientComplaint]):
     """
     API endpoint for submitting and viewing patient complaints.
     """

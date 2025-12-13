@@ -6,7 +6,7 @@ from .models import ClinicalOrder
 
 
 @admin.register(ClinicalOrder)
-class ClinicalOrderAdmin(admin.ModelAdmin):
+class ClinicalOrderAdmin(admin.ModelAdmin[ClinicalOrder]):
     """Admin interface for ClinicalOrder model."""
 
     list_display = (

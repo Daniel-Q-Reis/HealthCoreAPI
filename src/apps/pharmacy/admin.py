@@ -4,7 +4,7 @@ from .models import Dispensation, Medication
 
 
 @admin.register(Medication)
-class MedicationAdmin(admin.ModelAdmin):
+class MedicationAdmin(admin.ModelAdmin[Medication]):
     list_display = (
         "name",
         "brand",
@@ -20,7 +20,7 @@ class MedicationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Dispensation)
-class DispensationAdmin(admin.ModelAdmin):
+class DispensationAdmin(admin.ModelAdmin[Dispensation]):
     list_display = ("medication", "patient", "practitioner", "quantity", "dispensed_at")
     list_filter = ("dispensed_at",)
     search_fields = ("medication__name", "patient__mrn", "practitioner__family_name")

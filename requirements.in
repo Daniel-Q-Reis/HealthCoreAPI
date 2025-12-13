@@ -1,4 +1,5 @@
 django==5.2
+django-stubs-ext
 psycopg2-binary
 python-decouple
 dj-database-url
@@ -31,3 +32,4 @@ pybreaker
 
 # AI Integration
 openai>=1.50.0
+google-generativeai>=0.8.0

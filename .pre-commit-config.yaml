@@ -20,6 +20,14 @@ repos:
 
 - repo: local
   hooks:
+    - id: mypy
+      name: mypy (strict mode)
+      entry: mypy
+      language: system
+      types: [python]
+      pass_filenames: false
+      args: [.]
+      stages: [pre-push]
     - id: pytest
       name: pytest
       entry: pytest

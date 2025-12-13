@@ -2,10 +2,14 @@
 Service layer for the Scheduling bounded context.
 """
 
+from typing import Any
+
 from django.db import transaction
 
+from src.apps.patients.models import Patient
+
 from . import repositories
-from .models import Appointment, Patient, Slot
+from .models import Appointment, Slot
 
 
 class SlotUnavailableError(Exception):
@@ -36,7 +40,7 @@ def book_slot(slot: Slot) -> Slot:
     return repositories.book_slot(slot)
 
 
-def create_appointment(**data) -> Appointment:
+def create_appointment(**data: Any) -> Appointment:
     """Creates a new appointment record."""
     return repositories.create_appointment(**data)
 

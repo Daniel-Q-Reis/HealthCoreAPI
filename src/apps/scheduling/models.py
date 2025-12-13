@@ -26,7 +26,7 @@ class Slot(ActivatableModel):
         verbose_name_plural = "Slots"
         ordering = ["start_time"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Slot for {self.practitioner} from {self.start_time} to {self.end_time}"
 
 
@@ -60,5 +60,5 @@ class Appointment(ActivatableModel):
         verbose_name_plural = "Appointments"
         ordering = ["-slot__start_time"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Appointment for {self.patient} with {self.practitioner} at {self.slot.start_time}"

@@ -2,6 +2,8 @@
 API Views for Equipment.
 """
 
+from typing import Any
+
 from django.core.exceptions import ValidationError
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
@@ -12,7 +14,7 @@ from . import services
 from .models import (
     Equipment,
 )
-from .permissions import IsMedicalStaff
+from .permissions import IsMedicalStaffOrReadOnly
 from .serializers import (
     EquipmentIncidentSerializer,
     EquipmentMovementSerializer,
@@ -24,15 +26,15 @@ from .serializers import (
 )
 
 
-class EquipmentViewSet(viewsets.ModelViewSet):
+class EquipmentViewSet(viewsets.ModelViewSet[Equipment]):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
     # CRITICAL: Lock down access to Medical Staff only
-    permission_classes = [IsMedicalStaff]
+    permission_classes = [IsMedicalStaffOrReadOnly]
 
     @extend_schema(request=HandoffSerializer, responses=EquipmentMovementSerializer)
     @action(detail=True, methods=["post"])
-    def handoff(self, request, pk=None):
+    def handoff(self, request: Any, pk: Any = None) -> Response:
         equipment = self.get_object()
         serializer = HandoffSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -48,7 +50,7 @@ class EquipmentViewSet(viewsets.ModelViewSet):
         request=ReportIncidentSerializer, responses=EquipmentIncidentSerializer
     )
     @action(detail=True, methods=["post"])
-    def incident(self, request, pk=None):
+    def incident(self, request: Any, pk: Any = None) -> Response:
         equipment = self.get_object()
         serializer = ReportIncidentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -62,7 +64,7 @@ class EquipmentViewSet(viewsets.ModelViewSet):
 
     @extend_schema(request=ReserveSerializer, responses=EquipmentReservationSerializer)
     @action(detail=True, methods=["post"])
-    def reserve(self, request, pk=None):
+    def reserve(self, request: Any, pk: Any = None) -> Response:
         equipment = self.get_object()
         serializer = ReserveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

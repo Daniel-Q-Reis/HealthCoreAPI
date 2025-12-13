@@ -43,5 +43,5 @@ class Patient(ActivatableModel):
         verbose_name_plural = "Patients"
         ordering = ["family_name", "given_name"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.family_name}, {self.given_name} (MRN: {self.mrn})"

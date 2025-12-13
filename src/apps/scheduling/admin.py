@@ -8,7 +8,7 @@ from .models import Appointment, Slot
 
 
 @admin.register(Slot)
-class SlotAdmin(admin.ModelAdmin):
+class SlotAdmin(admin.ModelAdmin[Slot]):
     """
     Admin interface options for the Slot model.
     """
@@ -20,7 +20,7 @@ class SlotAdmin(admin.ModelAdmin):
 
 
 @admin.register(Appointment)
-class AppointmentAdmin(admin.ModelAdmin):
+class AppointmentAdmin(admin.ModelAdmin[Appointment]):
     """
     Admin interface options for the Appointment model.
     """
@@ -36,5 +36,5 @@ class AppointmentAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at", "updated_at")
 
     @admin.display(description="Slot Time", ordering="slot__start_time")
-    def get_slot_time(self, obj):
-        return obj.slot.start_time
+    def get_slot_time(self, obj: Appointment) -> str:
+        return str(obj.slot.start_time)

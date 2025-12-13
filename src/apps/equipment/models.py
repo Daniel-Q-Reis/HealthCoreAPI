@@ -65,15 +65,15 @@ class Equipment(AuthorableModel):
         verbose_name = "Equipment"
         verbose_name_plural = "Equipment"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} ({self.serial_number})"
 
-    def soft_delete(self):
+    def soft_delete(self) -> None:
         """Mark equipment as inactive instead of deleting."""
         self.is_active = False
         self.save(update_fields=["is_active", "updated_at"])
 
-    def activate(self):
+    def activate(self) -> None:
         """Mark equipment as active."""
         self.is_active = True
         self.save(update_fields=["is_active", "updated_at"])

@@ -7,7 +7,7 @@ from rest_framework import serializers
 from .models import PatientComplaint, PatientFeedback
 
 
-class PatientFeedbackSerializer(serializers.ModelSerializer):
+class PatientFeedbackSerializer(serializers.ModelSerializer[PatientFeedback]):
     class Meta:
         model = PatientFeedback
         fields = [
@@ -21,7 +21,7 @@ class PatientFeedbackSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at"]
 
 
-class PatientComplaintSerializer(serializers.ModelSerializer):
+class PatientComplaintSerializer(serializers.ModelSerializer[PatientComplaint]):
     class Meta:
         model = PatientComplaint
         fields = [

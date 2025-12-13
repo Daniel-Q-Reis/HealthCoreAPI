@@ -10,19 +10,24 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-import os
-from datetime import timedelta
-from pathlib import Path
+# Enable runtime support for generic type parameters in Django
+import django_stubs_ext
 
-import dj_database_url
-from decouple import Csv, config
+django_stubs_ext.monkeypatch()
+
+import os  # noqa: E402
+from datetime import timedelta  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+import dj_database_url  # noqa: E402
+from decouple import Csv, config  # noqa: E402
 
 # Imports for optional features
 
-import sentry_sdk  # noqa: F401
-from sentry_sdk.integrations.django import DjangoIntegration  # noqa: F401
-from sentry_sdk.integrations.redis import RedisIntegration  # noqa: F401
-from sentry_sdk.integrations.celery import CeleryIntegration  # noqa: F401
+import sentry_sdk  # noqa: E402, F401
+from sentry_sdk.integrations.django import DjangoIntegration  # noqa: E402, F401
+from sentry_sdk.integrations.redis import RedisIntegration  # noqa: E402, F401
+from sentry_sdk.integrations.celery import CeleryIntegration  # noqa: E402, F401
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
