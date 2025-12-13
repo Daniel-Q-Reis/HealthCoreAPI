@@ -2,6 +2,8 @@
 API Views for Pharmacy.
 """
 
+from typing import Any
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
@@ -20,19 +22,19 @@ from .serializers import (
 
 
 @extend_schema(tags=["Pharmacy"])
-class MedicationViewSet(viewsets.ModelViewSet):
+class MedicationViewSet(viewsets.ModelViewSet[Medication]):
     queryset = Medication.objects.filter(is_active=True)
     serializer_class = MedicationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_permissions(self):
+    def get_permissions(self) -> list[Any]:
         if self.action in ["create", "update", "partial_update", "destroy"]:
             return [IsMedicalStaff()]
-        return super().get_permissions()
+        return list(super().get_permissions())
 
 
 @extend_schema(tags=["Pharmacy"])
-class DispensationViewSet(viewsets.ModelViewSet):
+class DispensationViewSet(viewsets.ModelViewSet[Dispensation]):
     queryset = Dispensation.objects.select_related(
         "medication", "patient", "practitioner"
     ).filter(is_active=True)
@@ -40,7 +42,7 @@ class DispensationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsMedicalStaff]
 
     @extend_schema(request=CreateDispensationSerializer)
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         serializer = CreateDispensationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data

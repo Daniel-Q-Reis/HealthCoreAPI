@@ -33,5 +33,5 @@ class Shift(ActivatableModel):
             )
         ]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Shift for {self.practitioner} from {self.start_time.strftime('%Y-%m-%d %H:%M')} to {self.end_time.strftime('%H:%M')}"

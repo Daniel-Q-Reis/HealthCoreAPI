@@ -2,12 +2,14 @@
 Serializers for Pharmacy API.
 """
 
+from typing import Any
+
 from rest_framework import serializers
 
 from .models import Dispensation, Medication
 
 
-class MedicationSerializer(serializers.ModelSerializer):
+class MedicationSerializer(serializers.ModelSerializer[Medication]):
     class Meta:
         model = Medication
         fields = [
@@ -24,7 +26,7 @@ class MedicationSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "is_active"]
 
 
-class DispensationSerializer(serializers.ModelSerializer):
+class DispensationSerializer(serializers.ModelSerializer[Dispensation]):
     class Meta:
         model = Dispensation
         fields = [
@@ -39,7 +41,7 @@ class DispensationSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "dispensed_at"]
 
 
-class CreateDispensationSerializer(serializers.Serializer):
+class CreateDispensationSerializer(serializers.Serializer[Any]):
     medication_id = serializers.IntegerField()
     patient_id = serializers.IntegerField()
     practitioner_id = serializers.IntegerField()

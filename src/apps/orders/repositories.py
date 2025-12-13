@@ -3,7 +3,7 @@ Repository layer for Clinical Orders.
 Data access abstraction following project patterns.
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from .models import ClinicalOrder
 
@@ -16,7 +16,7 @@ def get_order_by_id(order_id: int) -> Optional[ClinicalOrder]:
         return None
 
 
-def create_order(**data) -> ClinicalOrder:  # type: ignore[no-untyped-def]
+def create_order(**data: Any) -> ClinicalOrder:
     """Create a new clinical order."""
     return ClinicalOrder.objects.create(**data)
 

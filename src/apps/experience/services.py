@@ -2,11 +2,13 @@
 Service layer for the Patient Experience bounded context.
 """
 
+from typing import Any
+
 from . import repositories
 from .models import PatientComplaint, PatientFeedback
 
 
-def submit_patient_feedback(**data) -> PatientFeedback:
+def submit_patient_feedback(**data: Any) -> PatientFeedback:
     """
     Business logic to submit patient feedback.
     """
@@ -14,7 +16,7 @@ def submit_patient_feedback(**data) -> PatientFeedback:
     return repositories.create_feedback(**data)
 
 
-def submit_patient_complaint(**data) -> PatientComplaint:
+def submit_patient_complaint(**data: Any) -> PatientComplaint:
     """
     Business logic to submit a patient complaint.
     """

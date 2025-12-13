@@ -101,10 +101,10 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 # Disable migrations for faster tests (use --create-db if needed)
 # This can be overridden with --migrations in pytest
 class DisableMigrations:
-    def __contains__(self, item):
+    def __contains__(self, item: str) -> bool:
         return True
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: str) -> None:
         return None
 
 

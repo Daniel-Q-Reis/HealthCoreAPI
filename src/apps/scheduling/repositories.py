@@ -2,7 +2,7 @@
 Data access layer for the Scheduling bounded context.
 """
 
-from typing import Optional
+from typing import Any, Optional
 
 from .models import Appointment, Slot
 
@@ -27,6 +27,6 @@ def book_slot(slot: Slot) -> Slot:
     return slot
 
 
-def create_appointment(**data) -> Appointment:
+def create_appointment(**data: Any) -> Appointment:
     """Creates a new appointment record."""
     return Appointment.objects.create(**data)

@@ -2,7 +2,7 @@
 Data access layer for the Practitioners bounded context.
 """
 
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from .models import Practitioner
 
@@ -15,6 +15,6 @@ def get_practitioner_by_id(practitioner_id: Union[int, str]) -> Optional[Practit
         return None
 
 
-def create_practitioner(**data) -> Practitioner:
+def create_practitioner(**data: Any) -> Practitioner:
     """Creates a new practitioner record."""
     return Practitioner.objects.create(**data)

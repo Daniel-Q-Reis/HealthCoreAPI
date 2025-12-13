@@ -2,6 +2,9 @@
 API Views for the Patients bounded context.
 """
 
+from typing import Any
+
+from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -14,7 +17,7 @@ from .serializers import PatientSerializer
 
 
 @extend_schema(tags=["Patients"])
-class PatientViewSet(viewsets.ModelViewSet):
+class PatientViewSet(viewsets.ModelViewSet[Patient]):
     """
     API endpoint for managing Patients.
 
@@ -32,7 +35,7 @@ class PatientViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Patient]:
         """
         Filter queryset based on user role.
 
@@ -45,13 +48,13 @@ class PatientViewSet(viewsets.ModelViewSet):
         # Medical staff and admins can see all patients
         return Patient.objects.active()
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: Any) -> None:
         """
         Overrides the default creation to use the service layer.
         """
         services.register_new_patient(**serializer.validated_data)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: Patient) -> None:
         """
         Overrides the default destroy to perform a soft delete.
         """

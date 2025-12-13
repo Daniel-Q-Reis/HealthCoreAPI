@@ -2,12 +2,14 @@
 Core serializers for the application.
 """
 
+from typing import Any
+
 from rest_framework import serializers
 
 from .models import Post
 
 
-class HealthCheckSerializer(serializers.Serializer):
+class HealthCheckSerializer(serializers.Serializer[Any]):
     """
     Serializer for the health check endpoint.
     """
@@ -17,7 +19,7 @@ class HealthCheckSerializer(serializers.Serializer):
     timestamp = serializers.DateTimeField(read_only=True)
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer[Post]):
     """
     Serializer for the Post model.
 
@@ -25,7 +27,7 @@ class PostSerializer(serializers.ModelSerializer):
     renderable as JSON for the API.
     """
 
-    author = serializers.StringRelatedField(read_only=True)
+    author = serializers.StringRelatedField(read_only=True)  # type: ignore[var-annotated]
 
     class Meta:
         model = Post

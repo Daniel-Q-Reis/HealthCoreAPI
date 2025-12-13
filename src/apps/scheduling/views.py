@@ -3,8 +3,8 @@ API Views for the Scheduling bounded context.
 """
 
 import json
+from typing import Any
 
-from django.http import JsonResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -20,7 +20,7 @@ from .serializers import AppointmentSerializer, SlotSerializer
 
 
 @extend_schema(tags=["Scheduling"])
-class AppointmentViewSet(viewsets.ModelViewSet):
+class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
     """
     API endpoint for managing Appointments.
 
@@ -43,7 +43,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 
-    def get_permissions(self):
+    def get_permissions(self) -> list[Any]:
         """
         Customize permissions based on action.
 
@@ -54,7 +54,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsDoctor()]
         return [IsAuthenticated(), IsMedicalStaff()]
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         """
         Override create to handle:
         1. Idempotency (check for duplicate Idempotency-Key)
@@ -79,9 +79,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
                 except (json.JSONDecodeError, TypeError):
                     response_data = {}
 
-                return JsonResponse(
-                    response_data, status=key_obj.response_code, safe=False
-                )
+                return Response(response_data, status=key_obj.response_code)
             except IdempotencyKey.DoesNotExist:
                 # Key not found - proceed with creation
                 pass
@@ -128,7 +126,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             # Return 400 with detail message for unavailable slots
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_destroy(self, instance):
+    def perform_destroy(self, instance: Appointment) -> None:
         """
         Soft delete appointment.
         """
@@ -137,7 +135,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     @action(
         detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsDoctor]
     )
-    def cancel(self, request, pk=None):
+    def cancel(self, request: Any, pk: int | None = None) -> Response:
         """
         Cancel an appointment.
 
@@ -151,7 +149,7 @@ class AppointmentViewSet(viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["Scheduling"])
-class SlotViewSet(viewsets.ModelViewSet):
+class SlotViewSet(viewsets.ModelViewSet[Slot]):
     """
     API endpoint for managing Slots.
 
@@ -166,7 +164,7 @@ class SlotViewSet(viewsets.ModelViewSet):
     serializer_class = SlotSerializer
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 
-    def get_permissions(self):
+    def get_permissions(self) -> list[Any]:
         """
         Doctors only for create/update/delete.
         Medical staff for read operations.

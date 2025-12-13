@@ -98,6 +98,8 @@ django-celery-beat==2.8.1
     # via -r requirements.in
 django-cors-headers==4.9.0
     # via -r requirements.in
+djangorestframework-stubs==3.16.0
+    # via -r requirements-dev.in
 django-filter==25.2
     # via -r requirements.in
 django-prometheus==2.4.1

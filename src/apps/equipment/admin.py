@@ -8,19 +8,19 @@ from .models import (
 
 
 @admin.register(Equipment)
-class EquipmentAdmin(admin.ModelAdmin):
+class EquipmentAdmin(admin.ModelAdmin[Equipment]):
     list_display = ("name", "serial_number", "type", "status", "current_location")
     list_filter = ("status", "type")
     search_fields = ("name", "serial_number", "qr_code")
 
 
 @admin.register(EquipmentMovement)
-class MovementAdmin(admin.ModelAdmin):
+class MovementAdmin(admin.ModelAdmin[EquipmentMovement]):
     list_display = ("equipment", "from_location", "to_location", "actor", "timestamp")
     readonly_fields = ("timestamp",)
 
 
 @admin.register(EquipmentIncident)
-class IncidentAdmin(admin.ModelAdmin):
+class IncidentAdmin(admin.ModelAdmin[EquipmentIncident]):
     list_display = ("equipment", "severity", "status", "created_by")
     list_filter = ("severity", "status")

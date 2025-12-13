@@ -7,13 +7,13 @@ from django.contrib import admin
 from .models import DiagnosticReport, Observation
 
 
-class ObservationInline(admin.TabularInline):
+class ObservationInline(admin.TabularInline):  # type: ignore[type-arg]
     model = Observation
     extra = 1
 
 
 @admin.register(DiagnosticReport)
-class DiagnosticReportAdmin(admin.ModelAdmin):
+class DiagnosticReportAdmin(admin.ModelAdmin[DiagnosticReport]):
     list_display = ("patient", "performer", "status", "issued_at")
     list_filter = ("status", "performer")
     search_fields = ("patient__mrn", "patient__family_name", "conclusion")
@@ -23,7 +23,7 @@ class DiagnosticReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(Observation)
-class ObservationAdmin(admin.ModelAdmin):
+class ObservationAdmin(admin.ModelAdmin[Observation]):
     list_display = ("report", "code", "value_text")
     search_fields = ("code", "value_text", "report__patient__mrn")
     autocomplete_fields = ("report",)

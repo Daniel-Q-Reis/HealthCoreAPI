@@ -45,7 +45,7 @@ admin.site.unregister(User)
 
 
 @admin.register(User)
-class CustomUserAdmin(BaseUserAdmin):
+class CustomUserAdmin(BaseUserAdmin):  # type: ignore[type-arg]
     """
     Custom User admin with RBAC role management.
 
@@ -76,7 +76,7 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(admin.ModelAdmin[Post]):
     """
     Admin configuration for Post model.
     """
@@ -100,7 +100,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(IdempotencyKey)
-class IdempotencyKeyAdmin(admin.ModelAdmin):
+class IdempotencyKeyAdmin(admin.ModelAdmin[IdempotencyKey]):
     """
     Admin configuration for IdempotencyKey model (read-only).
 

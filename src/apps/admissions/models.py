@@ -19,7 +19,7 @@ class Ward(ActivatableModel):
         verbose_name_plural = "Wards"
         ordering = ["name"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -36,7 +36,7 @@ class Bed(ActivatableModel):
         ordering = ["ward", "bed_number"]
         unique_together = ("ward", "bed_number")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.ward.name} - Bed {self.bed_number}"
 
 
@@ -62,5 +62,5 @@ class Admission(ActivatableModel):
         verbose_name_plural = "Admissions"
         ordering = ["-admission_date"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Admission for {self.patient} on {self.admission_date.strftime('%Y-%m-%d')}"

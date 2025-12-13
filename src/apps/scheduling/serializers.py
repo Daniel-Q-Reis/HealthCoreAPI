@@ -2,18 +2,22 @@
 Serializers for the Scheduling API.
 """
 
+from typing import Any
+
 from rest_framework import serializers
 
-from .models import Appointment, Patient, Slot
+from src.apps.patients.models import Patient
+
+from .models import Appointment, Slot
 
 
-class SlotSerializer(serializers.ModelSerializer):
+class SlotSerializer(serializers.ModelSerializer[Slot]):
     class Meta:
         model = Slot
         fields = ["id", "practitioner", "start_time", "end_time", "is_booked"]
 
 
-class AppointmentSerializer(serializers.ModelSerializer):
+class AppointmentSerializer(serializers.ModelSerializer[Appointment]):
     patient = serializers.PrimaryKeyRelatedField(queryset=Patient.objects.all())
     slot = serializers.PrimaryKeyRelatedField(queryset=Slot.objects.all())
 
@@ -29,7 +33,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "practitioner", "status"]
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Appointment) -> dict[str, Any]:
         # Provide a nested representation for read operations
         representation = super().to_representation(instance)
         # Replace slot ID with full slot object using SlotSerializer
@@ -49,7 +53,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
             ).data
         return representation
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> Appointment:
         """
         Override create to automatically set practitioner from slot.
         """

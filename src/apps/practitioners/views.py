@@ -1,10 +1,10 @@
 """
-API Views for the Practitioners bounded context.
+Views for the Practitioners API.
 """
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import BaseSerializer
 
 from src.apps.core.permissions import IsAdmin
 
@@ -14,7 +14,7 @@ from .serializers import PractitionerSerializer
 
 
 @extend_schema(tags=["Practitioners"])
-class PractitionerViewSet(viewsets.ModelViewSet):
+class PractitionerViewSet(viewsets.ModelViewSet[Practitioner]):
     """
     API endpoint for managing Practitioners.
 
@@ -28,7 +28,7 @@ class PractitionerViewSet(viewsets.ModelViewSet):
     lookup_field = "id"
     permission_classes = [IsAdmin]
 
-    def perform_create(self, serializer: Serializer) -> None:
+    def perform_create(self, serializer: BaseSerializer[Practitioner]) -> None:
         """
         Uses the service layer to create a new practitioner.
         """

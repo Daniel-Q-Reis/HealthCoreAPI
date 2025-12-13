@@ -39,7 +39,7 @@ class PatientFeedback(ActivatableModel):
         verbose_name_plural = "Patient Feedbacks"
         ordering = ["-created_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Feedback from {self.patient or 'Anonymous'} - Rating: {self.overall_rating}"
 
 
@@ -87,5 +87,5 @@ class PatientComplaint(ActivatableModel):
         verbose_name_plural = "Patient Complaints"
         ordering = ["-created_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Complaint ({self.category}) from {self.patient or 'Anonymous'}"

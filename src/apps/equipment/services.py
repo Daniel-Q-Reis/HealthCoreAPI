@@ -2,6 +2,9 @@
 Service layer for Equipment. Handles atomic handoffs and maintenance triggers.
 """
 
+from datetime import datetime
+from typing import TYPE_CHECKING
+
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
@@ -13,9 +16,17 @@ from .models import (
     EquipmentStatus,
 )
 
+if TYPE_CHECKING:
+    from django.contrib.auth.models import User
+
 
 def record_handoff(
-    *, equipment: Equipment, to_location: str, actor, method="SCAN", notes=""
+    *,
+    equipment: Equipment,
+    to_location: str,
+    actor: "User",
+    method: str = "SCAN",
+    notes: str = "",
 ) -> EquipmentMovement:
     """
     Moves equipment to a new location.
@@ -43,7 +54,7 @@ def record_handoff(
 
 
 def report_incident(
-    *, equipment: Equipment, reporter, severity: str, description: str
+    *, equipment: Equipment, reporter: "User", severity: str, description: str
 ) -> EquipmentIncident:
     """
     Reports an incident.
@@ -65,7 +76,13 @@ def report_incident(
 
 
 def reserve_equipment(
-    *, equipment: Equipment, requester, start_time, end_time, purpose, department_id
+    *,
+    equipment: Equipment,
+    requester: "User",
+    start_time: datetime,
+    end_time: datetime,
+    purpose: str,
+    department_id: str,
 ) -> EquipmentReservation:
     """
     Reserves equipment.

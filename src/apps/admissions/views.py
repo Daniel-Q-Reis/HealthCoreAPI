@@ -4,6 +4,7 @@ API Views for the Admissions & Beds bounded context.
 
 from typing import Any
 
+from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -23,7 +24,7 @@ from .serializers import (
 
 
 @extend_schema(tags=["Admissions & Beds"])
-class AdmissionViewSet(viewsets.ModelViewSet):
+class AdmissionViewSet(viewsets.ModelViewSet[Admission]):
     """
     API endpoint for viewing and managing Patient Admissions.
 
@@ -37,12 +38,12 @@ class AdmissionViewSet(viewsets.ModelViewSet):
     )
     permission_classes = [IsAuthenticated, IsMedicalStaff]
 
-    def get_serializer_class(self):  # type: ignore[override]
+    def get_serializer_class(self) -> type[Any]:
         if self.action == "create":
             return CreateAdmissionSerializer
         return AdmissionSerializer
 
-    def get_queryset(self):  # type: ignore[override]
+    def get_queryset(self) -> QuerySet[Admission]:
         # Allow read operations (list, retrieve) to be handled normally
         if self.action in ["list", "retrieve"]:
             return Admission.objects.select_related("patient", "bed__ward").filter(
@@ -67,7 +68,7 @@ class AdmissionViewSet(viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["Admissions & Beds"])
-class WardViewSet(viewsets.ReadOnlyModelViewSet):
+class WardViewSet(viewsets.ReadOnlyModelViewSet[Ward]):
     """Read-only access to Wards. Only medical staff can view ward information."""
 
     queryset = Ward.objects.prefetch_related("beds").filter(is_active=True)
@@ -76,7 +77,7 @@ class WardViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 @extend_schema(tags=["Admissions & Beds"])
-class BedViewSet(viewsets.ReadOnlyModelViewSet):
+class BedViewSet(viewsets.ReadOnlyModelViewSet[Bed]):
     """Read-only access to Beds. Only medical staff can view bed availability."""
 
     queryset = Bed.objects.select_related("ward").filter(is_active=True)

@@ -2,6 +2,8 @@
 API Views for the Results & Imaging bounded context.
 """
 
+from typing import Any
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -15,7 +17,7 @@ from .serializers import CreateDiagnosticReportSerializer, DiagnosticReportSeria
 
 
 @extend_schema(tags=["Results & Imaging"])
-class DiagnosticReportViewSet(viewsets.ModelViewSet):
+class DiagnosticReportViewSet(viewsets.ModelViewSet[DiagnosticReport]):
     """
     API endpoint for viewing and creating Diagnostic Reports.
 
@@ -36,12 +38,12 @@ class DiagnosticReportViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsMedicalStaff]
     http_method_names = ["get", "post", "head", "options"]
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Any]:
         if self.action == "create":
             return CreateDiagnosticReportSerializer
         return DiagnosticReportSerializer
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data

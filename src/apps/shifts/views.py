@@ -17,7 +17,7 @@ from .serializers import ShiftSerializer
 
 
 @extend_schema(tags=["Shifts & Availability"])
-class ShiftViewSet(viewsets.ModelViewSet):
+class ShiftViewSet(viewsets.ModelViewSet[Shift]):
     """
     API endpoint for viewing and creating Practitioner Shifts.
 

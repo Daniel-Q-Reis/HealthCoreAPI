@@ -2,12 +2,14 @@
 Serializers for the Shifts & Availability API.
 """
 
+from typing import Any
+
 from rest_framework import serializers
 
 from .models import Shift
 
 
-class ShiftSerializer(serializers.ModelSerializer):
+class ShiftSerializer(serializers.ModelSerializer[Shift]):
     practitioner_id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -22,7 +24,7 @@ class ShiftSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "practitioner"]
 
-    def validate(self, data):
+    def validate(self, data: dict[str, Any]) -> dict[str, Any]:
         """
         Check that start is before end.
         """

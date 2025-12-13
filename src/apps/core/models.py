@@ -1,26 +1,32 @@
 """Base models and managers for the application."""
 
 import uuid
+from datetime import timedelta
+from typing import Any, TypeVar
 
 from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 from django.utils import timezone
 
+# TypeVar for generic manager - allows proper type inference for child models
+_T = TypeVar("_T", bound="ActivatableModel")
 
-class BaseManager(models.Manager):
+
+class BaseManager(models.Manager[_T]):
     """Base manager with common querysets."""
 
-    def active(self):
+    def active(self) -> QuerySet[_T]:
         """Return only active records."""
         return self.filter(is_active=True)
 
-    def inactive(self):
+    def inactive(self) -> QuerySet[_T]:
         """Return only inactive records."""
         return self.filter(is_active=False)
 
-    def recent(self, days=30):
+    def recent(self, days: int = 30) -> QuerySet[_T]:
         """Return records created in the last N days."""
-        cutoff_date = timezone.now() - timezone.timedelta(days=days)
+        cutoff_date = timezone.now() - timedelta(days=days)
         return self.filter(created_at__gte=cutoff_date)
 
 
@@ -52,17 +58,17 @@ class ActivatableModel(TimestampedModel):
         default=True, help_text="Whether this record is active"
     )
 
-    objects = BaseManager()
+    objects = BaseManager["ActivatableModel"]()
 
     class Meta:
         abstract = True
 
-    def soft_delete(self):
+    def soft_delete(self) -> None:
         """Mark record as inactive instead of deleting."""
         self.is_active = False
         self.save(update_fields=["is_active", "updated_at"])
 
-    def activate(self):
+    def activate(self) -> None:
         """Mark record as active."""
         self.is_active = True
         self.save(update_fields=["is_active", "updated_at"])
@@ -94,7 +100,7 @@ class AuthorableModel(TimestampedModel):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """Override save to track user changes."""
         # Note: In real usage, you'd get the user from request context
         # This is a template, so we leave it as a pattern to follow
@@ -114,7 +120,7 @@ class SluggedModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         """Auto-generate slug if not provided."""
         if not self.slug and hasattr(self, "name"):
             from django.utils.text import slugify
@@ -124,7 +130,7 @@ class SluggedModel(models.Model):
             counter = 1
 
             # Ensure unique slug
-            while self.__class__.objects.filter(slug=slug).exists():
+            while self.__class__.objects.filter(slug=slug).exists():  # type: ignore[attr-defined]
                 slug = f"{base_slug}-{counter}"
                 counter += 1
 
@@ -157,12 +163,12 @@ class Post(ActivatableModel, SluggedModel):
         verbose_name_plural = "Posts"
         ordering = ["-created_at"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of a Post."""
         return self.title
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Provides the 'name' property for the SluggedModel to use."""
         return self.title
 

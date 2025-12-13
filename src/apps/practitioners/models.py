@@ -33,5 +33,5 @@ class Practitioner(ActivatableModel):
         verbose_name_plural = "Practitioners"
         ordering = ["family_name", "given_name"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.family_name}, {self.given_name} ({self.role})"

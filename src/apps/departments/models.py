@@ -21,7 +21,7 @@ class Department(ActivatableModel):
         verbose_name_plural = "Departments"
         ordering = ["name"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -50,5 +50,5 @@ class SpecialtyRule(ActivatableModel):
             "rule_key",
         )  # Ensure unique rule per department
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Rule '{self.rule_key}' for {self.department.name}"

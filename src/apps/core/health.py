@@ -6,17 +6,21 @@ including database connectivity, cache availability, and system resources.
 """
 
 import logging
+from typing import Any, Callable
 
 import psutil
 from django.conf import settings
 from django.core.cache import cache
 from django.db import connection
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 logger = logging.getLogger(__name__)
+
+# Type alias for health check results
+HealthCheckResult = dict[str, Any]
 
 
 class HealthCheckStatus:
@@ -30,17 +34,17 @@ class HealthCheckStatus:
 class HealthChecker:
     """Comprehensive health checker for application components."""
 
-    def __init__(self):
-        self.checks = {
+    def __init__(self) -> None:
+        self.checks: dict[str, Callable[[], HealthCheckResult]] = {
             "database": self._check_database,
             "cache": self._check_cache,
             "disk_space": self._check_disk_space,
             "memory": self._check_memory,
         }
 
-    def run_all_checks(self):
+    def run_all_checks(self) -> HealthCheckResult:
         """Run all health checks and return status."""
-        results = {}
+        results: dict[str, HealthCheckResult] = {}
         overall_status = HealthCheckStatus.HEALTHY
 
         for check_name, check_func in self.checks.items():
@@ -74,7 +78,7 @@ class HealthChecker:
             "checks": results,
         }
 
-    def _check_database(self):
+    def _check_database(self) -> HealthCheckResult:
         """Check database connectivity and response time."""
         try:
             start_time = timezone.now()
@@ -105,7 +109,7 @@ class HealthChecker:
                 "timestamp": timezone.now().isoformat(),
             }
 
-    def _check_cache(self):
+    def _check_cache(self) -> HealthCheckResult:
         """Check cache connectivity and functionality."""
         try:
             test_key = "health_check_test"
@@ -146,7 +150,7 @@ class HealthChecker:
                 "timestamp": timezone.now().isoformat(),
             }
 
-    def _check_disk_space(self):
+    def _check_disk_space(self) -> HealthCheckResult:
         """Check available disk space."""
         try:
             disk_usage = psutil.disk_usage("/")
@@ -179,7 +183,7 @@ class HealthChecker:
                 "timestamp": timezone.now().isoformat(),
             }
 
-    def _check_memory(self):
+    def _check_memory(self) -> HealthCheckResult:
         """Check available memory."""
         try:
             memory = psutil.virtual_memory()
@@ -219,7 +223,7 @@ health_checker = HealthChecker()
 
 @never_cache
 @require_http_methods(["GET", "HEAD"])
-def health_check_view(request):
+def health_check_view(request: HttpRequest) -> JsonResponse:
     """Health check endpoint for monitoring systems."""
     health_status = health_checker.run_all_checks()
 
@@ -236,7 +240,7 @@ def health_check_view(request):
 
 @never_cache
 @require_http_methods(["GET"])
-def readiness_check_view(request):
+def readiness_check_view(request: HttpRequest) -> JsonResponse:
     """Readiness check for Kubernetes/Docker deployments."""
     # Simple readiness check - can the app handle requests?
     try:
@@ -258,7 +262,7 @@ def readiness_check_view(request):
 
 @never_cache
 @require_http_methods(["GET"])
-def liveness_check_view(request):
+def liveness_check_view(request: HttpRequest) -> JsonResponse:
     """Liveness check for Kubernetes/Docker deployments."""
     # Simple liveness check - is the app running?
     return JsonResponse(

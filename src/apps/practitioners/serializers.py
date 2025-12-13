@@ -7,7 +7,7 @@ from rest_framework import serializers
 from .models import Practitioner
 
 
-class PractitionerSerializer(serializers.ModelSerializer):
+class PractitionerSerializer(serializers.ModelSerializer[Practitioner]):
     """
     Serializer for the Practitioner model.
     """
