@@ -15,28 +15,50 @@
 
 ---
 
+## 🌐 Services & Access
+
+After running `docker-compose up -d`, access the following services:
+
+| Service | URL | Credentials | Description |
+|---------|-----|-------------|-------------|
+| **Landing Page** | http://localhost:5173 | - | Modern React + TypeScript landing page with bilingual support (PT/EN) |
+| **Django API** | http://localhost:8000 | `user@user.com` / `user1234` | RESTful API with DRF |
+| **API Documentation** | http://localhost:8000/api/v1/schema/swagger-ui/ | - | Interactive Swagger UI |
+| **Django Admin** | http://localhost:8000/admin | `user@user.com` / `user1234` | Admin interface |
+| **Grafana** | http://localhost:3000 | `admin` / `admin` | Observability dashboards |
+| **PostgreSQL** | localhost:5432 | `postgres` / `postgres` | Database |
+| **Redis** | localhost:6379 | - | Cache & Celery broker |
+| **Kafka** | localhost:9092 | - | Event streaming (KRaft mode) |
+
+> **Note**: The landing page showcases the tech stack, features, cost comparison (W-8BEN vs CLT), and project portfolio with animated components and smooth transitions.
+
+---
+
 ## 🏆 Project Highlights
 
 ### **Enterprise Architecture & Quality**
-- **91.17% Test Coverage** with 200+ comprehensive tests
+- **90%+ Test Coverage** with 200+ comprehensive tests
 - **100% Type Safety** with MyPy strict mode (zero type errors across 172 source files)
-- **Domain-Driven Design** with 12+ bounded contexts
+- **Domain-Driven Design** with 12 bounded contexts
 - **Clean Architecture** principles with service/repository patterns
 - **Production-ready** CI/CD pipeline with automated quality gates
 - **Infrastructure as Code** using Terraform for Azure AKS deployment
+- **Event-Driven Architecture** with Kafka for asynchronous event streaming
 
 ### **Cloud-Native & DevOps Excellence**
 - **Kubernetes-native** with professional Helm charts
 - **Container orchestration** ready for enterprise scaling
-- **Observability** built-in with health checks and Prometheus metrics
+- **Observability** with Grafana dashboards and Prometheus metrics
 - **Resilience patterns** including circuit breakers and caching strategies
 - **Security scanning** integrated with Bandit and Safety tools
+- **Modern Frontend** with React + TypeScript landing page
 
 ### **Modern Development Practices**
 - **DevContainer** environment for consistent development experience
 - **Pre-commit hooks** ensuring code quality standards (Ruff, MyPy, Pytest)
 - **Architecture Decision Records** (ADRs) documenting technical decisions
 - **Comprehensive documentation** for setup, deployment, and operations
+- **Bilingual Support** (PT/EN) in landing page with i18n
 
 ---
 
@@ -77,6 +99,27 @@ HealthCoreAPI/
 │   ├── DOCKER.md                 # Docker configuration and best practices
 │   ├── VSCODE_SETUP.md           # VS Code development environment guide
 │   └── WSL2_OPTIMIZATION.md      # WSL2 performance optimization guide
+├── grafana/                      # Grafana observability configuration
+│   └── provisioning/             # Auto-provisioning configs
+│       ├── datasources/          # Datasource configurations (Prometheus)
+│       └── dashboards/           # Dashboard definitions
+├── landing-page/                 # React + TypeScript landing page
+│   ├── public/                   # Static assets
+│   ├── src/                      # Source code
+│   │   ├── assets/               # Images and media
+│   │   ├── components/           # React components (Hero, TechStack, Features, etc.)
+│   │   ├── hooks/                # Custom React hooks (useHealthCheck)
+│   │   ├── i18n/                 # Internationalization (PT/EN)
+│   │   ├── pages/                # Page components
+│   │   ├── types/                # TypeScript type definitions
+│   │   ├── App.tsx               # Main application component
+│   │   ├── main.tsx              # Application entry point
+│   │   └── index.css             # Global styles
+│   ├── Dockerfile                # Frontend container configuration
+│   ├── package.json              # Node.js dependencies
+│   ├── tsconfig.json             # TypeScript configuration
+│   ├── vite.config.ts            # Vite build configuration
+│   └── tailwind.config.js        # Tailwind CSS configuration
 ├── logs/                         # Application log files
 ├── scripts/                      # Utility and deployment scripts
 ├── terraform/                    # Infrastructure as Code (Azure AKS)
