@@ -27,9 +27,10 @@ sentry-sdk[django]
 
 psutil
 python-json-logger
-django-prometheus
+django-prometheus>=2.3.1
 pybreaker
+confluent-kafka>=2.6.1
 
 # AI Integration
 openai>=1.50.0
-google-generativeai>=0.8.0
+google-generativeai>=0.8.3

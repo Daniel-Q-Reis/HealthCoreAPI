@@ -45,6 +45,7 @@ After running `docker-compose up -d`, access the following services:
 - **Production-ready** CI/CD pipeline with automated quality gates
 - **Infrastructure as Code** using Terraform for Azure AKS deployment
 - **Event-Driven Architecture** with Kafka for asynchronous event streaming
+- **Domain Events** automatically published via Django signals
 
 ### **Cloud-Native & DevOps Excellence**
 - **Kubernetes-native** with professional Helm charts
@@ -99,6 +100,7 @@ HealthCoreAPI/
 │   ├── CRITICAL_CONTROL_POINTS.md    # HIPAA/healthcare compliance critical controls
 │   ├── DOCKER.md                 # Docker configuration and best practices
 │   ├── GRAFANA.md                # Grafana dashboards guide and best practices
+│   ├── KAFKA.md                  # Kafka event streaming guide and patterns
 │   ├── PROMETHEUS.md             # Prometheus monitoring guide and PromQL queries
 │   ├── VSCODE_SETUP.md           # VS Code development environment guide
 │   └── WSL2_OPTIMIZATION.md      # WSL2 performance optimization guide

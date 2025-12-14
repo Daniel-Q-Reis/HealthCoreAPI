@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   postgresql-client \
   netcat-openbsd \
   dos2unix \
+  librdkafka-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for security
@@ -86,11 +87,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Kubernetes tools (Helm + kubectl)
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-    chmod +x kubectl && \
-    mv kubectl /usr/local/bin/ && \
-    curl -fsSL https://get.helm.sh/helm-v3.13.1-linux-amd64.tar.gz | tar -xzv && \
-    mv linux-amd64/helm /usr/local/bin/helm && \
-    rm -rf linux-amd64
+  chmod +x kubectl && \
+  mv kubectl /usr/local/bin/ && \
+  curl -fsSL https://get.helm.sh/helm-v3.13.1-linux-amd64.tar.gz | tar -xzv && \
+  mv linux-amd64/helm /usr/local/bin/helm && \
+  rm -rf linux-amd64
 
 # Install GitHub CLI (gh)
 RUN mkdir -p -m 755 /etc/apt/keyrings && \
