@@ -208,6 +208,15 @@ echo "🔧 Setting up pre-commit..."
 pip install pre-commit > /dev/null 2>&1
 pre-commit install --hook-type pre-commit --hook-type pre-push > /dev/null 2>&1 || echo "⚠️  Pre-commit install failed - continuing anyway"
 
+# Install npm dependencies for landing page
+if [ -d "landing-page" ] && [ -f "landing-page/package.json" ]; then
+    echo "📦 Installing frontend dependencies..."
+    cd landing-page
+    npm install > /dev/null 2>&1 || echo "⚠️  npm install failed - run manually if needed"
+    cd ..
+    echo "✅ Frontend dependencies installed"
+fi
+
 echo "🎉 DevContainer setup complete!"
 
 # Configure enhanced bash with optional features
