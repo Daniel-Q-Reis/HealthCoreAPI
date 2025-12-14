@@ -26,6 +26,7 @@ After running `docker-compose up -d`, access the following services:
 | **API Documentation** | http://localhost:8000/api/v1/schema/swagger-ui/ | - | Interactive Swagger UI |
 | **Django Admin** | http://localhost:8000/admin | `user@user.com` / `user1234` | Admin interface |
 | **Grafana** | http://localhost:3000 | `admin` / `admin` | Observability dashboards |
+| **Prometheus** | http://localhost:9090 | - | Metrics collection and monitoring |
 | **PostgreSQL** | localhost:5432 | `postgres` / `postgres` | Database |
 | **Redis** | localhost:6379 | - | Cache & Celery broker |
 | **Kafka** | localhost:9092 | - | Event streaming (KRaft mode) |
@@ -97,6 +98,8 @@ HealthCoreAPI/
 │   ├── CCP_IMPLEMENTATION_STATUS.md  # Critical Control Points implementation status
 │   ├── CRITICAL_CONTROL_POINTS.md    # HIPAA/healthcare compliance critical controls
 │   ├── DOCKER.md                 # Docker configuration and best practices
+│   ├── GRAFANA.md                # Grafana dashboards guide and best practices
+│   ├── PROMETHEUS.md             # Prometheus monitoring guide and PromQL queries
 │   ├── VSCODE_SETUP.md           # VS Code development environment guide
 │   └── WSL2_OPTIMIZATION.md      # WSL2 performance optimization guide
 ├── grafana/                      # Grafana observability configuration
