@@ -155,17 +155,8 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     restart: unless-stopped
 
-  # Zookeeper (required for Kafka)
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    restart: unless-stopped
-
   # Kafka for Event Streaming (KRaft mode - no Zookeeper needed)
+
   kafka:
     image: confluentinc/cp-kafka:latest
     ports:
