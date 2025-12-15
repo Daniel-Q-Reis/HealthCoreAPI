@@ -41,6 +41,9 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default="*")
+# Add 'web' for internal Docker network (Prometheus scraping)
+if "web" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ["web"]
 
 # Version for health checks and API docs
 VERSION = "0.1.0"
