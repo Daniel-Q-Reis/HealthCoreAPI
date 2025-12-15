@@ -247,11 +247,108 @@ The system implements a **comprehensive healthcare management platform** with th
 - **Resilience**: Circuit breaker patterns for fault tolerance and system stability
 - **Security**: Authentication, authorization, and audit logging
 
-### **🤖 AI-Powered Features** *(NEW)*
-- **Pharmacy AI**: Drug information assistant with interactions, dosages, and contraindications
-- **Experience AI**: Patient feedback analyzer with sentiment detection and actionable insights
-- **Unified AIClient**: Centralized OpenAI integration with graceful degradation
-- See [AI_INTEGRATION.md](AI_INTEGRATION.md) for complete documentation
+### **🤖 AI-Powered Intelligence** ⭐ **(NEW - Production Ready)**
+
+HealthCoreAPI integrates **Google Gemini 2.5 Flash** (with OpenAI GPT fallback) to provide intelligent clinical decision support and operational insights, setting it apart from typical healthcare management systems.
+
+#### **Pharmacy AI: Drug Information Assistant**
+Intelligent medication management powered by Gemini 2.5 Flash:
+
+- **Drug Interactions**: Real-time analysis of potential drug-drug interactions
+- **Dosage Guidance**: Evidence-based dosing recommendations by patient demographics
+- **Contraindications**: Automated detection of contraindications and warnings
+- **Clinical Context**: Contextual information for prescribers and pharmacists
+- **API Endpoint**: `POST /api/v1/pharmacy/ai/drug-info/`
+
+**Example Use Case**:
+```json
+POST /api/v1/pharmacy/ai/drug-info/
+{
+  "medication_name": "Warfarin",
+  "patient_context": "65-year-old with atrial fibrillation, taking aspirin"
+}
+
+Response:
+{
+  "drug_info": "Warfarin is an anticoagulant... [detailed AI-generated guidance]",
+  "interactions": ["Aspirin increases bleeding risk with warfarin..."],
+  "dosage_recommendations": "Typical starting dose 2-5mg daily...",
+  "contraindications": ["Active bleeding", "Severe liver disease..."]
+}
+```
+
+#### **Experience AI: Patient Feedback Analyzer**
+Automated sentiment analysis and actionable insights from patient feedback:
+
+- **Sentiment Detection**: Multi-class sentiment analysis (positive, neutral, negative)
+- **Key Issues Extraction**: Automatic identification of recurring themes and problems
+- **Actionable Insights**: AI-generated recommendations for service improvement
+- **Trend Analysis**: Pattern recognition across multiple feedback submissions
+- **API Endpoint**: `POST /api/v1/experience/ai/analyze/`
+
+**Example Use Case**:
+```json
+POST /api/v1/experience/ai/analyze/
+{
+  "feedback_text": "The wait time was too long, but the doctor was very professional and caring."
+}
+
+Response:
+{
+  "sentiment": "mixed",
+  "sentiment_score": 0.65,
+  "key_issues": ["Long wait times", "Professional staff"],
+  "actionable_insights": [
+    "Consider optimizing appointment scheduling to reduce wait times",
+    "Recognize and maintain high-quality patient-doctor interactions"
+  ],
+  "summary": "Patient appreciates medical care quality but concerned about wait times"
+}
+```
+
+#### **Unified AIClient Architecture**
+- **Multi-Provider Support**: Gemini 2.5 Flash (primary) + OpenAI GPT (fallback)
+- **Multimodal Ready**: Architecture prepared for image/video analysis (future)
+- **Cost Optimized**: Using Gemini 2.5 Flash free tier (15 RPM, 1M tokens/month)
+- **Graceful Degradation**: System continues functioning if AI service unavailable
+- **Configurable Models**: Easy switching between providers and models
+- **Rate Limiting**: Built-in retry logic and error handling
+- **Testing**: Fully mocked in CI/CD (no real API calls during tests)
+
+**Technical Implementation**:
+```python
+# Centralized AI client with multi-provider support
+from src.apps.core.ai_client import AIClient
+
+client = AIClient()  # Uses Gemini 2.5 Flash by default
+response = client.generate_completion(
+    prompt="Analyze drug interaction between...",
+    max_tokens=500
+)
+# Returns None if AI unavailable, allowing system to continue
+```
+
+**AI Provider Configuration**:
+```bash
+# Environment variables
+OPENAI_API_KEY=your_openai_key  # Optional fallback
+OPENAI_MODEL=gpt-3.5-turbo      # Fallback model
+
+# Currently using Gemini 2.5 Flash (free tier)
+# 15 requests/minute
+# 1,000,000 tokens/month free
+```
+
+**Why This Matters**:
+- ✅ **Differentiation**: Few portfolio projects integrate real AI capabilities
+- ✅ **Production-Ready**: Not a proof-of-concept, fully functional with error handling
+- ✅ **Modern Stack**: Gemini 2.5 Flash (latest Google AI) + OpenAI fallback
+- ✅ **Cost Efficient**: Free tier usage with 1M tokens/month
+- ✅ **Multimodal Ready**: Architecture prepared for future image/video analysis
+- ✅ **Business Value**: Tangible clinical decision support and operational insights
+
+📚 **Complete Documentation**: See [AI_INTEGRATION.md](AI_INTEGRATION.md) for architecture, configuration, and advanced use cases
+
 
 ---
 
