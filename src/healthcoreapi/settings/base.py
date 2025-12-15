@@ -18,6 +18,7 @@ django_stubs_ext.monkeypatch()
 import os  # noqa: E402
 from datetime import timedelta  # noqa: E402
 from pathlib import Path  # noqa: E402
+from typing import Any  # noqa: E402
 
 import dj_database_url  # noqa: E402
 from decouple import Csv, config  # noqa: E402
@@ -276,6 +277,14 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
+CELERY_BEAT_SCHEDULE: dict[str, Any] = {}
+
+# KAFKA CONFIGURATION
+# ------------------------------------------------------------------------------
+KAFKA_BOOTSTRAP_SERVERS = config("KAFKA_BOOTSTRAP_SERVERS", default="kafka:9092")
+KAFKA_ENABLED = config("KAFKA_ENABLED", default=True, cast=bool)
+KAFKA_TOPIC_PREFIX = config("KAFKA_TOPIC_PREFIX", default="healthcore")
+
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 CELERY_TASK_ALWAYS_EAGER = config("CELERY_TASK_ALWAYS_EAGER", default=DEBUG, cast=bool)
