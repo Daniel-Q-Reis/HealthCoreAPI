@@ -185,4 +185,64 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] API Endpoints: `/api/v1/pharmacy/ai/drug-info/`, `/api/v1/experience/ai/analyze/`.
   - [x] Comprehensive mocked tests for CI/CD compatibility.
 
+## Phase 11: Observability & Event-Driven Architecture
+
+- [x] **Slice 24: Prometheus & Grafana Dashboards (`feature/prometheus-grafana-dashboards`)**
+  - [x] Configure Prometheus metrics scraping from Django.
+  - [x] Create custom Grafana dashboards for application monitoring.
+  - [x] Auto-provision datasources and dashboards.
+  - [x] Document Prometheus queries and Grafana setup.
+  - [x] Create PROMETHEUS.md and GRAFANA.md guides.
+
+- [x] **Slice 25: Kafka Event Producer Integration (`feature/kafka-event-producer`)**
+  - [x] Create ADR-0014 for Observability & Event-Driven Architecture.
+  - [x] Integrate `confluent-kafka` for event streaming.
+  - [x] Implement Kafka producer service (singleton pattern).
+  - [x] Create domain events (Patient, Appointment).
+  - [x] Implement Django signals for automatic event publishing.
+  - [x] Create example Kafka consumer for testing.
+  - [x] Write comprehensive tests (32 tests, 90%+ coverage).
+  - [x] Document Kafka integration in KAFKA.md (400+ lines).
+  - [x] Add librdkafka-dev to Dockerfile for production.
+  - [x] Fix MyPy strict mode compliance (0 errors).
+
+## Phase 12: Full-Stack Development
+
+- [x] **Slice 26: React Landing Page (`feature/landing-page-react`)**
+  - [x] Create ADR-0013 for Full-Stack Architecture.
+  - [x] Set up React + TypeScript with Vite.
+  - [x] Implement Tailwind CSS for styling.
+  - [x] Create bilingual support (PT/EN) with i18next.
+  - [x] Build responsive landing page components.
+  - [x] Integrate health check API.
+  - [x] Docker integration for frontend service.
+  - [x] SEO optimization and meta tags.
+
+## Phase 13: Modern Tooling & Performance (Planned)
+
+- [ ] **Slice 27: UV Dependency Management (`feature/uv-dependency-management`)**
+  - [ ] Create ADR-0015 for Modern Dependency Management.
+  - [ ] Install and configure UV.
+  - [ ] Update Dockerfile to use UV.
+  - [ ] Update CI/CD pipeline for UV.
+  - [ ] Benchmark performance improvements.
+  - [ ] Update documentation and Makefile.
+
+- [ ] **Slice 28: Parallel Testing with pytest-xdist (`feature/pytest-xdist`)**
+  - [ ] Install pytest-xdist.
+  - [ ] Configure parallel test execution.
+  - [ ] Update CI/CD for parallel testing.
+  - [ ] Benchmark test execution time.
+
+- [ ] **Slice 29: Landing Page Redesign (`feat/landing-page-redesign`)**
+  - [ ] Modern UI with animations.
+  - [ ] Glassmorphism effects.
+  - [ ] Interactive components.
+  - [ ] Portfolio showcase section.
+
+- [ ] **Slice 30: Zookeeper Cleanup (`chore/remove-zookeeper`)**
+  - [ ] Remove Zookeeper from docker-compose.yml.
+  - [ ] Update Kafka to KRaft-only configuration.
+  - [ ] Update documentation.
+
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
