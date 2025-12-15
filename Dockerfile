@@ -46,10 +46,12 @@ RUN find /opt/docker/scripts -type f -name "*.sh" -exec dos2unix {} \;
 # ==============================================================================
 FROM base AS production
 
-# Install production dependencies
+# Install UV for ultra-fast dependency management (10-100x faster than pip)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Install production dependencies using UV
 COPY requirements.txt .
-RUN pip install --upgrade pip setuptools wheel \
-  && pip install -r requirements.txt
+RUN uv pip install --system --no-cache -r requirements.txt
 
 # Switch to the non-root user
 USER $USERNAME
@@ -101,13 +103,15 @@ RUN mkdir -p -m 755 /etc/apt/keyrings && \
   apt-get update && \
   apt-get install gh -y
 
-# Install both production and development Python packages
+# Install UV for ultra-fast dependency management (10-100x faster than pip)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Install both production and development Python packages using UV
 COPY requirements.txt .
 COPY requirements-dev.txt .
-RUN pip install --upgrade pip setuptools wheel \
-  && pip install -r requirements.txt \
-  && pip install -r requirements-dev.txt \
-  && pip install debugpy
+RUN uv pip install --system --no-cache -r requirements.txt \
+  && uv pip install --system --no-cache -r requirements-dev.txt \
+  && uv pip install --system debugpy
 
 # Switch to the non-root user
 USER $USERNAME

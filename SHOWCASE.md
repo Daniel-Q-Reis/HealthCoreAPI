@@ -331,10 +331,11 @@ class AIClient:
 
 **Cost Optimization Strategy**:
 ```bash
-# Gemini 2.5 Flash (Current - FREE)
-- 15 requests/minute
-- 1,000,000 tokens/month
+# Gemini 2.5 Flash (Current - FREE TIER)
+- 5 requests/minute
+- 20 requests/day
 - $0.00 cost
+- Note: $300 credit available for 3 months (extended testing)
 
 # OpenAI GPT-3.5-turbo (Fallback)
 - Only used if Gemini fails

@@ -335,8 +335,9 @@ OPENAI_API_KEY=your_openai_key  # Optional fallback
 OPENAI_MODEL=gpt-3.5-turbo      # Fallback model
 
 # Currently using Gemini 2.5 Flash (free tier)
-# 15 requests/minute
-# 1,000,000 tokens/month free
+# 5 requests/minute
+# 20 requests/day free
+# Note: Google offers $300 credit for 3 months for extended testing
 ```
 
 **Why This Matters**:
