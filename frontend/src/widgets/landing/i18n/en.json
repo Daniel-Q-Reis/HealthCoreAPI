@@ -1,0 +1,35 @@
+{
+    "hero": {
+        "badge_en": "🌎 W-8BEN Certified • Tax-Free International Contracts",
+        "badge_pt": "🇧🇷 Empresa PJ • Contratos Corporativos no Brasil",
+        "title_en": "Production-Grade Backend Engineering",
+        "title_pt": "Engenharia Backend de Alta Performance",
+        "subtitle_en": "Translating 10+ years of Engineering & Operations expertise into Enterprise-Level Software. Building scalable distributed systems with Go and Python (Django).",
+        "subtitle_pt": "Convertendo mais de 10 anos de experiência em Engenharia e Operações em Software de Nível Empresarial. Construindo sistemas distribuídos escaláveis com Go e Python (Django).",
+        "cta_admin_en": "Live App Admin Panel",
+        "cta_admin_pt": "Painel Administrativo",
+        "cta_docs_en": "API Documentation",
+        "cta_docs_pt": "Documentação da API"
+    },
+    "features": {
+        "title_en": "Engineering with Business Context",
+        "title_pt": "Engenharia com Foco no Negócio",
+        "description_en": "I leverage a unique background in Operations & Management to deliver software that solves real problems. My code is built on Clean Architecture, DDD, and strict quality gates.",
+        "description_pt": "Utilizo um background único em Operações e Gestão para entregar software que resolve problemas reais. Meu código é construído sobre Clean Architecture, DDD e rigorosos padrões de qualidade.",
+        "item1_en": "Monolithic & Microservices Architecture",
+        "item1_pt": "Arquitetura Monolítica e Microsserviços",
+        "item2_en": "CI/CD Pipelines & Automated Testing",
+        "item2_pt": "Pipelines CI/CD & Testes Automatizados",
+        "item3_en": "Cloud Infrastructure (AWS/Azure)",
+        "item3_pt": "Infraestrutura em Nuvem (AWS/Azure)"
+    },
+    "projects": {
+        "title_en": "Selected Projects",
+        "title_pt": "Projetos Selecionados"
+    },
+    "footer": {
+        "tagline": "Cloud & Backend Solutions",
+        "copyright": "© 2025 Royal Tech. All rights reserved.",
+        "entity": "Registered Entity: Daniel de Queiroz Reis Tecnologia da Informação LTDA (CNPJ: 63.419.534/0001-77) - São Paulo, Brazil."
+    }
+}
