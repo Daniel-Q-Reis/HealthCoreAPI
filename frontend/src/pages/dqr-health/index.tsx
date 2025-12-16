@@ -5,6 +5,7 @@ import { PatientsPage } from './patients';
 import { AppointmentsPage } from './appointments';
 import { PharmacyPage } from './pharmacy';
 import { ExperiencePage } from './experience';
+import { ComponentShowcase } from './showcase';
 
 export function DQRHealthRoutes() {
     return (
@@ -15,6 +16,7 @@ export function DQRHealthRoutes() {
             <Route path="/appointments" element={<AppointmentsPage />} />
             <Route path="/pharmacy" element={<PharmacyPage />} />
             <Route path="/experience" element={<ExperiencePage />} />
+            <Route path="/showcase" element={<ComponentShowcase />} />
         </Routes>
     );
 }
