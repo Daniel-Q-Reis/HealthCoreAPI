@@ -5,42 +5,48 @@ export const HomePage = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
-            <nav className="bg-[#004B87] text-white">
-                <div className="container mx-auto px-4">
-                    {/* Top Bar */}
-                    <div className="flex justify-between items-center py-2 text-sm border-b border-white/20">
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
-                            <a href="#" className="hover:text-gray-200">myDQRHealth</a>
-                            <a href="#" className="hover:text-gray-200">News & Insights</a>
-                            <a href="#" className="hover:text-gray-200">Contact Us</a>
-                        </div>
-                        <div className="flex gap-4 items-center">
-                            <span>📞 +55 (11) 9999-9999</span>
-                            <button className="hover:text-gray-200">🌐 Translate</button>
-                            <button className="hover:text-gray-200">🔍 Search</button>
+            <nav>
+                {/* Top Bar - Dark Blue */}
+                <div className="bg-[#003B5C] text-white">
+                    <div className="container mx-auto px-4">
+                        <div className="flex justify-between items-center py-2 text-sm">
+                            <div className="flex gap-6">
+                                <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
+                                <a href="#" className="hover:text-gray-200">myDQRHealth</a>
+                                <a href="#" className="hover:text-gray-200">News & Insights</a>
+                                <a href="#" className="hover:text-gray-200">Contact Us</a>
+                            </div>
+                            <div className="flex gap-4 items-center">
+                                <span>📞 +55 (11) 9999-9999</span>
+                                <button className="hover:text-gray-200">🌐 Translate</button>
+                                <button className="hover:text-gray-200">🔍 Search</button>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Main Nav */}
-                    <div className="flex justify-between items-center py-4">
-                        <div className="flex items-center gap-2">
-                            <div className="text-2xl font-bold">DQR</div>
-                            <div className="text-xl">Health</div>
+                {/* Main Nav - White Background */}
+                <div className="bg-white border-b border-gray-200">
+                    <div className="container mx-auto px-4">
+                        <div className="flex justify-between items-center py-4">
+                            <div className="flex items-center gap-2">
+                                <div className="text-2xl font-bold text-[#003B5C]">DQR</div>
+                                <div className="text-xl text-[#0066CC]">Health</div>
+                            </div>
+                            <div className="flex gap-8 text-[#003B5C]">
+                                <Link to="/dqr-health/dashboard" className="hover:text-[#0066CC] transition">Find Care</Link>
+                                <a href="#" className="hover:text-[#0066CC] transition">Patient Resources</a>
+                                <a href="#" className="hover:text-[#0066CC] transition">Treatment Options</a>
+                                <a href="#" className="hover:text-[#0066CC] transition">Locations</a>
+                                <a href="#" className="hover:text-[#0066CC] transition">Discover</a>
+                            </div>
+                            <Link
+                                to="/dqr-health/dashboard"
+                                className="bg-[#F2C94C] text-[#003B5C] px-6 py-2 rounded font-semibold hover:bg-[#E5B840] transition shadow-sm"
+                            >
+                                Find a Doctor
+                            </Link>
                         </div>
-                        <div className="flex gap-8">
-                            <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Find Care</Link>
-                            <a href="#" className="hover:text-gray-200">Patient Resources</a>
-                            <a href="#" className="hover:text-gray-200">Treatment Options</a>
-                            <a href="#" className="hover:text-gray-200">Locations</a>
-                            <a href="#" className="hover:text-gray-200">Discover</a>
-                        </div>
-                        <Link
-                            to="/dqr-health/dashboard"
-                            className="bg-[#FFD100] text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-[#FFC700] transition"
-                        >
-                            Find a Doctor
-                        </Link>
                     </div>
                 </div>
             </nav>
@@ -50,11 +56,11 @@ export const HomePage = () => {
                 {/* Background Image */}
                 <div className="absolute inset-0">
                     <img
-                        src="/docs/images/Gemini_Generated_Image_5i1ve15i1ve15i1v.png"
+                        src="/images/full_hospital.png"
                         alt="DQR Health Medical Center"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#004B87]/90 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#003B5C]/85 to-transparent" />
                 </div>
 
                 {/* Content */}
@@ -136,22 +142,22 @@ export const HomePage = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <img
-                                src="/docs/images/Gemini_Generated_Image_9istlr9istlr9ist.png"
+                                src="/images/imaging.png"
                                 alt="Medical Technology"
                                 className="rounded-lg shadow-lg w-full h-48 object-cover"
                             />
                             <img
-                                src="/docs/images/Gemini_Generated_Image_b0yg7vb0yg7vb0yg.png"
+                                src="/images/healing_garden.png"
                                 alt="Patient Care"
                                 className="rounded-lg shadow-lg w-full h-48 object-cover"
                             />
                             <img
-                                src="/docs/images/Gemini_Generated_Image_bty116bty116bty1.png"
+                                src="/images/main_hall.png"
                                 alt="AI Technology"
                                 className="rounded-lg shadow-lg w-full h-48 object-cover"
                             />
                             <img
-                                src="/docs/images/Gemini_Generated_Image_mu6udsmu6udsmu6u.png"
+                                src="/images/ccu.png"
                                 alt="Medical Team"
                                 className="rounded-lg shadow-lg w-full h-48 object-cover"
                             />
@@ -263,7 +269,7 @@ export const HomePage = () => {
                         </div>
                     </div>
                     <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm text-gray-300">
-                        <p>© 2024 Daniel de Queiroz Reis Tecnologia da Informação LTDA (Royal Tech)</p>
+                        <p>© 2025 Daniel de Queiroz Reis Tecnologia da Informação LTDA (Royal Tech)</p>
                         <p className="mt-2">CNPJ: 63.419.534/0001-77 | São Paulo, Brazil</p>
                     </div>
                 </div>
