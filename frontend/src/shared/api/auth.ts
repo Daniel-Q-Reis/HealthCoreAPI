@@ -1,5 +1,6 @@
 import { apiClient } from './config';
 import { parseApiError } from './errors';
+import { secureStorage, auditLogger } from './security';
 import {
     LoginRequest,
     LoginResponse,
@@ -9,7 +10,7 @@ import {
 } from './types';
 
 /**
- * Authentication API Client
+ * Authentication API Client (with security enhancements)
  */
 export const authApi = {
     /**
@@ -19,12 +20,17 @@ export const authApi = {
         try {
             const { data } = await apiClient.post<LoginResponse>('/auth/login/', credentials);
 
-            // Store tokens in localStorage
-            localStorage.setItem('access_token', data.access);
-            localStorage.setItem('refresh_token', data.refresh);
+            // Store tokens securely (encrypted)
+            secureStorage.setAccessToken(data.access);
+            secureStorage.setRefreshToken(data.refresh);
+            secureStorage.setUserData(data.user);
+
+            // Audit log
+            auditLogger.log('LOGIN_SUCCESS', { username: credentials.username });
 
             return data;
         } catch (error) {
+            auditLogger.log('LOGIN_FAILED', { username: credentials.username });
             throw parseApiError(error);
         }
     },
@@ -33,6 +39,8 @@ export const authApi = {
      * Logout (clear tokens)
      */
     logout: async (): Promise<void> => {
+        const user = secureStorage.getUserData();
+
         try {
             // Call logout endpoint if it exists
             await apiClient.post('/auth/logout/');
@@ -40,8 +48,10 @@ export const authApi = {
             // Ignore errors on logout
         } finally {
             // Always clear tokens
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            secureStorage.clearAll();
+
+            // Audit log
+            auditLogger.log('LOGOUT', { username: user?.username });
         }
     },
 
@@ -56,13 +66,19 @@ export const authApi = {
             );
 
             // Update access token
-            localStorage.setItem('access_token', data.access);
+            secureStorage.setAccessToken(data.access);
+
+            // Audit log
+            auditLogger.log('TOKEN_REFRESHED');
 
             return data;
         } catch (error) {
             // Clear tokens on refresh failure
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            secureStorage.clearAll();
+
+            // Audit log
+            auditLogger.log('TOKEN_REFRESH_FAILED');
+
             throw parseApiError(error);
         }
     },
@@ -73,6 +89,10 @@ export const authApi = {
     getCurrentUser: async (): Promise<User> => {
         try {
             const { data } = await apiClient.get<User>('/auth/me/');
+
+            // Update stored user data
+            secureStorage.setUserData(data);
+
             return data;
         } catch (error) {
             throw parseApiError(error);
@@ -83,20 +103,27 @@ export const authApi = {
      * Check if user is authenticated
      */
     isAuthenticated: (): boolean => {
-        return !!localStorage.getItem('access_token');
+        return secureStorage.isValid();
     },
 
     /**
      * Get stored access token
      */
     getAccessToken: (): string | null => {
-        return localStorage.getItem('access_token');
+        return secureStorage.getAccessToken();
     },
 
     /**
      * Get stored refresh token
      */
     getRefreshToken: (): string | null => {
-        return localStorage.getItem('refresh_token');
+        return secureStorage.getRefreshToken();
+    },
+
+    /**
+     * Get stored user data
+     */
+    getUserData: (): User | null => {
+        return secureStorage.getUserData();
     },
 };
