@@ -10,6 +10,7 @@ Tests cover:
 - Audit logging
 """
 
+from typing import Any, cast
 from unittest.mock import Mock
 
 import pytest
@@ -37,7 +38,7 @@ pytestmark = pytest.mark.django_db
 class TestProfessionalRoleRequestModel:
     """Tests for ProfessionalRoleRequest model."""
 
-    def test_create_role_request(self, user: User) -> None:
+    def test_create_role_request(self, user: Any) -> None:
         """Test creating a professional role request."""
         # Create a simple PDF file
         pdf_file = SimpleUploadedFile(
@@ -64,7 +65,7 @@ class TestProfessionalRoleRequestModel:
         assert request.is_approved is False
         assert request.is_rejected is False
 
-    def test_approve_role_request(self, user: User, admin_user: User) -> None:
+    def test_approve_role_request(self, user: Any, admin_user: Any) -> None:
         """Test approving a role request grants the role."""
         # Create groups
         Group.objects.get_or_create(name="Doctors")
@@ -93,7 +94,7 @@ class TestProfessionalRoleRequestModel:
         assert request.is_approved is True
         assert user.groups.filter(name="Doctors").exists()
 
-    def test_reject_role_request(self, user: User, admin_user: User) -> None:
+    def test_reject_role_request(self, user: Any, admin_user: Any) -> None:
         """Test rejecting a role request."""
         pdf_file = SimpleUploadedFile("license.pdf", b"content")
         request = ProfessionalRoleRequest.objects.create(
@@ -117,7 +118,7 @@ class TestProfessionalRoleRequestModel:
         assert request.review_notes == "License not found"
         assert request.is_rejected is True
 
-    def test_str_representation(self, user: User) -> None:
+    def test_str_representation(self, user: Any) -> None:
         """Test string representation of role request."""
         pdf_file = SimpleUploadedFile("license.pdf", b"content")
         request = ProfessionalRoleRequest.objects.create(
@@ -141,7 +142,7 @@ class TestProfessionalRoleRequestModel:
 class TestReceptionistPermission:
     """Tests for IsReceptionist permission class."""
 
-    def test_receptionist_has_permission(self, user: User) -> None:
+    def test_receptionist_has_permission(self, user: Any) -> None:
         """Test that receptionist user has permission."""
         Group.objects.get_or_create(name="Receptionists")
         user.groups.add(Group.objects.get(name="Receptionists"))
@@ -150,21 +151,21 @@ class TestReceptionistPermission:
         request = Mock()
         request.user = user
 
-        assert permission.has_permission(request, None) is True
+        assert permission.has_permission(request, cast(Any, None)) is True
 
-    def test_non_receptionist_denied(self, user: User) -> None:
+    def test_non_receptionist_denied(self, user: Any) -> None:
         """Test that non-receptionist user is denied."""
         permission = IsReceptionist()
         request = Mock()
         request.user = user
 
-        assert permission.has_permission(request, None) is False
+        assert permission.has_permission(request, cast(Any, None)) is False
 
 
 class TestPharmacistPermission:
     """Tests for IsPharmacist permission class."""
 
-    def test_pharmacist_has_permission(self, user: User) -> None:
+    def test_pharmacist_has_permission(self, user: Any) -> None:
         """Test that pharmacist user has permission."""
         Group.objects.get_or_create(name="Pharmacists")
         user.groups.add(Group.objects.get(name="Pharmacists"))
@@ -173,15 +174,15 @@ class TestPharmacistPermission:
         request = Mock()
         request.user = user
 
-        assert permission.has_permission(request, None) is True
+        assert permission.has_permission(request, cast(Any, None)) is True
 
-    def test_non_pharmacist_denied(self, user: User) -> None:
+    def test_non_pharmacist_denied(self, user: Any) -> None:
         """Test that non-pharmacist user is denied."""
         permission = IsPharmacist()
         request = Mock()
         request.user = user
 
-        assert permission.has_permission(request, None) is False
+        assert permission.has_permission(request, cast(Any, None)) is False
 
 
 # ============================================================================
@@ -192,7 +193,7 @@ class TestPharmacistPermission:
 class TestProfessionalRoleRequestSerializer:
     """Tests for ProfessionalRoleRequestSerializer."""
 
-    def test_valid_serialization(self, user: User) -> None:
+    def test_valid_serialization(self, user: Any) -> None:
         """Test serializing a valid role request."""
         pdf_file = SimpleUploadedFile("license.pdf", b"content")
         request = ProfessionalRoleRequest.objects.create(
@@ -247,7 +248,7 @@ class TestProfessionalRoleRequestSerializer:
 class TestRoleRequestAPI:
     """Tests for role request API endpoints."""
 
-    def test_request_professional_role_success(self, user: User) -> None:
+    def test_request_professional_role_success(self, user: Any) -> None:
         """Test submitting a professional role request."""
         client = APIClient()
         client.force_authenticate(user=user)
@@ -289,7 +290,7 @@ class TestRoleRequestAPI:
         # DRF returns 403 when permission_classes are checked on unauthenticated requests
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_list_role_requests_admin_only(self, user: User, admin_user: User) -> None:
+    def test_list_role_requests_admin_only(self, user: Any, admin_user: Any) -> None:
         """Test that only admins can list role requests."""
         # Create a request
         pdf_file = SimpleUploadedFile("license.pdf", b"content")
@@ -314,9 +315,7 @@ class TestRoleRequestAPI:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
 
-    def test_approve_role_request_admin_only(
-        self, user: User, admin_user: User
-    ) -> None:
+    def test_approve_role_request_admin_only(self, user: Any, admin_user: Any) -> None:
         """Test that only admins can approve role requests."""
         Group.objects.get_or_create(name="Doctors")
 
@@ -346,7 +345,7 @@ class TestRoleRequestAPI:
         assert user.groups.filter(name="Doctors").exists()
 
     def test_reject_role_request_requires_reason(
-        self, user: User, admin_user: User
+        self, user: Any, admin_user: Any
     ) -> None:
         """Test that rejecting requires a reason."""
         pdf_file = SimpleUploadedFile("license.pdf", b"content")

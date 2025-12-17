@@ -336,7 +336,7 @@ class ProfessionalRoleRequest(TimestampedModel):
         """String representation of the request."""
         return f"{self.user.username} - {self.get_role_requested_display()} ({self.get_status_display()})"
 
-    def approve(self, reviewer: User, notes: str = "") -> None:
+    def approve(self, reviewer: Any, notes: str = "") -> None:
         """
         Approve the role request and grant the role to the user.
 
@@ -371,7 +371,7 @@ class ProfessionalRoleRequest(TimestampedModel):
             ]
         )
 
-    def reject(self, reviewer: User, reason: str) -> None:
+    def reject(self, reviewer: Any, reason: str) -> None:
         """
         Reject the role request.
 
