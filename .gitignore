@@ -272,3 +272,6 @@ pyrightconfig.json
 
 # Log files
 /logs/*.log
+frontend/package-lock.json
+frontend/package-lock.json
+frontend/package-lock.json
