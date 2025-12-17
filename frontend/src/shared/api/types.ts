@@ -46,6 +46,65 @@ export interface User {
     last_name: string;
     is_staff: boolean;
     is_active: boolean;
+    groups: string[];  // User's groups (e.g., ['Patients'], ['Doctors', 'Admins'])
+    role?: 'Admins' | 'Doctors' | 'Nurses' | 'Pharmacists' | 'Receptionists' | 'Patients';  // Primary role
+}
+
+export interface RegisterRequest {
+    username: string;
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+}
+
+export interface RegisterResponse {
+    user: User;
+    message: string;
+}
+
+// ============================================
+// Professional Role Request Types (Credential Verification)
+// ============================================
+
+export interface UserDetails {
+    id: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+}
+
+export interface ProfessionalRoleRequest {
+    id: number;
+    user: number;
+    user_details: UserDetails;
+    role_requested: 'Doctors' | 'Nurses' | 'Pharmacists' | 'Receptionists';
+    license_number: string;
+    license_state: string;
+    specialty?: string;
+    reason: string;
+    license_document: string;  // URL to uploaded document
+    certification_document?: string;
+    employment_verification?: string;
+    status: 'pending' | 'approved' | 'rejected';
+    reviewed_by?: number;
+    reviewer_details?: UserDetails;
+    reviewed_at?: string;
+    review_notes?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface RequestProfessionalRolePayload {
+    role_requested: 'Doctors' | 'Nurses' | 'Pharmacists' | 'Receptionists';
+    license_number: string;
+    license_state: string;
+    specialty?: string;
+    reason: string;
+    license_document: File;
+    certification_document?: File;
+    employment_verification?: File;
 }
 
 // ============================================

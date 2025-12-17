@@ -40,12 +40,20 @@ export const HomePage = () => {
                                 <a href="#" className="hover:text-[#0066CC] transition">Locations</a>
                                 <a href="#" className="hover:text-[#0066CC] transition">Discover</a>
                             </div>
-                            <Link
-                                to="/dqr-health/dashboard"
-                                className="bg-[#F2C94C] text-[#003B5C] px-6 py-2 rounded font-semibold hover:bg-[#E5B840] transition shadow-sm"
-                            >
-                                Find a Doctor
-                            </Link>
+                            <div className="flex gap-3">
+                                <Link
+                                    to="/dqr-health/login"
+                                    className="border-2 border-[#2774AE] text-[#2774AE] px-6 py-2 rounded font-semibold hover:bg-[#2774AE] hover:text-white transition"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    to="/dqr-health/register"
+                                    className="bg-[#2774AE] text-white px-6 py-2 rounded font-semibold hover:bg-[#1e5a8a] transition shadow-sm"
+                                >
+                                    Create Account
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

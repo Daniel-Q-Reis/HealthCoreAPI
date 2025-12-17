@@ -8,6 +8,7 @@ djangorestframework
 dj-rest-auth
 djangorestframework-simplejwt
 django-allauth
+social-auth-app-django
 requests
 redis
 django-redis

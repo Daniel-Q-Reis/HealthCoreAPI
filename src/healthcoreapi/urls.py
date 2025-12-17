@@ -29,6 +29,8 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     # Observability
     path("", include("django_prometheus.urls")),
+    # Google OAuth endpoints - social-auth-app-django
+    path("api/auth/", include("social_django.urls", namespace="social")),
     # Core functionality (health checks, etc)
     path("", include("src.apps.core.urls")),
     # API docs
