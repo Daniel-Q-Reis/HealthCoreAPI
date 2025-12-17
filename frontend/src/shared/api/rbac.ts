@@ -2,26 +2,30 @@
  * Role-Based Access Control (RBAC) Support
  *
  * Integrates with Django backend permissions
- * Provides role checking and permission validation
+ * Backend has 4 roles: Admins, Doctors, Nurses, Patients
+ * Frontend adds 2 convenience roles: Receptionist, Pharmacist (can be mapped to backend groups later)
  */
 
 import { secureStorage } from './security';
 import { User } from './types';
 
 /**
- * User roles (from Django groups)
+ * User roles (aligned with Django groups in src/apps/core/fixtures/roles.json)
+ * Backend roles: Admins, Doctors, Nurses, Patients
+ * Frontend extensions: Receptionist, Pharmacist (for future use)
  */
 export enum UserRole {
-    ADMIN = 'admin',
-    DOCTOR = 'doctor',
-    NURSE = 'nurse',
-    RECEPTIONIST = 'receptionist',
-    PHARMACIST = 'pharmacist',
-    PATIENT = 'patient',
+    ADMIN = 'Admins',        // Backend group name
+    DOCTOR = 'Doctors',      // Backend group name
+    NURSE = 'Nurses',        // Backend group name
+    PATIENT = 'Patients',    // Backend group name
+    RECEPTIONIST = 'Receptionists', // Future backend group
+    PHARMACIST = 'Pharmacists',     // Future backend group
 }
 
 /**
  * Permissions (from Django permissions)
+ * These align with Django's permission system
  */
 export enum Permission {
     // Patient permissions
@@ -60,11 +64,16 @@ export enum Permission {
 }
 
 /**
- * Role-Permission mapping (default permissions per role)
+ * Role-Permission mapping (aligned with backend permissions.py)
+ * Based on src/apps/core/permissions.py:
+ * - Admins: Full access
+ * - Doctors: Medical records, diagnostics, prescriptions
+ * - Nurses: Patient care, vitals, limited access
+ * - Patients: Read-only own records
  */
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+    // Admins: Full system access (IsAdmin permission class)
     [UserRole.ADMIN]: [
-        // Admin has all permissions
         Permission.VIEW_PATIENT,
         Permission.ADD_PATIENT,
         Permission.CHANGE_PATIENT,
@@ -89,6 +98,7 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.CHANGE_STAFF,
     ],
 
+    // Doctors: Medical records, diagnostics, prescriptions (IsDoctor permission class)
     [UserRole.DOCTOR]: [
         Permission.VIEW_PATIENT,
         Permission.CHANGE_PATIENT,
@@ -103,15 +113,23 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.CHANGE_DIAGNOSTIC,
     ],
 
+    // Nurses: Patient care, vitals, limited access (IsNurse permission class)
     [UserRole.NURSE]: [
         Permission.VIEW_PATIENT,
-        Permission.CHANGE_PATIENT,
+        Permission.CHANGE_PATIENT, // For vitals updates
         Permission.VIEW_APPOINTMENT,
         Permission.VIEW_MEDICATION,
         Permission.VIEW_DIAGNOSTIC,
         Permission.VIEW_FEEDBACK,
     ],
 
+    // Patients: Read-only own records (IsPatient permission class)
+    [UserRole.PATIENT]: [
+        Permission.VIEW_APPOINTMENT,
+        Permission.ADD_FEEDBACK,
+    ],
+
+    // Future roles (not in backend yet)
     [UserRole.RECEPTIONIST]: [
         Permission.VIEW_PATIENT,
         Permission.ADD_PATIENT,
@@ -127,15 +145,11 @@ const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
         Permission.ADD_MEDICATION,
         Permission.CHANGE_MEDICATION,
     ],
-
-    [UserRole.PATIENT]: [
-        Permission.VIEW_APPOINTMENT,
-        Permission.ADD_FEEDBACK,
-    ],
 };
 
 /**
  * RBAC utility functions
+ * Integrates with Django backend permission system
  */
 export const rbac = {
     /**
@@ -147,19 +161,30 @@ export const rbac = {
 
     /**
      * Check if user has a specific role
+     * Checks against Django groups (user.groups)
      */
     hasRole(role: UserRole): boolean {
         const user = this.getCurrentUser();
         if (!user) return false;
 
-        // Check if user is staff (admin, doctor, nurse, etc.)
+        // In production, user.groups will come from backend
+        // For now, check is_staff for admin
         if (role === UserRole.ADMIN) {
             return user.is_staff === true;
         }
 
-        // In production, check user.groups from backend
-        // For now, use is_staff as proxy
-        return user.is_staff === true;
+        // TODO: When backend sends user.groups, check:
+        // return user.groups?.includes(role) || false;
+
+        return user.is_staff === true; // Temporary: staff = medical staff
+    },
+
+    /**
+     * Check if user is medical staff (Doctor OR Nurse)
+     * Aligns with backend IsMedicalStaff permission class
+     */
+    isMedicalStaff(): boolean {
+        return this.hasRole(UserRole.DOCTOR) || this.hasRole(UserRole.NURSE);
     },
 
     /**
@@ -174,7 +199,9 @@ export const rbac = {
             return true;
         }
 
-        // In production, check user.permissions from backend
+        // TODO: When backend sends user.permissions, check:
+        // return user.permissions?.includes(permission) || false;
+
         // For now, use role-based permissions
         const userRole = this.getUserRole();
         if (!userRole) return false;
@@ -198,13 +225,15 @@ export const rbac = {
     },
 
     /**
-     * Get user's role (inferred from permissions)
+     * Get user's role (inferred from backend groups)
      */
     getUserRole(): UserRole | null {
         const user = this.getCurrentUser();
         if (!user) return null;
 
-        // In production, get from user.groups
+        // TODO: When backend sends user.groups, return first group:
+        // return user.groups?.[0] as UserRole || null;
+
         // For now, infer from is_staff
         if (user.is_staff) {
             return UserRole.ADMIN; // Default to admin for staff
@@ -231,6 +260,7 @@ export const rbac = {
 
 /**
  * Route permissions configuration
+ * Maps routes to required permissions
  */
 export const ROUTE_PERMISSIONS: Record<string, Permission[]> = {
     '/dqr-health/dashboard': [],
