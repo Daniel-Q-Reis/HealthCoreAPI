@@ -12,7 +12,14 @@ from .health import (
     liveness_check_view,
     readiness_check_view,
 )
-from .views import HealthCheckAPIView, PostViewSet
+from .views import (
+    HealthCheckAPIView,
+    PostViewSet,
+    approve_role_request,
+    list_role_requests,
+    reject_role_request,
+    request_professional_role,
+)
 
 app_name = "core"
 
@@ -31,6 +38,27 @@ urlpatterns = [
     path("livez/", liveness_check_view, name="livez"),
     # API endpoint for health check
     path("api/health/", HealthCheckAPIView.as_view(), name="api-health-check"),
+    # Credential verification endpoints
+    path(
+        "api/auth/request-professional-role/",
+        request_professional_role,
+        name="request-professional-role",
+    ),
+    path(
+        "api/admin/credential-requests/",
+        list_role_requests,
+        name="list-credential-requests",
+    ),
+    path(
+        "api/admin/credential-requests/<int:request_id>/approve/",
+        approve_role_request,
+        name="approve-credential-request",
+    ),
+    path(
+        "api/admin/credential-requests/<int:request_id>/reject/",
+        reject_role_request,
+        name="reject-credential-request",
+    ),
     # API endpoints from the router
     path("api/", include(router.urls)),
 ]

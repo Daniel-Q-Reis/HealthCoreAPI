@@ -35,6 +35,150 @@ Content-Type: application/json
 }
 ```
 
+### Professional Role Request (Credential Verification)
+
+**Request Professional Role** - Submit credentials for role elevation
+```http
+POST /api/auth/request-professional-role/
+Authorization: Bearer {access_token}
+Content-Type: multipart/form-data
+
+Form Data:
+- role_requested: "Doctors" | "Nurses" | "Pharmacists" | "Receptionists"
+- license_number: string (e.g., "MD123456")
+- license_state: string (e.g., "CA")
+- specialty: string (optional, for doctors - e.g., "Cardiology")
+- reason: string (explanation for request)
+- license_document: file (PDF/Image, max 10MB) - Required
+- certification_document: file (PDF/Image, max 10MB) - Optional
+- employment_verification: file (PDF/Image, max 10MB) - Optional
+
+Response (201 Created):
+{
+  "id": 1,
+  "user": 123,
+  "user_details": {
+    "id": 123,
+    "username": "john.doe",
+    "email": "john@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "full_name": "John Doe"
+  },
+  "role_requested": "Doctors",
+  "license_number": "MD123456",
+  "license_state": "CA",
+  "specialty": "Cardiology",
+  "reason": "Licensed cardiologist at UCLA Health",
+  "license_document": "/media/credentials/licenses/license_123.pdf",
+  "certification_document": "/media/credentials/certs/cert_123.pdf",
+  "employment_verification": "/media/credentials/employment/emp_123.pdf",
+  "status": "pending",
+  "reviewed_by": null,
+  "reviewer_details": null,
+  "reviewed_at": null,
+  "review_notes": "",
+  "created_at": "2025-12-17T09:00:00Z",
+  "updated_at": "2025-12-17T09:00:00Z"
+}
+```
+
+**List Role Requests** - Admin only, view all credential requests
+```http
+GET /api/admin/credential-requests/?status=pending
+Authorization: Bearer {admin_access_token}
+
+Query Parameters:
+- status: "pending" | "approved" | "rejected" (default: "pending")
+
+Response (200 OK):
+[
+  {
+    "id": 1,
+    "user": 123,
+    "user_details": {
+      "id": 123,
+      "username": "john.doe",
+      "email": "john@example.com",
+      "first_name": "John",
+      "last_name": "Doe",
+      "full_name": "John Doe"
+    },
+    "role_requested": "Doctors",
+    "license_number": "MD123456",
+    "license_state": "CA",
+    "specialty": "Cardiology",
+    "reason": "Licensed cardiologist at UCLA Health",
+    "license_document": "/media/credentials/licenses/license_123.pdf",
+    "status": "pending",
+    "created_at": "2025-12-17T09:00:00Z"
+  }
+]
+
+Permissions: Requires IsAdmin
+```
+
+**Approve Role Request** - Admin only, grant professional role
+```http
+POST /api/admin/credential-requests/{request_id}/approve/
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "notes": "License MD123456 verified with CA Medical Board. Active until 2026-12-31. No disciplinary actions."
+}
+
+Response (200 OK):
+{
+  "status": "approved",
+  "message": "Role granted successfully",
+  "user": "john.doe",
+  "role": "Doctors"
+}
+
+Side Effects:
+- User is added to the requested Django group (Doctors, Nurses, etc.)
+- Request status updated to "approved"
+- Reviewer and timestamp recorded
+- Audit log entry created
+
+Permissions: Requires IsAdmin
+```
+
+**Reject Role Request** - Admin only, reject credential request
+```http
+POST /api/admin/credential-requests/{request_id}/reject/
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "reason": "License number MD123456 not found in CA Medical Board database. Please verify and resubmit."
+}
+
+Response (200 OK):
+{
+  "status": "rejected",
+  "message": "Request rejected",
+  "user": "john.doe",
+  "role": "Doctors"
+}
+
+Side Effects:
+- Request status updated to "rejected"
+- Reviewer and timestamp recorded
+- Rejection reason stored
+- Audit log entry created
+
+Permissions: Requires IsAdmin
+```
+
+**Security Features:**
+- Default deny: All users start as "Patients" role
+- File validation: PDF/Image only, max 10MB per file
+- Admin approval required for all role elevations
+- Complete audit trail with timestamps and reviewer information
+- HIPAA compliance: § 164.308(a)(4), § 164.312(b), § 164.312(d)
+
 ---
 
 ## Core Endpoints
