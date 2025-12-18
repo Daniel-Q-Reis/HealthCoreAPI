@@ -455,9 +455,9 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.user.user_details",
 )
 
-# Frontend redirect after OAuth (will be handled by frontend)
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = "http://localhost:5173/dqr-health/dashboard"
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = "http://localhost:5173/dqr-health/dashboard"
+# OAuth redirect URLs - redirect to backend callback that generates JWT tokens
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/api/auth/oauth/callback/"
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = "/api/auth/oauth/callback/"
 
 # Security settings for OAuth
 SOCIAL_AUTH_GOOGLE_OAUTH2_USE_DEPRECATED_API = False

@@ -11,25 +11,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Verify authentication status
+    const verifyAuth = useCallback(async () => {
+        try {
+            if (authApi.isAuthenticated()) {
+                const userData = await authApi.getCurrentUser();
+                setUser(userData);
+            }
+        } catch (error) {
+            console.error('Failed to verify auth:', error);
+            // Clear invalid tokens
+            await authApi.logout();
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
     // Check if user is authenticated on mount
     useEffect(() => {
-        const initAuth = async () => {
-            try {
-                if (authApi.isAuthenticated()) {
-                    const userData = await authApi.getCurrentUser();
-                    setUser(userData);
-                }
-            } catch (error) {
-                console.error('Failed to initialize auth:', error);
-                // Clear invalid tokens
-                await authApi.logout();
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        initAuth();
-    }, []);
+        verifyAuth();
+    }, [verifyAuth]);
 
     // Login with username/password
     const login = useCallback(async (username: string, password: string) => {
@@ -91,7 +92,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const hasRole = useCallback(
         (role: string): boolean => {
             if (!user) return false;
-            return user.groups.includes(role);
+            const userGroups = user.groups || [];
+            return userGroups.includes(role);
         },
         [user]
     );
@@ -100,7 +102,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const hasAnyRole = useCallback(
         (roles: string[]): boolean => {
             if (!user) return false;
-            return roles.some((role) => user.groups.includes(role));
+            const userGroups = user.groups || [];
+            return roles.some((role) => userGroups.includes(role));
         },
         [user]
     );
@@ -114,6 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         register,
         logout,
         refreshToken,
+        verifyAuth,
         hasRole,
         hasAnyRole,
     };

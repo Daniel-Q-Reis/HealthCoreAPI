@@ -15,6 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from . import repositories, services
 from .models import Post, ProfessionalRoleRequest
@@ -23,9 +24,56 @@ from .serializers import (
     HealthCheckSerializer,
     PostSerializer,
     ProfessionalRoleRequestSerializer,
+    UserSerializer,
 )
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# Authentication Views
+# ============================================================================
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Get current user",
+    description="Get details of the currently authenticated user.",
+    responses={200: UserSerializer},
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_current_user(request: Request) -> Response:
+    """
+    Get the currently authenticated user.
+    """
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Logout user",
+    description="Logout the user by blacklisting the refresh token.",
+    responses={204: None},
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def logout_user(request: Request) -> Response:
+    """
+    Logout the user.
+    """
+    try:
+        refresh_token = request.data.get("refresh")
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+    except Exception as e:
+        # Ignore errors if token is invalid or already blacklisted
+        logger.warning(f"Logout error: {e}")
+        pass
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class HealthCheckData:

@@ -4,9 +4,54 @@ Core serializers for the application.
 
 from typing import Any
 
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import Post, ProfessionalRoleRequest
+
+
+class UserSerializer(serializers.ModelSerializer[User]):
+    """
+    Serializer for the User model.
+    """
+
+    role = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "role",
+            "groups",
+        ]
+
+    def get_role(self, obj: User) -> str:
+        """
+        Get the user's primary role based on their group membership.
+        Defaults to 'Patients' if no group is assigned.
+        """
+        group = obj.groups.first()
+        return group.name if group else "Patients"
+
+    def get_groups(self, obj: User) -> list[str]:
+        """
+        Get all groups the user belongs to.
+        """
+        return list(obj.groups.values_list("name", flat=True))
+
+    def get_full_name(self, obj: User) -> str:
+        """
+        Get the user's full name or fallback to username.
+        """
+        full_name = f"{obj.first_name} {obj.last_name}".strip()
+        return full_name or obj.username
 
 
 class HealthCheckSerializer(serializers.Serializer[Any]):

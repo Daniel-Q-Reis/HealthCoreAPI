@@ -10,6 +10,7 @@ export interface AuthContextValue {
     register: (data: RegisterData) => Promise<void>;
     logout: () => Promise<void>;
     refreshToken: () => Promise<void>;
+    verifyAuth: () => Promise<void>;
     hasRole: (role: string) => boolean;
     hasAnyRole: (roles: string[]) => boolean;
 }
