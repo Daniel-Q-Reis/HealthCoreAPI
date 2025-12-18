@@ -7,10 +7,7 @@ specifically for assigning default roles to new users according to ADR 0002.
 
 from typing import Any
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-
-User = get_user_model()
+from django.contrib.auth.models import Group, User
 
 
 def assign_default_patient_role(

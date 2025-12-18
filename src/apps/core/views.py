@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -47,7 +47,7 @@ def get_current_user(request: Request) -> Response:
     """
     Get the currently authenticated user.
     """
-    serializer = UserSerializer(request.user)
+    serializer = UserSerializer(cast(User, request.user))
     return Response(serializer.data)
 
 
