@@ -1,5 +1,5 @@
 
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 
@@ -10,23 +10,52 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
 
     const handleLogout = () => {
         logout();
         navigate('/dqr-health/login');
     };
 
+    useEffect(() => {
+        const controlNavbar = () => {
+            if (typeof window !== 'undefined') {
+                const currentScrollY = window.scrollY;
+
+                // Show if scrolling up or at the very top (within bounce range)
+                // Hide if scrolling down AND past the threshold (100px)
+                if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                    setIsVisible(false);
+                } else {
+                    setIsVisible(true);
+                }
+
+                setLastScrollY(currentScrollY);
+            }
+        };
+
+        window.addEventListener('scroll', controlNavbar);
+
+        return () => {
+            window.removeEventListener('scroll', controlNavbar);
+        };
+    }, [lastScrollY]);
+
     return (
         <div className="min-h-screen bg-white flex flex-col">
             {/* Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50">
+            <nav
+                className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full shadow-none'
+                    }`}
+            >
                 {/* Top Bar - Dark Blue */}
                 <div className="bg-[#003B5C] text-white">
                     <div className="container mx-auto px-4">
                         <div className="flex justify-between items-center py-2 text-sm">
                             <div className="flex gap-6">
                                 <a href="#" className="hover:text-gray-200 hidden md:block">Explore DQR Health</a>
-                                <Link to="/dqr-health/dashboard" className="hover:text-gray-200 font-semibold">myDQRHealth</Link>
+                                <Link to="/dqr-health" className="hover:text-gray-200 font-semibold">myDQRHealth</Link>
                                 <a href="#" className="hover:text-gray-200 hidden md:block">News & Insights</a>
                                 <a href="#" className="hover:text-gray-200 hidden md:block">Contact Us</a>
                             </div>
@@ -49,8 +78,20 @@ export function MainLayout({ children }: MainLayoutProps) {
                             </Link>
 
                             {/* Desktop Menu */}
-                            <div className="hidden md:flex gap-8 text-[#003B5C] font-medium">
-                                <Link to="/dqr-health/dashboard" className="hover:text-[#0066CC] transition">Find Care</Link>
+                            <div className="hidden md:flex gap-8 text-[#003B5C] font-medium items-center">
+                                {/* Dynamic Area Button */}
+                                {isAuthenticated && user && (
+                                    <Link
+                                        to="/dqr-health/dashboard"
+                                        className="bg-[#E6F0F9] text-[#003B5C] px-4 py-2 rounded-full font-bold hover:bg-[#D1E6F5] transition flex items-center gap-2"
+                                    >
+                                        <span className="text-xl">🏥</span>
+                                        {user.role === 'Patients' ? 'Patient Area' :
+                                            user.role === 'Admins' ? 'Admin Area' :
+                                                user.role === 'Doctors' ? 'Doctor Area' : 'My Area'}
+                                    </Link>
+                                )}
+
                                 <a href="#" className="hover:text-[#0066CC] transition">Patient Resources</a>
                                 <a href="#" className="hover:text-[#0066CC] transition">Treatment Options</a>
                                 <a href="#" className="hover:text-[#0066CC] transition">Locations</a>

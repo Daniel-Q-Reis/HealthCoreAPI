@@ -57,23 +57,23 @@ export const secureStorage = {
     setAccessToken(token: string): void {
         if (!token) return;
 
-        // Use sessionStorage (cleared on tab close) instead of localStorage
-        sessionStorage.setItem(TOKEN_KEYS.ACCESS, encrypt(token));
+        // Use localStorage for persistence across tabs
+        localStorage.setItem(TOKEN_KEYS.ACCESS, encrypt(token));
 
         // Set expiration (15 minutes for access token)
         const expiry = Date.now() + 15 * 60 * 1000;
-        sessionStorage.setItem(`${TOKEN_KEYS.ACCESS}_expiry`, expiry.toString());
+        localStorage.setItem(`${TOKEN_KEYS.ACCESS}_expiry`, expiry.toString());
     },
 
     /**
      * Get access token
      */
     getAccessToken(): string | null {
-        const encrypted = sessionStorage.getItem(TOKEN_KEYS.ACCESS);
+        const encrypted = localStorage.getItem(TOKEN_KEYS.ACCESS);
         if (!encrypted) return null;
 
         // Check if expired
-        const expiry = sessionStorage.getItem(`${TOKEN_KEYS.ACCESS}_expiry`);
+        const expiry = localStorage.getItem(`${TOKEN_KEYS.ACCESS}_expiry`);
         if (expiry && Date.now() > parseInt(expiry)) {
             this.clearAccessToken();
             return null;
@@ -130,14 +130,14 @@ export const secureStorage = {
             is_staff: user.is_staff,
         };
 
-        sessionStorage.setItem(TOKEN_KEYS.USER, encrypt(JSON.stringify(sanitized)));
+        localStorage.setItem(TOKEN_KEYS.USER, encrypt(JSON.stringify(sanitized)));
     },
 
     /**
      * Get user data
      */
     getUserData(): any | null {
-        const encrypted = sessionStorage.getItem(TOKEN_KEYS.USER);
+        const encrypted = localStorage.getItem(TOKEN_KEYS.USER);
         if (!encrypted) return null;
 
         try {
@@ -151,8 +151,8 @@ export const secureStorage = {
      * Clear access token
      */
     clearAccessToken(): void {
-        sessionStorage.removeItem(TOKEN_KEYS.ACCESS);
-        sessionStorage.removeItem(`${TOKEN_KEYS.ACCESS}_expiry`);
+        localStorage.removeItem(TOKEN_KEYS.ACCESS);
+        localStorage.removeItem(`${TOKEN_KEYS.ACCESS}_expiry`);
     },
 
     /**
@@ -167,7 +167,7 @@ export const secureStorage = {
      * Clear user data
      */
     clearUserData(): void {
-        sessionStorage.removeItem(TOKEN_KEYS.USER);
+        localStorage.removeItem(TOKEN_KEYS.USER);
     },
 
     /**

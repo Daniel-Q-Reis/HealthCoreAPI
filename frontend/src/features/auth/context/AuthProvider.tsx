@@ -15,6 +15,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const verifyAuth = useCallback(async () => {
         try {
             if (authApi.isAuthenticated()) {
+                // Check inactivity (30 mins = 1800000 ms)
+                const lastActive = parseInt(localStorage.getItem('lastActive') || '0');
+                const now = Date.now();
+
+                if (lastActive && (now - lastActive > 30 * 60 * 1000)) {
+                    console.log('Session expired due to inactivity');
+                    await logout();
+                    return;
+                }
+
+                // Update activity if valid
+                localStorage.setItem('lastActive', now.toString());
+
                 const userData = await authApi.getCurrentUser();
                 setUser(userData);
             }
@@ -27,17 +40,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }, []);
 
-    // Check if user is authenticated on mount
-    useEffect(() => {
-        verifyAuth();
-    }, [verifyAuth]);
-
     // Login with username/password
     const login = useCallback(async (username: string, password: string) => {
         setIsLoading(true);
         try {
             const response = await authApi.login({ username, password });
             setUser(response.user);
+            // Initialize activity timer
+            localStorage.setItem('lastActive', Date.now().toString());
         } finally {
             setIsLoading(false);
         }
@@ -69,10 +79,60 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
             await authApi.logout();
             setUser(null);
+            localStorage.removeItem('lastActive');
         } finally {
             setIsLoading(false);
         }
     }, []);
+
+    // Check if user is authenticated on mount
+    useEffect(() => {
+        verifyAuth();
+    }, [verifyAuth]);
+
+    // Inactivity Monitor
+    useEffect(() => {
+        if (!user) return; // Only monitor if logged in
+
+        const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+        const CHECK_INTERVAL_MS = 60 * 1000; // Check every 1 minute
+
+        // Update 'lastActive' on user interaction
+        const updateActivity = () => {
+            // Throttling: only update if last update was > 5 seconds ago
+            // to avoid excessive localStorage writes on mousemove
+            const lastWrite = parseInt(sessionStorage.getItem('lastActivityWrite') || '0');
+            const now = Date.now();
+
+            if (now - lastWrite > 5000) {
+                localStorage.setItem('lastActive', now.toString());
+                sessionStorage.setItem('lastActivityWrite', now.toString());
+            }
+        };
+
+        // Events to listen for
+        const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+
+        events.forEach(event => {
+            window.addEventListener(event, updateActivity);
+        });
+
+        // Periodic check for idleness
+        const intervalId = setInterval(() => {
+            const lastActive = parseInt(localStorage.getItem('lastActive') || '0');
+            if (Date.now() - lastActive > TIMEOUT_MS) {
+                console.log('User inactive for 30mins, logging out...');
+                logout();
+            }
+        }, CHECK_INTERVAL_MS);
+
+        return () => {
+            events.forEach(event => {
+                window.removeEventListener(event, updateActivity);
+            });
+            clearInterval(intervalId);
+        };
+    }, [user, logout]);
 
     // Refresh access token
     const refreshToken = useCallback(async () => {
