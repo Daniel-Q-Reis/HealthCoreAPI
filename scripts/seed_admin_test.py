@@ -6,7 +6,7 @@ from src.apps.core.models import ProfessionalRoleRequest
 User = get_user_model()
 
 
-def run():
+def run() -> None:
     print("--- Seeding Test Data ---")
 
     # 1. Create Groups
