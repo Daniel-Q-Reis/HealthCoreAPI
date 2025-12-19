@@ -44,6 +44,8 @@ urlpatterns = [
     path("api/health/", HealthCheckAPIView.as_view(), name="api-health-check"),
     # OAuth callback endpoint (generates JWT tokens after OAuth success)
     path("api/auth/oauth/callback/", oauth_callback, name="oauth-callback"),
+    # Registration endpoint (dj-rest-auth)
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     # Auth endpoints matching Frontend API
     path("api/auth/login/", TokenObtainPairView.as_view(), name="auth-login"),
     path("api/auth/logout/", logout_user, name="auth-logout"),

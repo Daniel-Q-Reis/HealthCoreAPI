@@ -6,6 +6,7 @@ but doesn't provide JWT tokens. This view generates JWT tokens for the
 authenticated user and redirects to the frontend with tokens in URL params.
 """
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
@@ -39,7 +40,7 @@ def oauth_callback(request: HttpRequest) -> HttpResponse:
     # Redirect to frontend with tokens
     # Frontend will extract tokens from URL and save to localStorage
     redirect_url = (
-        f"http://localhost:5173/dqr-health/auth/callback"
+        f"{settings.FRONTEND_URL}/dqr-health/auth/callback"
         f"?access={access_token}&refresh={refresh_token}"
     )
 
