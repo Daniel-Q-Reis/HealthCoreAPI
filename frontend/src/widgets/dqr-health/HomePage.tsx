@@ -1,68 +1,14 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { MainLayout } from '@/shared/layout/MainLayout';
 
 export const HomePage = () => {
     return (
-        <div className="min-h-screen bg-white">
-            {/* Navigation */}
-            <nav>
-                {/* Top Bar - Dark Blue */}
-                <div className="bg-[#003B5C] text-white">
-                    <div className="container mx-auto px-4">
-                        <div className="flex justify-between items-center py-2 text-sm">
-                            <div className="flex gap-6">
-                                <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
-                                <a href="#" className="hover:text-gray-200">myDQRHealth</a>
-                                <a href="#" className="hover:text-gray-200">News & Insights</a>
-                                <a href="#" className="hover:text-gray-200">Contact Us</a>
-                            </div>
-                            <div className="flex gap-4 items-center">
-                                <span>📞 +55 (11) 9999-9999</span>
-                                <button className="hover:text-gray-200">🌐 Translate</button>
-                                <button className="hover:text-gray-200">🔍 Search</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Main Nav - White Background */}
-                <div className="bg-white border-b border-gray-200">
-                    <div className="container mx-auto px-4">
-                        <div className="flex justify-between items-center py-4">
-                            <div className="flex items-center gap-2">
-                                <div className="text-2xl font-bold text-[#003B5C]">DQR</div>
-                                <div className="text-xl text-[#0066CC]">Health</div>
-                            </div>
-                            <div className="flex gap-8 text-[#003B5C]">
-                                <Link to="/dqr-health/dashboard" className="hover:text-[#0066CC] transition">Find Care</Link>
-                                <a href="#" className="hover:text-[#0066CC] transition">Patient Resources</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Treatment Options</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Locations</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Discover</a>
-                            </div>
-                            <div className="flex gap-3">
-                                <Link
-                                    to="/dqr-health/login"
-                                    className="border-2 border-[#2774AE] text-[#2774AE] px-6 py-2 rounded font-semibold hover:bg-[#2774AE] hover:text-white transition"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    to="/dqr-health/register"
-                                    className="bg-[#2774AE] text-white px-6 py-2 rounded font-semibold hover:bg-[#1e5a8a] transition shadow-sm"
-                                >
-                                    Create Account
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+        <MainLayout>
             {/* Hero Section */}
-            <section className="relative h-[600px] overflow-hidden">
+            <section className="relative h-[600px] overflow-hidden -mt-[108px] pt-[108px]">
                 {/* Background Image */}
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 z-0">
                     <img
                         src="/images/full_hospital.png"
                         alt="DQR Health Medical Center"
@@ -112,7 +58,7 @@ export const HomePage = () => {
                 </div>
 
                 {/* Bottom Tabs */}
-                <div className="absolute bottom-0 left-0 right-0 bg-white shadow-lg">
+                <div className="absolute bottom-0 left-0 right-0 bg-white shadow-lg z-20">
                     <div className="container mx-auto px-4">
                         <div className="flex gap-8 text-[#004B87] font-semibold">
                             <a href="#about" className="py-4 border-b-4 border-[#004B87]">About the Medical Center</a>
@@ -237,51 +183,6 @@ export const HomePage = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Footer */}
-            <footer className="bg-[#003366] text-white py-12">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-4 gap-8">
-                        <div>
-                            <h3 className="font-bold text-xl mb-4">DQR Health</h3>
-                            <p className="text-gray-300 text-sm">
-                                Advanced Healthcare with AI-Powered Intelligence
-                            </p>
-                            <p className="text-gray-300 text-sm mt-4">
-                                São Paulo, Brazil
-                            </p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-4">Find Care</h4>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                                <li><a href="#" className="hover:text-white">Find a Doctor</a></li>
-                                <li><a href="#" className="hover:text-white">Locations</a></li>
-                                <li><a href="#" className="hover:text-white">Appointments</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-4">Patient Resources</h4>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                                <li><a href="#" className="hover:text-white">Patient Portal</a></li>
-                                <li><a href="#" className="hover:text-white">Medical Records</a></li>
-                                <li><a href="#" className="hover:text-white">Billing</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold mb-4">About</h4>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                                <li><a href="#" className="hover:text-white">About Us</a></li>
-                                <li><a href="#" className="hover:text-white">Careers</a></li>
-                                <li><a href="#" className="hover:text-white">Contact</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="border-t border-white/20 mt-8 pt-8 text-center text-sm text-gray-300">
-                        <p>© 2025 Daniel de Queiroz Reis Tecnologia da Informação LTDA (Royal Tech)</p>
-                        <p className="mt-2">CNPJ: 63.419.534/0001-77 | São Paulo, Brazil</p>
-                    </div>
-                </div>
-            </footer>
-        </div>
+        </MainLayout>
     );
 };
