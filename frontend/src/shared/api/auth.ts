@@ -36,6 +36,37 @@ export const authApi = {
     },
 
     /**
+     * Register a new user
+     */
+    register: async (data: any): Promise<any> => {
+        try {
+            // dj-rest-auth expects password1 and password2
+            const payload = {
+                ...data,
+                password1: data.password,
+                password2: data.confirmPassword || data.password,
+            };
+            const response = await apiClient.post('/auth/registration/', payload);
+
+            // dj-rest-auth login after registration is optional (default: true)
+            // If it returns tokens, let's login the user immediately
+            if (response.data.access && response.data.refresh) {
+                secureStorage.setAccessToken(response.data.access);
+                secureStorage.setRefreshToken(response.data.refresh);
+                if (response.data.user) {
+                    secureStorage.setUserData(response.data.user);
+                }
+            }
+
+            auditLogger.log('REGISTER_SUCCESS', { username: data.username });
+            return response.data;
+        } catch (error) {
+            auditLogger.log('REGISTER_FAILED', { username: data.username });
+            throw parseApiError(error);
+        }
+    },
+
+    /**
      * Logout (clear tokens)
      */
     logout: async (): Promise<void> => {

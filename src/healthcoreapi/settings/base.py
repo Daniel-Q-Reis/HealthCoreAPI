@@ -41,6 +41,7 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default="*")
+FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
 # Add 'web' for internal Docker network (Prometheus scraping)
 if "web" not in ALLOWED_HOSTS:
     ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ["web"]
@@ -61,13 +62,22 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "drf_spectacular",
     "django_filters",
     "corsheaders",
     "storages",
     "social_django",  # Google OAuth integration
+    # Auth & Registration
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
 ]
+
+SITE_ID = 1
 
 if "yes" == "yes":
     THIRD_PARTY_APPS.append("django_celery_beat")
@@ -103,6 +113,7 @@ MIDDLEWARE = [
     "src.apps.core.middleware.RequestLoggingMiddleware",
     "src.apps.core.middleware.TimeoutMiddleware",
     "src.apps.core.middleware.IdempotencyMiddleware",
+    "allauth.account.middleware.AccountMiddleware",  # allauth
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
@@ -400,12 +411,30 @@ SIMPLE_JWT = {
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
+# dj-rest-auth settings
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = "healthcore-auth"
+JWT_AUTH_REFRESH_COOKIE = "healthcore-refresh"
+
 # Google OAuth Configuration
 # ------------------------------------------------------------------------------
 AUTHENTICATION_BACKENDS = [
     "social_core.backends.google.GoogleOAuth2",  # Google OAuth2
     "django.contrib.auth.backends.ModelBackend",  # Default Django auth
+    "allauth.account.auth_backends.AuthenticationBackend",  # allauth
 ]
+
+# dj-rest-auth & allauth registration settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+
+# Development: Print emails to console instead of sending (fixes 500 error)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Google OAuth credentials (from Google Cloud Console)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config("GOOGLE_OAUTH_CLIENT_ID", default="")

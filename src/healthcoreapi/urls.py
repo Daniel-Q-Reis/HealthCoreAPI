@@ -32,7 +32,10 @@ urlpatterns = [
     # Google OAuth endpoints - social-auth-app-django
     path("api/auth/", include("social_django.urls", namespace="social")),
     # Core functionality (health checks, etc)
+    # Core functionality (health checks, etc)
     path("", include("src.apps.core.urls")),
+    # Allauth accounts URLs (MUST be at root level for reverse lookups)
+    path("accounts/", include("allauth.urls")),
     # API docs
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

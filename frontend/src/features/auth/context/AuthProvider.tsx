@@ -63,11 +63,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const register = useCallback(async (data: RegisterData) => {
         setIsLoading(true);
         try {
-            // TODO: Implement registration endpoint
-            // const response = await authApi.register(data);
-            // setUser(response.user);
-            console.log('Register:', data);
-            throw new Error('Registration endpoint not implemented yet');
+            const response = await authApi.register(data);
+            if (response.user) {
+                setUser(response.user);
+                // Initialize activity timer
+                localStorage.setItem('lastActive', Date.now().toString());
+            }
         } finally {
             setIsLoading(false);
         }
