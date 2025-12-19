@@ -2,24 +2,78 @@
 
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiExample, extend_schema
-from rest_framework import viewsets
+from rest_framework import status, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from . import repositories, services
-from .models import Post
-from .permissions import IsOwnerOrReadOnly
-from .serializers import HealthCheckSerializer, PostSerializer
+from .models import Post, ProfessionalRoleRequest
+from .permissions import IsAdmin, IsOwnerOrReadOnly
+from .serializers import (
+    HealthCheckSerializer,
+    PostSerializer,
+    ProfessionalRoleRequestSerializer,
+    UserSerializer,
+)
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# Authentication Views
+# ============================================================================
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Get current user",
+    description="Get details of the currently authenticated user.",
+    responses={200: UserSerializer},
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_current_user(request: Request) -> Response:
+    """
+    Get the currently authenticated user.
+    """
+    serializer = UserSerializer(cast(User, request.user))
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Logout user",
+    description="Logout the user by blacklisting the refresh token.",
+    responses={204: None},
+)
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def logout_user(request: Request) -> Response:
+    """
+    Logout the user.
+    """
+    try:
+        refresh_token = request.data.get("refresh")
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+    except Exception as e:
+        # Ignore errors if token is invalid or already blacklisted
+        logger.warning(f"Logout error: {e}")
+        pass
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class HealthCheckData:
@@ -157,3 +211,350 @@ class PostViewSet(viewsets.ModelViewSet[Post]):
         Overrides the default destroy method to perform a soft delete.
         """
         instance.soft_delete()
+
+
+# ============================================================================
+# Professional Role Request Views (Credential Verification)
+# ============================================================================
+
+
+@extend_schema(
+    tags=["Authentication"],
+    summary="Request professional role",
+    description=(
+        "Submit a request for professional role elevation (Doctor, Nurse, "
+        "Pharmacist, Receptionist). Requires upload of credential documents "
+        "(license, certification, employment verification). Admin approval required."
+    ),
+    request=ProfessionalRoleRequestSerializer,
+    responses={
+        201: ProfessionalRoleRequestSerializer,
+        400: {"description": "Invalid data or file upload error"},
+    },
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def request_professional_role(request: Request) -> Response:
+    """
+    Submit request for professional role with credential verification.
+
+    Authenticated users can request elevation to professional roles by
+    submitting their credentials and supporting documents. All requests
+    require admin approval.
+
+    Security:
+    - Requires authentication
+    - User is automatically set from request.user
+    - Status defaults to 'pending'
+    - Complete audit trail maintained
+
+    File uploads:
+    - license_document: Required (PDF/Image, max 10MB)
+    - certification_document: Optional (PDF/Image, max 10MB)
+    - employment_verification: Optional (PDF/Image, max 10MB)
+
+    Args:
+        request: HTTP request with multipart/form-data containing:
+            - role_requested: str (Doctors, Nurses, Pharmacists, Receptionists)
+            - license_number: str
+            - license_state: str
+            - specialty: str (optional, for doctors)
+            - reason: str
+            - license_document: file
+            - certification_document: file (optional)
+            - employment_verification: file (optional)
+
+    Returns:
+        Response: Created request with status 201, or validation errors with 400
+
+    Example:
+        POST /api/v1/auth/request-professional-role/
+        Content-Type: multipart/form-data
+
+        {
+            "role_requested": "Doctors",
+            "license_number": "MD123456",
+            "license_state": "CA",
+            "specialty": "Cardiology",
+            "reason": "Licensed cardiologist at UCLA Health",
+            "license_document": <file>,
+            "certification_document": <file>
+        }
+    """
+    serializer = ProfessionalRoleRequestSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # Save with current user
+        serializer.save(user=request.user)
+
+        # Audit log
+        logger.info(
+            f"Professional role request submitted: "
+            f"user={request.user.username}, "
+            f"role={serializer.data['role_requested']}, "
+            f"license={serializer.data['license_number']}"
+        )
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(
+    tags=["Admin"],
+    summary="List professional role requests",
+    description=(
+        "List all professional role requests. Admin only. "
+        "Can filter by status (pending, approved, rejected)."
+    ),
+    responses={
+        200: ProfessionalRoleRequestSerializer(many=True),
+        403: {"description": "Admin privileges required"},
+    },
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated, IsAdmin])
+def list_role_requests(request: Request) -> Response:
+    """
+    List all professional role requests (Admin only).
+
+    Allows admins to view and filter credential verification requests.
+    Supports filtering by status to show pending, approved, or rejected requests.
+
+    Security:
+    - Requires authentication
+    - Requires admin privileges (IsAdmin permission)
+
+    Query Parameters:
+        status: str (optional) - Filter by status (pending, approved, rejected)
+                Default: 'pending'
+
+    Returns:
+        Response: List of role requests with status 200
+
+    Example:
+        GET /api/v1/admin/credential-requests/?status=pending
+        GET /api/v1/admin/credential-requests/?status=approved
+    """
+    request_status = request.query_params.get("status", "pending")
+
+    # Validate status parameter
+    valid_statuses = ["pending", "approved", "rejected"]
+    if request_status not in valid_statuses:
+        return Response(
+            {"error": f"Invalid status. Must be one of: {', '.join(valid_statuses)}"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Query requests with related user data
+    requests_queryset = ProfessionalRoleRequest.objects.filter(
+        status=request_status
+    ).select_related("user", "reviewed_by")
+
+    serializer = ProfessionalRoleRequestSerializer(requests_queryset, many=True)
+
+    logger.info(
+        f"Admin {request.user.username} listed {len(serializer.data)} "
+        f"{request_status} role requests"
+    )
+
+    return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Admin"],
+    summary="Approve professional role request",
+    description=(
+        "Approve a professional role request and grant the role to the user. "
+        "Admin only. Adds user to the requested group."
+    ),
+    request={
+        "application/json": {
+            "type": "object",
+            "properties": {
+                "notes": {
+                    "type": "string",
+                    "description": "Optional notes about the approval decision",
+                }
+            },
+        }
+    },
+    responses={
+        200: {
+            "description": "Request approved successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "approved",
+                        "message": "Role granted successfully",
+                        "user": "john.doe",
+                        "role": "Doctors",
+                    }
+                }
+            },
+        },
+        403: {"description": "Admin privileges required"},
+        404: {"description": "Request not found"},
+    },
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdmin])
+def approve_role_request(request: Request, request_id: int) -> Response:
+    """
+    Approve a professional role request (Admin only).
+
+    Grants the requested role to the user by adding them to the appropriate
+    Django group. Records the approval with admin details and timestamp.
+
+    Security:
+    - Requires authentication
+    - Requires admin privileges (IsAdmin permission)
+    - Complete audit trail maintained
+
+    Side effects:
+    - Adds user to requested group (Doctors, Nurses, etc.)
+    - Updates request status to 'approved'
+    - Records reviewer, timestamp, and notes
+
+    Args:
+        request: HTTP request with optional JSON body containing:
+            - notes: str (optional) - Admin notes about approval
+        request_id: int - ID of the ProfessionalRoleRequest to approve
+
+    Returns:
+        Response: Success message with status 200, or error with 404
+
+    Example:
+        POST /api/v1/admin/credential-requests/123/approve/
+        {
+            "notes": "License MD123456 verified with CA Medical Board. Active until 2026-12-31."
+        }
+    """
+    role_request = get_object_or_404(ProfessionalRoleRequest, id=request_id)
+
+    # Get approval notes from request body
+    notes = request.data.get("notes", "")
+
+    # Approve the request (uses model method)
+    role_request.approve(reviewer=request.user, notes=notes)
+
+    # Audit log
+    logger.info(
+        f"Role request approved: "
+        f"user={role_request.user.username}, "
+        f"role={role_request.role_requested}, "
+        f"approved_by={request.user.username}, "
+        f"license={role_request.license_number}"
+    )
+
+    return Response(
+        {
+            "status": "approved",
+            "message": "Role granted successfully",
+            "user": role_request.user.username,
+            "role": role_request.role_requested,
+        }
+    )
+
+
+@extend_schema(
+    tags=["Admin"],
+    summary="Reject professional role request",
+    description=(
+        "Reject a professional role request. Admin only. "
+        "Requires a reason for rejection."
+    ),
+    request={
+        "application/json": {
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for rejection (required)",
+                }
+            },
+            "required": ["reason"],
+        }
+    },
+    responses={
+        200: {
+            "description": "Request rejected successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "rejected",
+                        "message": "Request rejected",
+                        "user": "john.doe",
+                        "role": "Doctors",
+                    }
+                }
+            },
+        },
+        400: {"description": "Reason is required"},
+        403: {"description": "Admin privileges required"},
+        404: {"description": "Request not found"},
+    },
+)
+@api_view(["POST"])
+@permission_classes([IsAuthenticated, IsAdmin])
+def reject_role_request(request: Request, request_id: int) -> Response:
+    """
+    Reject a professional role request (Admin only).
+
+    Rejects the credential verification request with a mandatory reason.
+    Records the rejection with admin details and timestamp.
+
+    Security:
+    - Requires authentication
+    - Requires admin privileges (IsAdmin permission)
+    - Complete audit trail maintained
+
+    Side effects:
+    - Updates request status to 'rejected'
+    - Records reviewer, timestamp, and rejection reason
+
+    Args:
+        request: HTTP request with JSON body containing:
+            - reason: str (required) - Reason for rejection
+        request_id: int - ID of the ProfessionalRoleRequest to reject
+
+    Returns:
+        Response: Success message with status 200, or error with 400/404
+
+    Example:
+        POST /api/v1/admin/credential-requests/123/reject/
+        {
+            "reason": "License number MD123456 not found in CA Medical Board database. Please verify and resubmit."
+        }
+    """
+    role_request = get_object_or_404(ProfessionalRoleRequest, id=request_id)
+
+    # Get rejection reason from request body (required)
+    reason = request.data.get("reason", "").strip()
+
+    if not reason:
+        return Response(
+            {"error": "Rejection reason is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Reject the request (uses model method)
+    role_request.reject(reviewer=request.user, reason=reason)
+
+    # Audit log
+    logger.info(
+        f"Role request rejected: "
+        f"user={role_request.user.username}, "
+        f"role={role_request.role_requested}, "
+        f"rejected_by={request.user.username}, "
+        f"reason={reason[:100]}"  # Log first 100 chars of reason
+    )
+
+    return Response(
+        {
+            "status": "rejected",
+            "message": "Request rejected",
+            "user": role_request.user.username,
+            "role": role_request.role_requested,
+        }
+    )

@@ -34,9 +34,17 @@ def user():
 @pytest.fixture
 def admin_user():
     """Create an admin test user."""
-    return User.objects.create_superuser(
+    from django.contrib.auth.models import Group
+
+    user = User.objects.create_superuser(
         username="admin", email="admin@example.com", password="adminpass123"
     )
+
+    # Add to Admins group for IsAdmin permission
+    admins_group, _ = Group.objects.get_or_create(name="Admins")
+    user.groups.add(admins_group)
+
+    return user
 
 
 @pytest.fixture

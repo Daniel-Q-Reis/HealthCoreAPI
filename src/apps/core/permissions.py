@@ -224,6 +224,94 @@ class IsPatient(permissions.BasePermission):
         )
 
 
+class IsReceptionist(permissions.BasePermission):
+    """
+    Permission class for reception staff.
+
+    Receptionists can:
+    - View and create patient records
+    - Manage appointment scheduling
+    - Check-in patients
+    - Update patient contact information
+    - View appointment calendars
+
+    Restrictions:
+    - Cannot access medical records or diagnostic data
+    - Cannot prescribe medications
+    - Cannot create diagnostic reports
+
+    Usage:
+        permission_classes = [IsAuthenticated, IsReceptionist]
+
+    Example:
+        class AppointmentViewSet(viewsets.ModelViewSet):
+            permission_classes = [IsAuthenticated, IsReceptionist | IsMedicalStaff]
+    """
+
+    message = "Receptionist privileges required to perform this action."
+
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        """
+        Check if requesting user is reception staff.
+
+        Args:
+            request: The HTTP request object with authenticated user
+            view: The API view being accessed
+
+        Returns:
+            bool: True if user is authenticated and in Receptionists group
+        """
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.groups.filter(name="Receptionists").exists()
+        )
+
+
+class IsPharmacist(permissions.BasePermission):
+    """
+    Permission class for pharmacy staff.
+
+    Pharmacists can:
+    - View medication inventory
+    - Dispense prescribed medications
+    - Update medication stock levels
+    - View patient prescriptions
+    - Access drug interaction information (AI-powered)
+
+    Restrictions:
+    - Cannot prescribe medications (doctor-only)
+    - Cannot access full patient medical history
+    - Cannot create diagnostic reports
+
+    Usage:
+        permission_classes = [IsAuthenticated, IsPharmacist]
+
+    Example:
+        class MedicationViewSet(viewsets.ModelViewSet):
+            permission_classes = [IsAuthenticated, IsPharmacist | IsDoctor]
+    """
+
+    message = "Pharmacist privileges required to perform this action."
+
+    def has_permission(self, request: Request, view: APIView) -> bool:
+        """
+        Check if requesting user is pharmacy staff.
+
+        Args:
+            request: The HTTP request object with authenticated user
+            view: The API view being accessed
+
+        Returns:
+            bool: True if user is authenticated and in Pharmacists group
+        """
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.groups.filter(name="Pharmacists").exists()
+        )
+
+
 class IsMedicalStaff(permissions.BasePermission):
     """
     Composite permission for any medical professional (Doctors OR Nurses).
