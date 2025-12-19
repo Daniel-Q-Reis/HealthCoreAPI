@@ -40,12 +40,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }, []);
 
-    // Login with username/password
     const login = useCallback(async (username: string, password: string) => {
         setIsLoading(true);
         try {
             const response = await authApi.login({ username, password });
-            setUser(response.user);
+
+            let currentUser = response.user;
+            if (!currentUser) {
+                // Fallback: Fetch user if not provided in login response
+                currentUser = await authApi.getCurrentUser();
+            }
+
+            setUser(currentUser);
             // Initialize activity timer
             localStorage.setItem('lastActive', Date.now().toString());
         } finally {
@@ -81,6 +87,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             await authApi.logout();
             setUser(null);
             localStorage.removeItem('lastActive');
+            // Redirect to home page
+            window.location.href = '/dqr-health';
         } finally {
             setIsLoading(false);
         }

@@ -2,6 +2,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { LoginModal } from '@/features/auth/components/LoginModal';
 
 interface MainLayoutProps {
     children: ReactNode;
@@ -12,6 +13,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -44,6 +46,10 @@ export function MainLayout({ children }: MainLayoutProps) {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
+            <LoginModal
+                isOpen={isLoginModalOpen}
+                onClose={() => setIsLoginModalOpen(false)}
+            />
             {/* Navigation */}
             <nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full shadow-none'
@@ -113,12 +119,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                                     </div>
                                 ) : (
                                     <>
-                                        <Link
-                                            to="/dqr-health/login"
+                                        <button
+                                            onClick={() => setIsLoginModalOpen(true)}
                                             className="border-2 border-[#2774AE] text-[#2774AE] px-6 py-2 rounded font-semibold hover:bg-[#2774AE] hover:text-white transition"
                                         >
                                             Sign In
-                                        </Link>
+                                        </button>
                                         <Link
                                             to="/dqr-health/register"
                                             className="bg-[#2774AE] text-white px-6 py-2 rounded font-semibold hover:bg-[#1e5a8a] transition shadow-sm hidden sm:block"
