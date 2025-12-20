@@ -135,6 +135,16 @@ else:
 " 2>/dev/null || log_warning "Could not create/check superuser (non-critical)"
 }
 
+seed_database_if_needed() {
+    log "Seeding database with realistic data..."
+    # Always try to seed (the script handles idempotency)
+    if python manage.py seed_database --no-input; then
+        log_success "Database seeding completed"
+    else
+        log_warning "Database seeding failed (non-critical, maybe Faker missing?)"
+    fi
+}
+
 start_server() {
     if [ "${APP_ENV}" = "production" ]; then
         log "Starting Gunicorn server for production..."
@@ -177,6 +187,7 @@ main() {
     load_rbac_fixtures          # ← 2. THEN load fixtures
     collect_static_files        # ← 3. Then static files
     create_superuser_if_needed  # ← 4. Finally superuser
+    seed_database_if_needed     # ← 5. Populate with realistic data
 
     log_success "Django setup completed successfully!"
     log "🌟 Access your application at: http://localhost:8000"
