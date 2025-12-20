@@ -6,14 +6,29 @@ from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from src.apps.admissions.models import Bed, Ward
+from src.apps.admissions.models import Admission, Bed, Ward
 
 # Import Models
 from src.apps.departments.models import Department
+from src.apps.equipment.models import (
+    Equipment,
+    EquipmentIncident,
+    EquipmentStatus,
+    EquipmentType,
+)
 from src.apps.experience.models import PatientComplaint, PatientFeedback
+from src.apps.orders.models import (
+    ClinicalOrder,
+    OrderCategory,
+    OrderPriority,
+    OrderStatus,
+)
 from src.apps.patients.models import Patient
 from src.apps.pharmacy.models import Dispensation, Medication
 from src.apps.practitioners.models import Practitioner
+from src.apps.results.models import DiagnosticReport, Observation
+from src.apps.scheduling.models import Appointment, Slot
+from src.apps.shifts.models import Shift
 
 try:
     from faker import Faker
@@ -68,7 +83,31 @@ class Command(BaseCommand):
             # 4. Setup Pharmacy (Medications)
             self.setup_pharmacy()
 
-            # 5. Create Transactions (Dispensations, Feedback)
+            # 5. Setup Equipment
+            self.setup_equipment()
+
+            # 6. Setup Shifts & Scheduling
+            self.setup_shifts_and_scheduling()
+
+            # 7. Setup Admissions
+            self.setup_admissions()
+
+            # 8. Setup Clinical Orders & Results
+            self.setup_clinical_data()
+
+            # 5. Setup Equipment
+            self.setup_equipment()
+
+            # 6. Setup Shifts & Scheduling
+            self.setup_shifts_and_scheduling()
+
+            # 7. Setup Admissions
+            self.setup_admissions()
+
+            # 8. Setup Clinical Orders & Results
+            self.setup_clinical_data()
+
+            # 9. Create Transactions (Dispensations, Feedback)
             self.create_activity_data()
 
             self.stdout.write(
@@ -304,6 +343,258 @@ class Command(BaseCommand):
                 },
             )
             self.medications.append(med)
+
+    def setup_equipment(self):
+        self.stdout.write("Setting up equipment...")
+        if Equipment.objects.exists():
+            return
+
+        equipment_types = [
+            (EquipmentType.STRETCHER, "Stretcher"),
+            (EquipmentType.WHEELCHAIR, "Wheelchair"),
+            (EquipmentType.INFUSION_PUMP, "Infusion Pump"),
+            (EquipmentType.DEFIBRILLATOR, "Defibrillator"),
+            (EquipmentType.ECG, "ECG Monitor"),
+            (EquipmentType.PORTABLE_XRAY, "Portable X-Ray"),
+        ]
+
+        # Use wards as locations
+        wards = list(Ward.objects.all())
+        if not wards:
+            wards_names = ["Emergency", "General Ward"]
+        else:
+            wards_names = [w.name for w in wards]
+
+        for _ in range(30):
+            eq_type, type_name = random.choice(equipment_types)
+            Equipment.objects.create(
+                name=f"{type_name} {random.randint(100, 999)}",
+                type=eq_type,
+                brand=random.choice(["GE Healthcare", "Philips", "Siemens", "Drager"]),
+                model=f"Model-{random.choice(['X', 'Y', 'Z'])}-{random.randint(10, 99)}",
+                serial_number=self.fake.unique.bothify(text="SN-????-####"),
+                qr_code=self.fake.unique.uuid4(),
+                current_location=random.choice(wards_names),
+                status=random.choice(EquipmentStatus.values),
+                is_active=True,
+            )
+
+        # Incidents
+        equipment_list = list(Equipment.objects.all())
+        for _ in range(10):
+            EquipmentIncident.objects.create(
+                equipment=random.choice(equipment_list),
+                severity=random.choice(["LOW", "MEDIUM", "HIGH"]),
+                description=self.fake.sentence(),
+                status=random.choice(["OPEN", "INVESTIGATING", "RESOLVED"]),
+                created_at=self.fake.date_time_this_year(tzinfo=datetime.timezone.utc),
+            )
+
+    def setup_shifts_and_scheduling(self):
+        self.stdout.write("Setting up shifts and scheduling...")
+
+        # 1. Shifts
+        if not Shift.objects.exists():
+            practitioners = list(
+                Practitioner.objects.filter(role__in=["doctor", "nurse"])
+            )
+            today = datetime.datetime.now(datetime.timezone.utc).date()
+
+            for practitioner in practitioners:
+                # Create shifts for the next 7 days
+                for i in range(7):
+                    day = today + datetime.timedelta(days=i)
+                    # Randomly assign a shift type or off
+                    shift_choice = random.choice(
+                        ["morning", "afternoon", "night", "off"]
+                    )
+
+                    if shift_choice == "morning":
+                        start = datetime.datetime.combine(
+                            day, datetime.time(8, 0), tzinfo=datetime.timezone.utc
+                        )
+                        end = datetime.datetime.combine(
+                            day, datetime.time(16, 0), tzinfo=datetime.timezone.utc
+                        )
+                    elif shift_choice == "afternoon":
+                        start = datetime.datetime.combine(
+                            day, datetime.time(16, 0), tzinfo=datetime.timezone.utc
+                        )
+                        end = datetime.datetime.combine(
+                            day + datetime.timedelta(days=1),
+                            datetime.time(0, 0),
+                            tzinfo=datetime.timezone.utc,
+                        )
+                    elif shift_choice == "night":
+                        start = datetime.datetime.combine(
+                            day, datetime.time(0, 0), tzinfo=datetime.timezone.utc
+                        )
+                        end = datetime.datetime.combine(
+                            day, datetime.time(8, 0), tzinfo=datetime.timezone.utc
+                        )
+                    else:
+                        continue
+
+                    Shift.objects.create(
+                        practitioner=practitioner,
+                        start_time=start,
+                        end_time=end,
+                        role=f"{practitioner.role.capitalize()} on Duty",
+                    )
+
+        # 2. Slots and Appointments
+        if not Slot.objects.exists():
+            doctors = list(Practitioner.objects.filter(role="doctor"))
+            today = datetime.datetime.now(datetime.timezone.utc).date()
+
+            for doctor in doctors:
+                # Create slots for the next 3 days, morning only implementation for simplicity
+                for i in range(3):
+                    day = today + datetime.timedelta(days=i)
+                    start_hour = 9
+
+                    # 4 slots per day
+                    for j in range(4):
+                        start_time = datetime.datetime.combine(
+                            day,
+                            datetime.time(start_hour + j, 0),
+                            tzinfo=datetime.timezone.utc,
+                        )
+                        end_time = start_time + datetime.timedelta(minutes=30)
+
+                        slot = Slot.objects.create(
+                            practitioner=doctor,
+                            start_time=start_time,
+                            end_time=end_time,
+                            is_booked=False,
+                        )
+
+                        # Randomly book
+                        if random.random() > 0.6 and self.patients:
+                            patient = random.choice(self.patients)
+                            is_completed = day < today
+
+                            status = "completed" if is_completed else "booked"
+
+                            Appointment.objects.create(
+                                slot=slot,
+                                patient=patient,
+                                practitioner=doctor,
+                                status=status,
+                                notes=self.fake.sentence(),
+                            )
+                            slot.is_booked = True
+                            slot.save()
+
+    def setup_admissions(self):
+        self.stdout.write("Setting up admissions...")
+        if Admission.objects.exists():
+            return
+
+        beds = list(Bed.objects.filter(is_occupied=False))
+        patients_to_admit = random.sample(self.patients, k=min(len(self.patients), 10))
+
+        for patient in patients_to_admit:
+            if not beds:
+                break
+
+            bed = beds.pop()
+
+            admission_date = self.fake.date_time_this_year(tzinfo=datetime.timezone.utc)
+
+            # 80% active, 20% discharged
+            is_active = random.random() > 0.2
+
+            if is_active:
+                status = "admitted"
+                discharge_date = None
+                bed.is_occupied = True
+                bed.save()
+            else:
+                status = "discharged"
+                discharge_date = admission_date + datetime.timedelta(
+                    days=random.randint(1, 10)
+                )
+                # Bed remains free since they are discharged
+
+            Admission.objects.create(
+                patient=patient,
+                bed=bed if is_active else None,
+                admission_date=admission_date,
+                discharge_date=discharge_date,
+                status=status,
+            )
+
+    def setup_clinical_data(self):
+        self.stdout.write("Setting up clinical orders and results...")
+        if ClinicalOrder.objects.exists():
+            return
+
+        doctors = list(Practitioner.objects.filter(role="doctor"))
+        if not doctors:
+            return
+
+        # Ensure we have a target department
+        lab_dept, _ = Department.objects.get_or_create(
+            name="Laboratory", defaults={"description": "Pathology and Lab Services"}
+        )
+        imaging_dept, _ = Department.objects.get_or_create(
+            name="Radiology", defaults={"description": "X-Ray, MRI, CT"}
+        )
+
+        for patient in self.patients:
+            # Create 1-3 orders per patient
+            for _ in range(random.randint(1, 3)):
+                requester = random.choice(doctors)
+                is_lab = random.random() > 0.5
+
+                if is_lab:
+                    category = OrderCategory.LABORATORY
+                    code = random.choice(["CBC", "BMP", "LIPID", "TSH"])
+                    desc = f"{code} Panel"
+                    dept = lab_dept
+                else:
+                    category = OrderCategory.IMAGING
+                    code = random.choice(["CXR", "MRI-BRAIN", "CT-ABD"])
+                    desc = f"Exam {code}"
+                    dept = imaging_dept
+
+                status = random.choice(OrderStatus.values)
+
+                order = ClinicalOrder.objects.create(
+                    patient=patient,
+                    requester=requester,
+                    target_department=dept,
+                    category=category,
+                    code=code,
+                    description=desc,
+                    status=status,
+                    priority=random.choice(OrderPriority.values),
+                    requested_date=self.fake.date_time_this_year(
+                        tzinfo=datetime.timezone.utc
+                    ),
+                    reason=self.fake.sentence(),
+                )
+
+                # Create Results for Completed orders
+                if status == OrderStatus.COMPLETED:
+                    report = DiagnosticReport.objects.create(
+                        patient=patient,
+                        performer=requester,
+                        status="final",
+                        conclusion=self.fake.paragraph(),
+                        issued_at=order.requested_date + datetime.timedelta(hours=4),
+                    )
+
+                    # Observations
+                    for i in range(3):
+                        Observation.objects.create(
+                            report=report,
+                            code=f"{code}-OBS-{i}",
+                            value_text=f"{random.randint(10, 100)} units"
+                            if is_lab
+                            else "Normal findings",
+                        )
 
     def create_activity_data(self):
         # Check if activity data already exists to avoid duplication on restarts
