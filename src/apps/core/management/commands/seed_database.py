@@ -1,9 +1,10 @@
 import datetime
 import random
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
 
 from src.apps.admissions.models import Admission, Bed, Ward
@@ -32,24 +33,31 @@ from src.apps.shifts.models import Shift
 
 try:
     from faker import Faker
+
+    HAS_FAKER = True
 except ImportError:
-    Faker = None
+    Faker = None  # type: ignore
+    HAS_FAKER = False
 
 User = get_user_model()
 
 
 class Command(BaseCommand):
     help = "Seeds the database with realistic initial data for development and demo."
+    fake: Any
+    patients: list[Patient]
+    medications: list[Medication]
+    depts: list[Department]
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "--no-input",
             action="store_true",
             help="Do not prompt for confirmation",
         )
 
-    def handle(self, *args, **options):
-        if not Faker:
+    def handle(self, *args: Any, **options: Any) -> None:
+        if not HAS_FAKER:
             self.stdout.write(
                 self.style.ERROR(
                     "Faker is required. Please install it with 'pip install Faker'"
@@ -95,18 +103,6 @@ class Command(BaseCommand):
             # 8. Setup Clinical Orders & Results
             self.setup_clinical_data()
 
-            # 5. Setup Equipment
-            self.setup_equipment()
-
-            # 6. Setup Shifts & Scheduling
-            self.setup_shifts_and_scheduling()
-
-            # 7. Setup Admissions
-            self.setup_admissions()
-
-            # 8. Setup Clinical Orders & Results
-            self.setup_clinical_data()
-
             # 9. Create Transactions (Dispensations, Feedback)
             self.create_activity_data()
 
@@ -114,7 +110,7 @@ class Command(BaseCommand):
                 self.style.SUCCESS("Database seeding completed successfully! 🚀")
             )
 
-    def setup_groups(self):
+    def setup_groups(self) -> None:
         self.stdout.write("Setting up groups...")
         # Ensure fixtures are loaded or groups exist
         # We can just rely on the existing fixture loader or create them here if missing
@@ -129,7 +125,7 @@ class Command(BaseCommand):
         for name in groups:
             Group.objects.get_or_create(name=name)
 
-    def setup_infrastructure(self):
+    def setup_infrastructure(self) -> None:
         self.stdout.write("Setting up departments and wards...")
 
         depts_data = [
@@ -163,7 +159,7 @@ class Command(BaseCommand):
                             defaults={"is_occupied": False},
                         )
 
-    def setup_users(self):
+    def setup_users(self) -> None:
         self.stdout.write("Setting up users and profiles...")
 
         # === Admins ===
@@ -314,7 +310,7 @@ class Command(BaseCommand):
             )
             self.patients.append(patient)
 
-    def setup_pharmacy(self):
+    def setup_pharmacy(self) -> None:
         self.stdout.write("Setting up pharmacy inventory...")
         meds_data = [
             ("Amoxicillin 500mg", "Amoxil", "ABX-001"),
@@ -344,7 +340,7 @@ class Command(BaseCommand):
             )
             self.medications.append(med)
 
-    def setup_equipment(self):
+    def setup_equipment(self) -> None:
         self.stdout.write("Setting up equipment...")
         if Equipment.objects.exists():
             return
@@ -390,7 +386,7 @@ class Command(BaseCommand):
                 created_at=self.fake.date_time_this_year(tzinfo=datetime.timezone.utc),
             )
 
-    def setup_shifts_and_scheduling(self):
+    def setup_shifts_and_scheduling(self) -> None:
         self.stdout.write("Setting up shifts and scheduling...")
 
         # 1. Shifts
@@ -486,7 +482,7 @@ class Command(BaseCommand):
                             slot.is_booked = True
                             slot.save()
 
-    def setup_admissions(self):
+    def setup_admissions(self) -> None:
         self.stdout.write("Setting up admissions...")
         if Admission.objects.exists():
             return
@@ -525,7 +521,7 @@ class Command(BaseCommand):
                 status=status,
             )
 
-    def setup_clinical_data(self):
+    def setup_clinical_data(self) -> None:
         self.stdout.write("Setting up clinical orders and results...")
         if ClinicalOrder.objects.exists():
             return
@@ -596,7 +592,7 @@ class Command(BaseCommand):
                             else "Normal findings",
                         )
 
-    def create_activity_data(self):
+    def create_activity_data(self) -> None:
         # Check if activity data already exists to avoid duplication on restarts
         if Dispensation.objects.exists() or PatientFeedback.objects.exists():
             self.stdout.write(
