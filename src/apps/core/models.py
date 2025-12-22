@@ -383,7 +383,18 @@ class ProfessionalRoleRequest(TimestampedModel):
             - Updates status to REJECTED
             - Records reviewer and timestamp
             - Saves the model
+            - Removes user from the group (if they were added)
         """
+        from django.contrib.auth.models import Group
+
+        # Revoke the role logic: Check if user is in group and remove
+        try:
+            group = Group.objects.get(name=self.role_requested)
+            if group in self.user.groups.all():
+                self.user.groups.remove(group)
+        except Group.DoesNotExist:
+            pass  # Group doesn't exist, nothing to remove
+
         self.status = self.Status.REJECTED
         self.reviewed_by = reviewer
         self.reviewed_at = timezone.now()

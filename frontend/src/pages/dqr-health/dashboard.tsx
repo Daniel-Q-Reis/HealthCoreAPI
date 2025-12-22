@@ -13,14 +13,15 @@ import {
 } from 'react-icons/fa';
 
 export function DashboardPage() {
-    const { user, hasRole } = useAuth();
+    const { user, hasRole, hasAnyRole } = useAuth();
     const navigate = useNavigate();
 
     // Safety check
     if (!user) return null;
 
-    const isPatient = hasRole('Patients');
     const isAdmin = hasRole('Admins');
+    // Show 'Request Access' to anyone who doesn't have a professional role yet
+    const isPatient = !hasAnyRole(['Doctors', 'Nurses', 'Pharmacists', 'Receptionists', 'Admins']);
 
     return (
         <MainLayout>
