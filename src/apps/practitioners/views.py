@@ -7,7 +7,7 @@ from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import BaseSerializer
 
-from src.apps.core.permissions import IsMedicalStaff
+from src.apps.core.permissions import IsAdmin, IsMedicalStaff
 
 from . import services
 from .models import Practitioner
@@ -29,8 +29,8 @@ class PractitionerViewSet(viewsets.ModelViewSet[Practitioner]):
     lookup_field = "id"
     permission_classes = [
         IsAuthenticated,
-        IsMedicalStaff,
-    ]  # Allow staff to view practitioners
+        IsMedicalStaff | IsAdmin,
+    ]  # Allow staff/admin to view practitioners
     filter_backends = [filters.SearchFilter]
     search_fields = ["given_name", "family_name", "specialization", "license_number"]
 

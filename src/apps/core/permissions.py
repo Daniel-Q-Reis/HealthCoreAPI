@@ -349,12 +349,9 @@ class IsMedicalStaff(permissions.BasePermission):
         return bool(
             request.user
             and request.user.is_authenticated
-            and (
-                request.user.is_superuser
-                or request.user.groups.filter(
-                    name__in=["Doctors", "Nurses", "Pharmacists", "Admins"]
-                ).exists()
-            )
+            and request.user.groups.filter(
+                name__in=["Doctors", "Nurses", "Pharmacists"]
+            ).exists()
         )
 
 
