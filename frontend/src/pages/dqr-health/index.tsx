@@ -1,10 +1,13 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { HomePage } from './home';
 import { DashboardPage } from './dashboard';
 import { PatientsPage } from './patients';
 import { AppointmentsPage } from './appointments';
-import { PharmacyPage } from './pharmacy';
+// import { PharmacyPage } from './pharmacy'; // Removed placeholder
 import { ExperiencePage } from './experience';
+import { PharmacyLayout } from '@/features/pharmacy/layouts/PharmacyLayout';
+import { InventoryPage } from '@/features/pharmacy/pages/InventoryPage';
+import { DispensePage } from '@/features/pharmacy/pages/DispensePage';
 import { ComponentShowcase } from './showcase';
 import {
     LoginPage,
@@ -54,7 +57,21 @@ export function DQRHealthRoutes() {
                 />
                 <Route path="/patients" element={<PatientsPage />} />
                 <Route path="/appointments" element={<AppointmentsPage />} />
-                <Route path="/pharmacy" element={<PharmacyPage />} />
+
+                {/* Pharmacy Module */}
+                <Route
+                    path="/pharmacy"
+                    element={
+                        <ProtectedRoute requiredRoles={['Doctors', 'Nurses', 'Pharmacists', 'Admins']}>
+                            <PharmacyLayout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<Navigate to="inventory" replace />} />
+                    <Route path="inventory" element={<InventoryPage />} />
+                    <Route path="dispense" element={<DispensePage />} />
+                </Route>
+
                 <Route path="/experience" element={<ExperiencePage />} />
                 <Route path="/showcase" element={<ComponentShowcase />} />
             </Routes>
