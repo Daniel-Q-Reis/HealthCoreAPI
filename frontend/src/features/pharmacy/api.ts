@@ -2,6 +2,7 @@ import { apiClient as api } from '@/shared/api/config';
 import {
     Medication,
     Patient,
+    Practitioner,
     Dispensation,
     CreateDispensationPayload,
     DrugInfoRequest,
@@ -11,7 +12,12 @@ import {
 export const pharmacyApi = {
     // Patients (Helper)
     getPatients: async (): Promise<Patient[]> => {
-        const response = await api.get('/v1/patients/');
+        const response = await api.get('/v1/patients/', { params: { limit: 1000 } });
+        return response.data.results || response.data;
+    },
+
+    getPractitioners: async (): Promise<Practitioner[]> => {
+        const response = await api.get('/v1/practitioners/', { params: { limit: 1000 } });
         return response.data.results || response.data;
     },
 

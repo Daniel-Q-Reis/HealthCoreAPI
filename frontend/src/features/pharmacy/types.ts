@@ -6,6 +6,15 @@ export interface Patient {
     birth_date: string;
 }
 
+export interface Practitioner {
+    id: number;
+    given_name: string;
+    family_name: string;
+    specialization: string;
+    license_number: string;
+    user_id: number;
+}
+
 export interface Medication {
     id: number;
     name: string;

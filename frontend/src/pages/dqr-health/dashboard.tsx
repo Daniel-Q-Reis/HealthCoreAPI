@@ -8,7 +8,8 @@ import {
     FaNotesMedical,
     FaFlask,
     FaCalendarCheck,
-    FaBell
+    FaBell,
+    FaPills
 } from 'react-icons/fa';
 
 export function DashboardPage() {
@@ -162,6 +163,23 @@ export function DashboardPage() {
                             <p className="text-gray-600 mb-4">Access your complete medical history.</p>
                             <span className="text-sm font-medium text-gray-400">Coming Soon</span>
                         </div>
+
+                        {/* Pharmacy Management - Medical Staff Only */}
+                        {(isAdmin || hasRole('Doctors') || hasRole('Nurses') || hasRole('Pharmacists')) && (
+                            <div
+                                onClick={() => navigate('/dqr-health/pharmacy/inventory')}
+                                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-teal-600 group"
+                            >
+                                <div className="bg-teal-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                    <FaPills className="text-2xl text-teal-600" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">Pharmacy & Stock</h3>
+                                <p className="text-gray-600 mb-4">
+                                    Manage inventory, dispense medications, and access AI drug info.
+                                </p>
+                                <span className="text-teal-600 font-semibold group-hover:underline">Open Pharmacy →</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

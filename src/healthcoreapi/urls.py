@@ -16,6 +16,7 @@ Including another URLconf
 """
 
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -61,4 +62,4 @@ urlpatterns = [
     path("api/v1/equipment/", include("src.apps.equipment.urls")),
     path("api/v1/orders/", include("src.apps.orders.urls")),
     # Add your apps' urls here
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

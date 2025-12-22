@@ -6,7 +6,7 @@ from typing import Any
 
 from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from src.apps.core.permissions import IsMedicalStaff
@@ -34,6 +34,8 @@ class PatientViewSet(viewsets.ModelViewSet[Patient]):
     serializer_class = PatientSerializer
     lookup_field = "id"
     permission_classes = [IsAuthenticated, IsMedicalStaff]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["given_name", "family_name", "mrn", "birth_date"]
 
     def get_queryset(self) -> QuerySet[Patient]:
         """
