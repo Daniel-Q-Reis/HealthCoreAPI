@@ -92,6 +92,16 @@ export function AdminCredentialDashboard() {
         }
     };
 
+    // Helper to resolve full media URL
+    const getMediaUrl = (path: string | null) => {
+        if (!path) return '';
+        if (path.startsWith('http')) return path;
+        // Assuming backend is at valid URL. In dev: localhost:8000
+        // We can check local env or hardcode for dev/demo if config is not exposed
+        const baseUrl = 'http://localhost:8000';
+        return `${baseUrl}${path}`;
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 p-6 md:p-8">
             <div className="max-w-7xl mx-auto">
@@ -285,7 +295,7 @@ export function AdminCredentialDashboard() {
                                             <span className="font-medium text-sm">Medical License</span>
                                         </div>
                                         <a
-                                            href={selectedRequest.license_document}
+                                            href={getMediaUrl(selectedRequest.license_document)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-[#2774AE] text-sm hover:underline"
@@ -301,7 +311,7 @@ export function AdminCredentialDashboard() {
                                                 <span className="font-medium text-sm">Board Certification</span>
                                             </div>
                                             <a
-                                                href={selectedRequest.certification_document}
+                                                href={getMediaUrl(selectedRequest.certification_document)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-[#2774AE] text-sm hover:underline"
@@ -316,7 +326,8 @@ export function AdminCredentialDashboard() {
 
                         {/* Footer Actions */}
                         <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl flex justify-end gap-3">
-                            {selectedRequest.status === 'pending' ? (
+                            {/* Pending State: Approve or Reject */}
+                            {selectedRequest.status === 'pending' && (
                                 <>
                                     <button
                                         onClick={() => setShowActionModal('reject')}
@@ -331,9 +342,23 @@ export function AdminCredentialDashboard() {
                                         Approve Request
                                     </button>
                                 </>
-                            ) : (
+                            )}
+
+                            {/* Approved State: Allow Revocation */}
+                            {selectedRequest.status === 'approved' && (
+                                <button
+                                    onClick={() => setShowActionModal('reject')}
+                                    className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors shadow-sm flex items-center gap-2"
+                                >
+                                    <FaTimes />
+                                    Revoke Access
+                                </button>
+                            )}
+
+                            {/* Rejected State: Immutable */}
+                            {selectedRequest.status === 'rejected' && (
                                 <div className="text-sm text-gray-500 font-medium italic">
-                                    Request was {selectedRequest.status} on {selectedRequest.updated_at ? format(new Date(selectedRequest.updated_at), 'MMM d, yyyy') : 'Unknown date'}
+                                    Request was rejected on {selectedRequest.updated_at ? format(new Date(selectedRequest.updated_at), 'MMM d, yyyy') : 'Unknown date'}
                                 </div>
                             )}
                         </div>
@@ -347,12 +372,18 @@ export function AdminCredentialDashboard() {
                     <div className={`bg-white rounded-xl shadow-xl max-w-md w-full border-t-4 ${showActionModal === 'approve' ? 'border-green-500' : 'border-red-500'}`}>
                         <div className="p-6">
                             <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                {showActionModal === 'approve' ? 'Approve Access Request' : 'Reject Access Request'}
+                                {showActionModal === 'approve'
+                                    ? 'Approve Access Request'
+                                    : (selectedRequest.status === 'approved' ? 'Revoke Access' : 'Reject Access Request')
+                                }
                             </h3>
                             <p className="text-gray-600 mb-6 text-sm">
                                 {showActionModal === 'approve'
                                     ? `Are you sure you want to verify credentials for ${selectedRequest.user_details.first_name}? This will grant them the ${selectedRequest.role_requested} role.`
-                                    : `Please provide a reason for rejecting the request from ${selectedRequest.user_details.first_name}.`
+                                    : (selectedRequest.status === 'approved'
+                                        ? `Are you sure you want to REVOKE access for ${selectedRequest.user_details.first_name}? This will remove their ${selectedRequest.role_requested} privileges immediately.`
+                                        : `Please provide a reason for rejecting the request from ${selectedRequest.user_details.first_name}.`
+                                    )
                                 }
                             </p>
 

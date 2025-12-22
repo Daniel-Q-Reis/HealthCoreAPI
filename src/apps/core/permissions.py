@@ -337,19 +337,21 @@ class IsMedicalStaff(permissions.BasePermission):
 
     def has_permission(self, request: Request, view: APIView) -> bool:
         """
-        Check if user is any type of medical staff.
+        Check if user is any type of medical staff, pharmacist, or system admin.
 
         Args:
             request: The HTTP request object with authenticated user
             view: The API view being accessed
 
         Returns:
-            bool: True if user is in Doctors OR Nurses group
+            bool: True if user is in Doctors, Nurses, Pharmacists, or Admins group
         """
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.groups.filter(name__in=["Doctors", "Nurses"]).exists()
+            and request.user.groups.filter(
+                name__in=["Doctors", "Nurses", "Pharmacists"]
+            ).exists()
         )
 
 

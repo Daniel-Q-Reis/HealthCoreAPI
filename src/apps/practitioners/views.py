@@ -3,10 +3,11 @@ Views for the Practitioners API.
 """
 
 from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets
+from rest_framework import filters, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import BaseSerializer
 
-from src.apps.core.permissions import IsAdmin
+from src.apps.core.permissions import IsAdmin, IsMedicalStaff
 
 from . import services
 from .models import Practitioner
@@ -26,7 +27,12 @@ class PractitionerViewSet(viewsets.ModelViewSet[Practitioner]):
     queryset = Practitioner.objects.active()
     serializer_class = PractitionerSerializer
     lookup_field = "id"
-    permission_classes = [IsAdmin]
+    permission_classes = [
+        IsAuthenticated,
+        IsMedicalStaff | IsAdmin,
+    ]  # Allow staff/admin to view practitioners
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["given_name", "family_name", "specialization", "license_number"]
 
     def perform_create(self, serializer: BaseSerializer[Practitioner]) -> None:
         """
