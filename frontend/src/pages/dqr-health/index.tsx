@@ -16,6 +16,7 @@ import {
     OAuthCallbackPage,
     AdminCredentialDashboard
 } from '@/features/auth/pages';
+import { ProviderSearchPage } from '@/features/scheduling/pages/ProviderSearchPage';
 import { AuthProvider } from '@/features/auth/context/AuthProvider';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 
@@ -57,6 +58,14 @@ export function DQRHealthRoutes() {
                 />
                 <Route path="/patients" element={<PatientsPage />} />
                 <Route path="/appointments" element={<AppointmentsPage />} />
+                <Route
+                    path="/schedule"
+                    element={
+                        <ProtectedRoute>
+                            <ProviderSearchPage />
+                        </ProtectedRoute>
+                    }
+                />
 
                 {/* Pharmacy Module */}
                 <Route

@@ -70,11 +70,17 @@ export function DashboardPage() {
 
                     {/* Stats / Quick Overview Row */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                        {/* Upcoming Appointments (Dynamic for Medical Staff, Static for Patients) */}
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                            <div className="text-gray-500 text-sm mb-1">Upcoming Appointments</div>
+                            <div className="text-gray-500 text-sm mb-1">
+                                {hasAnyRole(['Doctors', 'Nurses']) ? 'My Schedule' : 'Upcoming Appointments'}
+                            </div>
                             <div className="text-3xl font-bold text-[#003B5C]">0</div>
-                            <div className="text-xs text-green-600 mt-2 font-medium">No appointments scheduled</div>
+                            <div className="text-xs text-green-600 mt-2 font-medium">
+                                {hasAnyRole(['Doctors', 'Nurses']) ? 'No shifts today' : 'No appointments scheduled'}
+                            </div>
                         </div>
+
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
                             <div className="text-gray-500 text-sm mb-1">Active Prescriptions</div>
                             <div className="text-3xl font-bold text-[#003B5C]">0</div>
@@ -135,13 +141,16 @@ export function DashboardPage() {
                             </div>
                         )}
 
-                        <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
+                        <div
+                            onClick={() => navigate('/dqr-health/schedule')}
+                            className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group"
+                        >
                             <div className="bg-green-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-100 transition">
                                 <FaCalendarCheck className="text-2xl text-[#00A651]" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Schedule Appointment</h3>
                             <p className="text-gray-600 mb-4">Book a consultation with our specialists.</p>
-                            <span className="text-sm font-medium text-gray-400">Coming Soon</span>
+                            <span className="text-[#00A651] font-semibold group-hover:underline">Find a Doctor →</span>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">

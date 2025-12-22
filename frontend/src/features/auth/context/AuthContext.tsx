@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import React, { createContext } from 'react';
 import type { User } from '@/shared/api/types';
 
 export interface AuthContextValue {
@@ -24,3 +24,5 @@ export interface RegisterData {
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+// End of file
