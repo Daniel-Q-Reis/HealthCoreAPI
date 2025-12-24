@@ -15,8 +15,22 @@ class Patient(ActivatableModel):
 
     # Identifiers
     mrn = models.CharField(
-        max_length=255, unique=True, help_text="Medical Record Number"
+        max_length=255, unique=True, help_text="Medical Record Number", blank=True
     )
+
+    # ... fields ...
+
+    def save(self, *args, **kwargs):
+        if not self.mrn:
+            # Simple auto-generation: P + distinct timestamp part + random suffix
+            # Format: P-TIMESTAMP-RAND (e.g., P-171563-123)
+            # Keeping it strictly numeric/simple as per some standards or mixing
+            # Using uuid subset is safer for collision
+            import uuid
+
+            self.mrn = f"MRN-{str(uuid.uuid4().int)[:10]}"
+        super().save(*args, **kwargs)
+
     # Personal Details
     given_name = models.CharField(max_length=255)
     family_name = models.CharField(max_length=255)

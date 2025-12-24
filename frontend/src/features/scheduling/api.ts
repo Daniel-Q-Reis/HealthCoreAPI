@@ -13,17 +13,34 @@ const enrichPractitioner = (p: Practitioner): Practitioner => ({
 
 export const schedulingApi = {
     getPractitioners: async (search?: string): Promise<Practitioner[]> => {
-        const params = search ? { search } : { limit: 100 };
+        // Force server-side filtering by including 'doctor' in the search term.
+        // This ensures the backend (PractitionerViewSet) returns actual doctors even if they are deep in the db.
+        const term = search ? `${search} doctor` : 'doctor';
+
+        // Request 1000 items as requested by user to ensure we capture all doctors
+        const params = { search: term, limit: 1000, page_size: 1000 };
         const response = await api.get('/v1/practitioners/', { params });
         const data = response.data.results || response.data;
-        return data.map(enrichPractitioner);
+
+        const enriched = data.map(enrichPractitioner);
+
+        // Client-side filter to show ONLY Doctors
+        // Seed data uses 'doctor' (lowercase), so we need robust checking.
+        return enriched.filter((p: Practitioner) => {
+            if (!p.role) return false;
+            const role = p.role.toLowerCase();
+            return role.includes('doctor') ||
+                role.includes('physician') ||
+                role.includes('md') ||
+                role.includes('dr.');
+        });
     },
 
     getSlots: async (practitionerId: number): Promise<Slot[]> => {
         // In a real app, filtering by date range is essential
         // For MVP, getting all slots for the practitioner
         const response = await api.get('/v1/scheduling/slots/', {
-            params: { practitioner: practitionerId, is_booked: false }
+            params: { practitioner: practitionerId, is_booked: false, limit: 1000, page_size: 1000 }
         });
         const allSlots = response.data.results || response.data;
 

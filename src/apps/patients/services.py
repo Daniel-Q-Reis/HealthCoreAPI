@@ -10,11 +10,11 @@ from .models import Patient
 
 
 def register_new_patient(
-    mrn: str,
     given_name: str,
     family_name: str,
     birth_date: str,
     sex: str,
+    mrn: str = None,
     **kwargs: Any,
 ) -> Patient:
     """

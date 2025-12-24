@@ -10,6 +10,13 @@ export const ProviderSearchPage: React.FC = () => {
     const [showMap, setShowMap] = useState(true);
     const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
 
+    // Default to Einstein Hospital area in São Paulo as requested
+    const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>({ lat: -23.5990, lng: -46.7198 });
+    const [locationName, setLocationName] = useState('Albert Einstein Hospital Area, SP');
+
+    // Note: Automatic IP geolocation removed to prevent CORS/429 errors in development.
+    // Defaulting to generic location.
+
     const { data: practitioners, isLoading } = useQuery(
         ['practitioners', searchTerm],
         () => schedulingApi.getPractitioners(searchTerm),
@@ -45,7 +52,7 @@ export const ProviderSearchPage: React.FC = () => {
             <div className="min-h-screen bg-gray-50">
                 {/* Hero / Header Filter Bar */}
                 <div className="bg-[#003B5C] py-8 text-white shadow-md">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div className="w-full px-4 sm:px-6 lg:px-8">
                         <h1 className="text-3xl font-bold tracking-tight">Search for DQR Health Doctors</h1>
                         <p className="mt-2 text-[#8BB8E8]">Find the right care for you and your family.</p>
 
@@ -80,7 +87,7 @@ export const ProviderSearchPage: React.FC = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <div className="w-full px-4 py-8 sm:px-6 lg:px-8">
                     <div className="flex flex-col lg:flex-row gap-8">
                         {/* Filters Sidebar */}
                         <div className="w-full lg:w-64 shrink-0 space-y-6">
@@ -146,7 +153,9 @@ export const ProviderSearchPage: React.FC = () => {
                                     {isLoading ? (
                                         <div className="col-span-full py-12 text-center text-gray-500">Loading doctors...</div>
                                     ) : filteredPractitioners?.length === 0 ? (
-                                        <div className="col-span-full py-12 text-center text-gray-500">No doctors found for the selected criteria.</div>
+                                        <div className="col-span-full py-12 text-center text-gray-500">
+                                            No doctors found matching your criteria. Try selecting "General Practice" or clearing filters.
+                                        </div>
                                     ) : filteredPractitioners?.map((practitioner) => (
                                         <ProviderCard key={practitioner.id} practitioner={practitioner} />
                                     ))}
@@ -155,19 +164,15 @@ export const ProviderSearchPage: React.FC = () => {
                                 {/* Map Visual (Mock) */}
                                 {showMap && (
                                     <div className="xl:w-1/2 xl:h-[calc(100vh-300px)] xl:sticky xl:top-24 rounded-xl overflow-hidden border border-gray-200 shadow-sm bg-blue-50 relative hidden xl:block">
-                                        {/* Mock Map Background */}
-                                        <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=34.0689,-118.4452&zoom=13&size=800x600&sensor=false&visual_refresh=true&style=feature:all|element:all|saturation:-100|lightness:10')] bg-cover bg-center opacity-50"></div>
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="bg-white/90 backdrop-blur px-6 py-4 rounded-lg shadow-lg text-center max-w-xs">
-                                                <MapPin className="h-8 w-8 text-red-500 mx-auto mb-2" />
-                                                <h3 className="font-bold text-gray-900">Map View</h3>
-                                                <p className="text-sm text-gray-600">Showing locations for {filteredPractitioners?.length} providers in the area.</p>
-                                            </div>
-                                        </div>
-                                        {/* Interaction Block */}
-                                        <div className="absolute bottom-4 right-4 bg-white p-2 rounded shadow text-xs text-gray-500">
-                                            Interactive Map (Simulated)
-                                        </div>
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            loading="lazy"
+                                            allowFullScreen
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.0513987157833!2d-46.72202682375172!3d-23.599147563098553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce56ce6d30666b%3A0xe5a3c20058b7617b!2sHospital%20Israelita%20Albert%20Einstein!5e0!3m2!1sen!2sbr!4v1715632195000!5m2!1sen!2sbr">
+                                        </iframe>
                                     </div>
                                 )}
                             </div>

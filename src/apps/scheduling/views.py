@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from src.apps.core.models import IdempotencyKey
-from src.apps.core.permissions import IsDoctor, IsMedicalStaff
+from src.apps.core.permissions import IsDoctor
 
 from . import services
 from .models import Appointment, Slot
@@ -41,18 +41,16 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         "patient", "practitioner", "slot", "slot__practitioner"
     ).filter(is_active=True)
     serializer_class = AppointmentSerializer
-    permission_classes = [IsAuthenticated, IsMedicalStaff]
+    permission_classes = [IsAuthenticated]
 
     def get_permissions(self) -> list[Any]:
         """
         Customize permissions based on action.
-
-        - Create/Update/Delete: Doctors only
-        - List/Retrieve: Medical staff (Doctors + Nurses)
         """
-        if self.action in ["create", "update", "partial_update", "destroy"]:
+        if self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsDoctor()]
-        return [IsAuthenticated(), IsMedicalStaff()]
+        # Allow Patients to Create and List (List logic should filter by own appointments ideally)
+        return [IsAuthenticated()]
 
     def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         """
@@ -89,7 +87,23 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         serializer.is_valid(raise_exception=True)
         validated_data = serializer.validated_data
 
-        patient = validated_data["patient"]
+        patient = validated_data.get("patient")
+
+        # Patient Self-Service Logic:
+        # If no patient ID provided (Patient booking for self), try to find Patient by user email
+        if not patient:
+            from src.apps.patients.models import Patient
+
+            patient = Patient.objects.filter(email=request.user.email).first()
+            if not patient:
+                # Fallback/Error if no linked patient found
+                return Response(
+                    {
+                        "detail": "No patient profile found for this user. Please contact reception."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         slot = validated_data["slot"]
 
         try:
@@ -162,13 +176,13 @@ class SlotViewSet(viewsets.ModelViewSet[Slot]):
     # ORIGINAL LOGIC PRESERVED: filter(is_active=True) is maintained.
     queryset = Slot.objects.select_related("practitioner").filter(is_active=True)
     serializer_class = SlotSerializer
-    permission_classes = [IsAuthenticated, IsMedicalStaff]
+    permission_classes = [IsAuthenticated]
 
     def get_permissions(self) -> list[Any]:
         """
         Doctors only for create/update/delete.
-        Medical staff for read operations.
+        All authenticated users for read operations (Patient Portal).
         """
         if self.action in ["create", "update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsDoctor()]
-        return [IsAuthenticated(), IsMedicalStaff()]
+        return [IsAuthenticated()]

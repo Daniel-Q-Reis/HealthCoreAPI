@@ -190,8 +190,9 @@ class Command(BaseCommand):
             user.save()
             user.groups.add(Group.objects.get(name="Doctors"))
 
+            # Deterministic License to prevent duplicates on re-runs
             Practitioner.objects.get_or_create(
-                license_number=f"MED-{random.randint(10000, 99999)}",
+                license_number=f"MED-{10000 + i}",
                 defaults={
                     "given_name": user.first_name,
                     "family_name": user.last_name,
@@ -218,7 +219,7 @@ class Command(BaseCommand):
             user.groups.add(Group.objects.get(name="Nurses"))
 
             Practitioner.objects.get_or_create(
-                license_number=f"NUR-{random.randint(10000, 99999)}",
+                license_number=f"NUR-{10000 + i}",
                 defaults={
                     "given_name": user.first_name,
                     "family_name": user.last_name,
@@ -444,16 +445,18 @@ class Command(BaseCommand):
             today = datetime.datetime.now(datetime.timezone.utc).date()
 
             for doctor in doctors:
-                # Create slots for the next 3 days, morning only implementation for simplicity
-                for i in range(3):
+                # Create slots for the next 14 days (2 weeks)
+                for i in range(14):
                     day = today + datetime.timedelta(days=i)
-                    start_hour = 9
 
-                    # 4 slots per day
-                    for j in range(4):
+                    # Varied start times: 8 AM to 5 PM
+                    start_hour = 8
+
+                    # 16 slots per day (8 hours * 2 slots/hr)
+                    for j in range(16):
                         start_time = datetime.datetime.combine(
                             day,
-                            datetime.time(start_hour + j, 0),
+                            datetime.time(start_hour + (j // 2), (j % 2) * 30),
                             tzinfo=datetime.timezone.utc,
                         )
                         end_time = start_time + datetime.timedelta(minutes=30)

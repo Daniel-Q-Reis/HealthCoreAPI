@@ -1,198 +1,159 @@
-
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { patientApi } from '@/features/patients/api';
+import { CompleteProfileForm } from '@/features/patients/components/CompleteProfileForm';
+import { Patient } from '@/features/patients/types';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { MainLayout } from '@/shared/layout/MainLayout';
-import {
-    FaUserMd,
-    FaShieldAlt,
-    FaNotesMedical,
-    FaFlask,
-    FaCalendarCheck,
-    FaBell,
-    FaPills
-} from 'react-icons/fa';
+import { LogOut, User, Activity, Calendar, Pill, FileText } from 'lucide-react';
 
-export function DashboardPage() {
-    const { user, hasRole, hasAnyRole } = useAuth();
+export const DashboardPage = () => {
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
+    const [profile, setProfile] = useState<Patient | null>(null);
 
-    // Safety check
-    if (!user) return null;
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const data = await patientApi.getMyProfile();
+                setProfile(data);
+            } catch (error) {
+                console.error(error);
+                // 404 handled in api
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProfile();
+    }, []);
 
-    const isAdmin = hasRole('Admins');
-    // Show 'Request Access' to anyone who doesn't have a professional role yet
-    const isPatient = !hasAnyRole(['Doctors', 'Nurses', 'Pharmacists', 'Receptionists', 'Admins']);
+    const handleProfileCreated = (newProfile: Patient) => {
+        setProfile(newProfile);
+    };
 
-    return (
-        <MainLayout>
-            <div className="bg-gray-50 min-h-screen pb-16">
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
-                {/* Dashboard Header / Hero */}
-                <div className="bg-[#003B5C] text-white py-12 relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10">
-                        <img
-                            src="/images/main_hall.png"
-                            alt="Background"
-                            className="w-full h-full object-cover"
-                        />
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#004B87]"></div>
+            </div>
+        );
+    }
+
+    // 1. If Patient Profile is Missing -> Show Form
+    if (!profile) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-8">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-3xl font-bold text-[#004B87]">Welcome to DQR Health</h1>
+                        <button onClick={handleLogout} className="text-gray-500 hover:text-red-600 font-medium">
+                            Sign Out
+                        </button>
                     </div>
-                    <div className="container mx-auto px-4 relative z-10">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div>
-                                <div className="text-[#FFD100] font-semibold mb-2 uppercase tracking-wider text-sm">
-                                    Patient Portal
-                                </div>
-                                <h1 className="text-4xl font-bold mb-2">
-                                    Welcome back, {user.first_name || user.username}
-                                </h1>
-                                <p className="text-blue-100 text-lg">
-                                    Manage your health journey with our AI-powered tools.
-                                </p>
-                            </div>
-                            <div className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 flex items-center gap-4">
-                                <div className="bg-[#FFD100] text-[#003B5C] p-3 rounded-full">
-                                    <FaBell className="text-xl" />
-                                </div>
-                                <div>
-                                    <div className="font-bold">2 Notifications</div>
-                                    <div className="text-sm text-gray-200">You have upcoming updates</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="container mx-auto px-4 -mt-8 relative z-20">
-                    {/* Role Badge */}
-                    <div className="inline-block bg-white text-[#003B5C] px-6 py-2 rounded-full shadow-lg font-bold border-2 border-[#003B5C] mb-8">
-                        Logged in as: <span className="text-[#0066CC]">{user.role}</span>
-                    </div>
-
-                    {/* Stats / Quick Overview Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                        {/* Upcoming Appointments (Dynamic for Medical Staff, Static for Patients) */}
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                            <div className="text-gray-500 text-sm mb-1">
-                                {hasAnyRole(['Doctors', 'Nurses']) ? 'My Schedule' : 'Upcoming Appointments'}
-                            </div>
-                            <div className="text-3xl font-bold text-[#003B5C]">0</div>
-                            <div className="text-xs text-green-600 mt-2 font-medium">
-                                {hasAnyRole(['Doctors', 'Nurses']) ? 'No shifts today' : 'No appointments scheduled'}
-                            </div>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                            <div className="text-gray-500 text-sm mb-1">Active Prescriptions</div>
-                            <div className="text-3xl font-bold text-[#003B5C]">0</div>
-                            <div className="text-xs text-gray-400 mt-2">View details</div>
-                        </div>
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                            <div className="text-gray-500 text-sm mb-1">Test Results</div>
-                            <div className="text-3xl font-bold text-[#003B5C]">0</div>
-                            <div className="text-xs text-blue-600 mt-2 font-medium">New results available</div>
-                        </div>
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                            <div className="text-gray-500 text-sm mb-1">Health Score</div>
-                            <div className="text-3xl font-bold text-[#00A651]">98</div>
-                            <div className="text-xs text-green-600 mt-2 font-medium">Excellent condition</div>
-                        </div>
-                    </div>
-
-                    <h2 className="text-2xl font-bold text-[#003B5C] mb-6 border-l-4 border-[#FFD100] pl-4">
-                        Quick Actions
-                    </h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                        {/* Request Professional Access - Highlighted */}
-                        {isPatient && (
-                            <div
-                                onClick={() => navigate('/dqr-health/request-access')}
-                                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-[#2774AE] group relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
-                                    <FaUserMd className="text-9xl text-[#2774AE]" />
-                                </div>
-                                <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                    <FaUserMd className="text-2xl text-[#2774AE]" />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Are you a Provider?</h3>
-                                <p className="text-gray-600 mb-4 z-10 relative">
-                                    Request professional access to manage patients, schedule appointments, and update medical records.
-                                </p>
-                                <span className="text-[#2774AE] font-semibold group-hover:underline">Request Access →</span>
-                            </div>
-                        )}
-
-                        {/* Admin Dashboard */}
-                        {isAdmin && (
-                            <div
-                                onClick={() => navigate('/dqr-health/admin/credentials')}
-                                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-purple-600 group"
-                            >
-                                <div className="bg-purple-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                    <FaShieldAlt className="text-2xl text-purple-600" />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Admin Dashboard</h3>
-                                <p className="text-gray-600 mb-4">
-                                    Review pending professional access requests, manage user roles and system settings.
-                                </p>
-                                <span className="text-purple-600 font-semibold group-hover:underline">Manage System →</span>
-                            </div>
-                        )}
-
-                        <div
-                            onClick={() => navigate('/dqr-health/schedule')}
-                            className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group"
-                        >
-                            <div className="bg-green-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-100 transition">
-                                <FaCalendarCheck className="text-2xl text-[#00A651]" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Schedule Appointment</h3>
-                            <p className="text-gray-600 mb-4">Book a consultation with our specialists.</p>
-                            <span className="text-[#00A651] font-semibold group-hover:underline">Find a Doctor →</span>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
-                            <div className="bg-yellow-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-100 transition">
-                                <FaFlask className="text-2xl text-[#FFD100]" />
-                            </div>
-                            <div className="flex justify-between items-start">
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Lab Results</h3>
-                                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded font-bold">NEW</span>
-                            </div>
-                            <p className="text-gray-600 mb-4">View your recent blood work and imaging.</p>
-                            <span className="text-sm font-medium text-gray-400">Coming Soon</span>
-                        </div>
-
-                        <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
-                            <div className="bg-red-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-100 transition">
-                                <FaNotesMedical className="text-2xl text-red-500" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">My Records</h3>
-                            <p className="text-gray-600 mb-4">Access your complete medical history.</p>
-                            <span className="text-sm font-medium text-gray-400">Coming Soon</span>
-                        </div>
-
-                        {/* Pharmacy Management - Medical Staff Only */}
-                        {(isAdmin || hasRole('Doctors') || hasRole('Nurses') || hasRole('Pharmacists')) && (
-                            <div
-                                onClick={() => navigate('/dqr-health/pharmacy/inventory')}
-                                className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-teal-600 group"
-                            >
-                                <div className="bg-teal-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                    <FaPills className="text-2xl text-teal-600" />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Pharmacy & Stock</h3>
-                                <p className="text-gray-600 mb-4">
-                                    Manage inventory, dispense medications, and access AI drug info.
-                                </p>
-                                <span className="text-teal-600 font-semibold group-hover:underline">Open Pharmacy →</span>
-                            </div>
-                        )}
-                    </div>
+                    <CompleteProfileForm onSuccess={handleProfileCreated} />
                 </div>
             </div>
-        </MainLayout>
+        );
+    }
+
+    // 2. Main Dashboard (Profile Exists)
+    return (
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <header className="bg-white shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                    <div className="flex items-center space-x-3">
+                        <div className="bg-primary-100 p-2 rounded-lg">
+                            <Activity className="h-6 w-6 text-primary-600" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-gray-900">Patient Portal</h1>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                                <User className="h-5 w-5 text-gray-600" />
+                            </div>
+                            <div className="text-right hidden sm:block">
+                                <span className="block text-sm font-medium text-gray-700">{profile.given_name} {profile.family_name}</span>
+                                <span className="block text-xs text-gray-500">MRN: {profile.mrn}</span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center space-x-1 text-gray-500 hover:text-red-600 transition-colors"
+                        >
+                            <LogOut className="h-5 w-5" />
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            {/* Main Content */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Welcome Section */}
+                <div className="mb-8">
+                    <h2 className="text-3xl font-bold text-gray-900">Welcome Back, {profile.given_name}</h2>
+                    <p className="mt-2 text-gray-600">Manage your health journey with DQR Health.</p>
+                </div>
+
+                {/* Quick Actions Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Appointments Card */}
+                    <div
+                        onClick={() => navigate('/dqr-health/schedule')}
+                        className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group"
+                    >
+                        <div className="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                            <Calendar className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2"> Appointments</h3>
+                        <p className="text-gray-500 text-sm">Schedule a new visit or manage upcoming consultations.</p>
+                    </div>
+
+                    {/* Prescriptions Card */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="bg-green-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors">
+                            <Pill className="h-6 w-6 text-green-600" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">myPharmacy</h3>
+                        <p className="text-gray-500 text-sm">View active prescriptions and request refills.</p>
+                    </div>
+
+                    {/* Medical Records Card */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer group">
+                        <div className="bg-purple-50 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
+                            <FileText className="h-6 w-6 text-purple-600" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">Medical Records</h3>
+                        <p className="text-gray-500 text-sm">Access your history, lab results, and documents.</p>
+                    </div>
+                </div>
+
+                {/* Status Section */}
+                <div className="mt-12">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">Upcoming Schedule</h3>
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-50 rounded-full mb-4">
+                            <Calendar className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <h4 className="text-lg font-medium text-gray-900">No Upcoming Appointments</h4>
+                        <p className="mt-2 text-gray-500 max-w-sm mx-auto">
+                            You don't have any appointments scheduled at the moment.
+                        </p>
+                        <button
+                            onClick={() => navigate('/dqr-health/schedule')}
+                            className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        >
+                            Book Appointment
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
     );
-}
+};
