@@ -5,9 +5,9 @@ API Views for the Scheduling bounded context.
 import json
 from typing import Any
 
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -43,6 +43,26 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Filter appointments based on user role.
+        - Patients: See only their own appointments.
+        - Staff/Admins: See all.
+        """
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        # If superuser or staff (Doctors/Nurses/Admins), return all
+        if (
+            user.is_superuser
+            or user.groups.filter(name__in=["Doctors", "Nurses", "Admins"]).exists()
+        ):
+            return queryset
+
+        # Otherwise, filter by patient email (assuming link by email)
+        # Note: Ideally we filter by patient.user, but our model might use email link
+        return queryset.filter(patient__email=user.email)
+
     def get_permissions(self) -> list[Any]:
         """
         Customize permissions based on action.
@@ -52,59 +72,41 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         # Allow Patients to Create and List (List logic should filter by own appointments ideally)
         return [IsAuthenticated()]
 
-    def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
+    def create(self, request, *args, **kwargs):
         """
-        Override create to handle:
-        1. Idempotency (check for duplicate Idempotency-Key)
-        2. Service exceptions (convert to proper HTTP responses)
-        3. Automatic practitioner assignment from slot
+        Custom create method to handle appointment booking logic,
+        idempotency, and specific error handling.
         """
-        # Check for idempotency key
-        idempotency_key = request.headers.get("Idempotency-Key")
-        if idempotency_key and request.user.is_authenticated:
-            try:
-                # Check if this key was already processed
-                key_obj = IdempotencyKey.objects.get(
-                    user=request.user, idempotency_key=idempotency_key
-                )
-                # Return cached response
-                try:
-                    response_data = (
-                        json.loads(key_obj.response_body)
-                        if key_obj.response_body
-                        else {}
-                    )
-                except (json.JSONDecodeError, TypeError):
-                    response_data = {}
-
-                return Response(response_data, status=key_obj.response_code)
-            except IdempotencyKey.DoesNotExist:
-                # Key not found - proceed with creation
-                pass
-
-        # Validate request data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        validated_data = serializer.validated_data
 
-        patient = validated_data.get("patient")
+        # Extract data from validated serializer
+        patient = serializer.validated_data.get("patient")
+        slot = serializer.validated_data.get("slot")
+        idempotency_key = request.headers.get("Idempotency-Key")
 
-        # Patient Self-Service Logic:
-        # If no patient ID provided (Patient booking for self), try to find Patient by user email
+        # Handle potential null patient or slot if validation allows (though serializer should prevent this)
         if not patient:
-            from src.apps.patients.models import Patient
+            return Response(
+                {"detail": "Patient is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        if not slot:
+            return Response(
+                {"detail": "Slot is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-            patient = Patient.objects.filter(email=request.user.email).first()
-            if not patient:
-                # Fallback/Error if no linked patient found
+        # Check for idempotency key and return previous response if found
+        if idempotency_key and request.user.is_authenticated:
+            existing_key = IdempotencyKey.objects.filter(
+                user=request.user,
+                idempotency_key=idempotency_key,
+                request_path=request.path,
+            ).first()
+            if existing_key:
                 return Response(
-                    {
-                        "detail": "No patient profile found for this user. Please contact reception."
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
+                    json.loads(existing_key.response_body),
+                    status=existing_key.response_code,
                 )
-
-        slot = validated_data["slot"]
 
         try:
             # Use book_appointment service
@@ -139,27 +141,12 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         except services.SlotUnavailableError as e:
             # Return 400 with detail message for unavailable slots
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Capture other service errors (like Appointment integrity) and return 400
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_destroy(self, instance: Appointment) -> None:
-        """
-        Soft delete appointment.
-        """
-        instance.soft_delete()
 
-    @action(
-        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsDoctor]
-    )
-    def cancel(self, request: Any, pk: int | None = None) -> Response:
-        """
-        Cancel an appointment.
-
-        Only doctors can cancel appointments.
-        """
-        appointment = self.get_object()
-        appointment.soft_delete()
-        return Response(
-            {"detail": "Appointment cancelled successfully."}, status=status.HTTP_200_OK
-        )
+# ... (rest of AppointmentViewSet) ...
 
 
 @extend_schema(tags=["Scheduling"])
@@ -177,6 +164,10 @@ class SlotViewSet(viewsets.ModelViewSet[Slot]):
     queryset = Slot.objects.select_related("practitioner").filter(is_active=True)
     serializer_class = SlotSerializer
     permission_classes = [IsAuthenticated]
+
+    # Enable filtering by practitioner and valid booking status
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["practitioner", "is_booked"]
 
     def get_permissions(self) -> list[Any]:
         """

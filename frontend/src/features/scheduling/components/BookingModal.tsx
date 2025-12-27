@@ -54,11 +54,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
         );
     }
 
-    // Group slots by date
+    // Group slots by date, filtering out past dates
+    // Group slots by date, filtering out past dates
     const slotsByDate = slots.reduce((acc, slot) => {
-        const date = format(new Date(slot.start_time), 'yyyy-MM-dd');
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(slot);
+        const slotDate = new Date(slot.start_time);
+        const today = new Date();
+
+        // Fix: Use local date strings for comparison to avoid timezone shifts
+        // (e.g. 8 PM today should not be filtered out if UTC thinks it's tomorrow,
+        // and yesterday should definitely be gone).
+        const slotDateStr = slotDate.toLocaleDateString('en-CA'); // YYYY-MM-DD local
+        const todayStr = today.toLocaleDateString('en-CA');       // YYYY-MM-DD local
+
+        // If simple string comparison (lexicographical) shows it's before today
+        if (slotDateStr < todayStr) return acc;
+
+        if (!acc[slotDateStr]) acc[slotDateStr] = [];
+        acc[slotDateStr].push(slot);
         return acc;
     }, {} as Record<string, Slot[]>);
 

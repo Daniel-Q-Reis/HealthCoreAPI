@@ -175,6 +175,19 @@ class Command(BaseCommand):
         admin_user.save()
         admin_user.groups.add(Group.objects.get(name="Admins"))
 
+        # === Admin Test User (Explicit request) ===
+        admin_test, _ = User.objects.get_or_create(
+            username="admin_test",
+            defaults={
+                "email": "admin_test@healthcore.local",
+                "is_staff": True,
+                "is_superuser": True,
+            },
+        )
+        admin_test.set_password("admin123")
+        admin_test.save()
+        admin_test.groups.add(Group.objects.get(name="Admins"))
+
         # === Doctors ===
         for i in range(5):
             username = f"doctor_{i + 1}"
@@ -452,8 +465,8 @@ class Command(BaseCommand):
                     # Varied start times: 8 AM to 5 PM
                     start_hour = 8
 
-                    # 16 slots per day (8 hours * 2 slots/hr)
-                    for j in range(16):
+                    # 18 slots per day (9 hours * 2 slots/hr) to cover 8am - 5pm
+                    for j in range(18):
                         start_time = datetime.datetime.combine(
                             day,
                             datetime.time(start_hour + (j // 2), (j % 2) * 30),
