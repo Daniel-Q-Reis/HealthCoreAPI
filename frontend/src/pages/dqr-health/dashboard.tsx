@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { patientApi } from '@/features/patients/api';
 import { schedulingApi } from '@/features/scheduling/api';
 import { CompleteProfileForm } from '@/features/patients/components/CompleteProfileForm';
+import { AppointmentListModal } from '@/features/scheduling/components/AppointmentListModal';
 import { Patient } from '@/features/patients/types';
 import { Appointment } from '@/features/scheduling/types';
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -23,6 +24,7 @@ export const DashboardPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [profile, setProfile] = useState<Patient | null>(null);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [isAppointmentsModalOpen, setIsAppointmentsModalOpen] = useState(false);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -123,27 +125,35 @@ export const DashboardPage = () => {
                         <>
                             {/* Stats Row */}
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                                    <div className="text-gray-500 text-sm mb-1">
+                                <div
+                                    onClick={() => setIsAppointmentsModalOpen(true)}
+                                    className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition cursor-pointer group"
+                                >
+                                    <div className="text-gray-500 text-sm mb-1 group-hover:text-[#2774AE] transition-colors">
                                         {isMedicalStaff ? 'My Schedule' : 'Upcoming Appointments'}
                                     </div>
                                     <div className="text-3xl font-bold text-[#003B5C]">
-                                        {appointments.filter(apt => new Date(apt.slot.start_time) > new Date()).length}
+                                        {appointments.filter(apt => {
+                                            const slot = apt.slot as any;
+                                            return new Date(slot.start_time || slot) > new Date();
+                                        }).length}
                                     </div>
                                     <div className="text-xs text-green-600 mt-2 font-medium">
                                         {(() => {
                                             const upcoming = appointments
-                                                .filter(apt => new Date(apt.slot.start_time) > new Date())
-                                                .sort((a, b) => new Date(a.slot.start_time).getTime() - new Date(b.slot.start_time).getTime());
+                                                .filter(apt => {
+                                                    const slot = apt.slot as any;
+                                                    return new Date(slot.start_time || slot) > new Date();
+                                                })
+                                                .sort((a, b) => {
+                                                    const slotA = a.slot as any;
+                                                    const slotB = b.slot as any;
+                                                    return new Date(slotA.start_time || slotA).getTime() - new Date(slotB.start_time || slotB).getTime();
+                                                });
 
-                                            // Ensure we access the nested slot start_time safely.
-                                            // The types interface says 'slot' can be number | Slot.
-                                            // Backend usually expands it, but we should be safe.
                                             const next = upcoming[0];
                                             if (!next) return 'No events scheduled';
 
-                                            // Assuming 'slot' is object. If it's ID, we can't show date here without looking it up.
-                                            // For this view, we assume expanded serializer.
                                             const slotObj = next.slot as any;
                                             return `Next: ${new Date(slotObj.start_time || slotObj).toLocaleDateString()}`;
                                         })()}
@@ -248,6 +258,13 @@ export const DashboardPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modal Integration */}
+            <AppointmentListModal
+                isOpen={isAppointmentsModalOpen}
+                onClose={() => setIsAppointmentsModalOpen(false)}
+                appointments={appointments}
+            />
         </MainLayout>
     );
 };
