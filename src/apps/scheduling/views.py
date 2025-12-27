@@ -86,10 +86,22 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         idempotency_key = request.headers.get("Idempotency-Key")
 
         # Handle potential null patient or slot if validation allows (though serializer should prevent this)
+        # Handle potential null patient or slot if validation allows (though serializer should prevent this)
         if not patient:
-            return Response(
-                {"detail": "Patient is required."}, status=status.HTTP_400_BAD_REQUEST
-            )
+            # Patient Self-Service Logic:
+            # If no patient ID provided (Patient booking for self), try to find Patient by user email
+            from src.apps.patients.models import Patient
+
+            patient = Patient.objects.filter(email=request.user.email).first()
+
+            if not patient:
+                return Response(
+                    {
+                        "detail": "No patient profile found for this user. Please contact reception."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         if not slot:
             return Response(
                 {"detail": "Slot is required."}, status=status.HTTP_400_BAD_REQUEST
