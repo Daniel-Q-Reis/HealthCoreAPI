@@ -2,6 +2,8 @@
 Domain models for the Patients bounded context.
 """
 
+from typing import Any
+
 from django.db import models
 
 from src.apps.core.models import ActivatableModel
@@ -20,7 +22,7 @@ class Patient(ActivatableModel):
 
     # ... fields ...
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: Any, **kwargs: Any) -> None:
         if not self.mrn:
             # Simple auto-generation: P + distinct timestamp part + random suffix
             # Format: P-TIMESTAMP-RAND (e.g., P-171563-123)

@@ -3,7 +3,7 @@ Service layer for the Patients bounded context.
 Encapsulates business logic and orchestrates operations.
 """
 
-from typing import Any
+from typing import Any, Optional
 
 from . import repositories
 from .models import Patient
@@ -14,7 +14,7 @@ def register_new_patient(
     family_name: str,
     birth_date: str,
     sex: str,
-    mrn: str = None,
+    mrn: Optional[str] = None,
     **kwargs: Any,
 ) -> Patient:
     """

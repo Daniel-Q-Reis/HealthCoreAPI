@@ -3,8 +3,10 @@ API Views for the Scheduling bounded context.
 """
 
 import json
-from typing import Any
+from typing import Any, cast
 
+from django.contrib.auth.models import AbstractBaseUser
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
@@ -43,7 +45,7 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
     serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Appointment]:
         """
         Filter appointments based on user role.
         - Patients: See only their own appointments.
@@ -60,8 +62,9 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
             return queryset
 
         # Otherwise, filter by patient email (assuming link by email)
-        # Note: Ideally we filter by patient.user, but our model might use email link
-        return queryset.filter(patient__email=user.email)
+        # Cast to get email attribute (authenticated users only reach here)
+        authenticated_user = cast(AbstractBaseUser, user)
+        return queryset.filter(patient__email=getattr(authenticated_user, "email", ""))
 
     def get_permissions(self) -> list[Any]:
         """
@@ -72,7 +75,7 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         # Allow Patients to Create and List (List logic should filter by own appointments ideally)
         return [IsAuthenticated()]
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         """
         Custom create method to handle appointment booking logic,
         idempotency, and specific error handling.

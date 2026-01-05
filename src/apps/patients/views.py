@@ -2,8 +2,9 @@
 API Views for the Patients bounded context.
 """
 
-from typing import Any
+from typing import Any, cast
 
+from django.contrib.auth.models import AbstractBaseUser
 from django.db.models import QuerySet
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, status, viewsets
@@ -55,7 +56,11 @@ class PatientViewSet(viewsets.ModelViewSet[Patient]):
             return Patient.objects.active()
 
         # Regular User -> Own Profile Only
-        return Patient.objects.active().filter(email=user.email)
+        # Cast to get email attribute (authenticated users only reach here)
+        authenticated_user = cast(AbstractBaseUser, user)
+        return Patient.objects.active().filter(
+            email=getattr(authenticated_user, "email", "")
+        )
 
     def perform_create(self, serializer: Any) -> None:
         """
@@ -71,12 +76,14 @@ class PatientViewSet(viewsets.ModelViewSet[Patient]):
             or user.groups.filter(name__in=["Doctors", "Nurses", "Admins"]).exists()
         )
         if not is_staff:
-            data["email"] = user.email
+            # Cast to get email attribute
+            authenticated_user = cast(AbstractBaseUser, user)
+            data["email"] = getattr(authenticated_user, "email", "")
 
         services.register_new_patient(**data)
 
     @action(detail=False, methods=["get", "post"], url_path="me")
-    def me(self, request):
+    def me(self, request: Any) -> Response:
         """
         Endpoint for the current user to get or create their patient profile.
         GET: Returns current profile if exists.
@@ -114,3 +121,8 @@ class PatientViewSet(viewsets.ModelViewSet[Patient]):
             return Response(
                 self.get_serializer(new_patient).data, status=status.HTTP_201_CREATED
             )
+
+        # Fallback for unsupported methods (should not reach here due to decorator)
+        return Response(
+            {"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
