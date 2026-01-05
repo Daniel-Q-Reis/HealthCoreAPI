@@ -18,7 +18,10 @@ class SlotSerializer(serializers.ModelSerializer[Slot]):
 
 
 class AppointmentSerializer(serializers.ModelSerializer[Appointment]):
-    patient = serializers.PrimaryKeyRelatedField(queryset=Patient.objects.all())
+    # Patient is optional in input (inferred from user if missing), required in model
+    patient = serializers.PrimaryKeyRelatedField(
+        queryset=Patient.objects.all(), required=False, allow_null=True
+    )
     slot = serializers.PrimaryKeyRelatedField(queryset=Slot.objects.all())
 
     class Meta:

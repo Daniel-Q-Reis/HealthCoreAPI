@@ -69,6 +69,16 @@ We will implement a **Full Stack Architecture** by adding a **React + TypeScript
 
 ## Consequences
 
+### Folder Structure Decision
+
+> **Note (2025-01-04):** We evaluated moving the backend code to a `backend/` folder to create symmetry with `frontend/`. This was **rejected** due to significant refactoring impact:
+> - Dockerfile and docker-compose.yml path changes
+> - CI/CD workflow modifications
+> - Python import path adjustments
+> - DevContainer and scripts updates
+>
+> The current structure (backend at root, frontend in `/frontend`) is maintainable and well-documented. This decision prioritizes stability over cosmetic organization.
+
 ### Positive
 
 ✅ **Portfolio Impact**

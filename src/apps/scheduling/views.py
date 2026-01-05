@@ -3,16 +3,18 @@ API Views for the Scheduling bounded context.
 """
 
 import json
-from typing import Any
+from typing import Any, cast
 
+from django.contrib.auth.models import AbstractBaseUser
+from django.db.models import QuerySet
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from src.apps.core.models import IdempotencyKey
-from src.apps.core.permissions import IsDoctor, IsMedicalStaff
+from src.apps.core.permissions import IsDoctor
 
 from . import services
 from .models import Appointment, Slot
@@ -41,56 +43,85 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         "patient", "practitioner", "slot", "slot__practitioner"
     ).filter(is_active=True)
     serializer_class = AppointmentSerializer
-    permission_classes = [IsAuthenticated, IsMedicalStaff]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self) -> QuerySet[Appointment]:
+        """
+        Filter appointments based on user role.
+        - Patients: See only their own appointments.
+        - Staff/Admins: See all.
+        """
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        # If superuser or staff (Doctors/Nurses/Admins), return all
+        if (
+            user.is_superuser
+            or user.groups.filter(name__in=["Doctors", "Nurses", "Admins"]).exists()
+        ):
+            return queryset
+
+        # Otherwise, filter by patient email (assuming link by email)
+        # Cast to get email attribute (authenticated users only reach here)
+        authenticated_user = cast(AbstractBaseUser, user)
+        return queryset.filter(patient__email=getattr(authenticated_user, "email", ""))
 
     def get_permissions(self) -> list[Any]:
         """
         Customize permissions based on action.
-
-        - Create/Update/Delete: Doctors only
-        - List/Retrieve: Medical staff (Doctors + Nurses)
         """
-        if self.action in ["create", "update", "partial_update", "destroy"]:
+        if self.action in ["update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsDoctor()]
-        return [IsAuthenticated(), IsMedicalStaff()]
+        # Allow Patients to Create and List (List logic should filter by own appointments ideally)
+        return [IsAuthenticated()]
 
     def create(self, request: Any, *args: Any, **kwargs: Any) -> Response:
         """
-        Override create to handle:
-        1. Idempotency (check for duplicate Idempotency-Key)
-        2. Service exceptions (convert to proper HTTP responses)
-        3. Automatic practitioner assignment from slot
+        Custom create method to handle appointment booking logic,
+        idempotency, and specific error handling.
         """
-        # Check for idempotency key
-        idempotency_key = request.headers.get("Idempotency-Key")
-        if idempotency_key and request.user.is_authenticated:
-            try:
-                # Check if this key was already processed
-                key_obj = IdempotencyKey.objects.get(
-                    user=request.user, idempotency_key=idempotency_key
-                )
-                # Return cached response
-                try:
-                    response_data = (
-                        json.loads(key_obj.response_body)
-                        if key_obj.response_body
-                        else {}
-                    )
-                except (json.JSONDecodeError, TypeError):
-                    response_data = {}
-
-                return Response(response_data, status=key_obj.response_code)
-            except IdempotencyKey.DoesNotExist:
-                # Key not found - proceed with creation
-                pass
-
-        # Validate request data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        validated_data = serializer.validated_data
 
-        patient = validated_data["patient"]
-        slot = validated_data["slot"]
+        # Extract data from validated serializer
+        patient = serializer.validated_data.get("patient")
+        slot = serializer.validated_data.get("slot")
+        idempotency_key = request.headers.get("Idempotency-Key")
+
+        # Handle potential null patient or slot if validation allows (though serializer should prevent this)
+        # Handle potential null patient or slot if validation allows (though serializer should prevent this)
+        if not patient:
+            # Patient Self-Service Logic:
+            # If no patient ID provided (Patient booking for self), try to find Patient by user email
+            from src.apps.patients.models import Patient
+
+            patient = Patient.objects.filter(email=request.user.email).first()
+
+            if not patient:
+                return Response(
+                    {
+                        "detail": "No patient profile found for this user. Please contact reception."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if not slot:
+            return Response(
+                {"detail": "Slot is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Check for idempotency key and return previous response if found
+        if idempotency_key and request.user.is_authenticated:
+            existing_key = IdempotencyKey.objects.filter(
+                user=request.user,
+                idempotency_key=idempotency_key,
+                request_path=request.path,
+            ).first()
+            if existing_key:
+                return Response(
+                    json.loads(existing_key.response_body),
+                    status=existing_key.response_code,
+                )
 
         try:
             # Use book_appointment service
@@ -125,27 +156,12 @@ class AppointmentViewSet(viewsets.ModelViewSet[Appointment]):
         except services.SlotUnavailableError as e:
             # Return 400 with detail message for unavailable slots
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Capture other service errors (like Appointment integrity) and return 400
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_destroy(self, instance: Appointment) -> None:
-        """
-        Soft delete appointment.
-        """
-        instance.soft_delete()
 
-    @action(
-        detail=True, methods=["post"], permission_classes=[IsAuthenticated, IsDoctor]
-    )
-    def cancel(self, request: Any, pk: int | None = None) -> Response:
-        """
-        Cancel an appointment.
-
-        Only doctors can cancel appointments.
-        """
-        appointment = self.get_object()
-        appointment.soft_delete()
-        return Response(
-            {"detail": "Appointment cancelled successfully."}, status=status.HTTP_200_OK
-        )
+# ... (rest of AppointmentViewSet) ...
 
 
 @extend_schema(tags=["Scheduling"])
@@ -162,13 +178,17 @@ class SlotViewSet(viewsets.ModelViewSet[Slot]):
     # ORIGINAL LOGIC PRESERVED: filter(is_active=True) is maintained.
     queryset = Slot.objects.select_related("practitioner").filter(is_active=True)
     serializer_class = SlotSerializer
-    permission_classes = [IsAuthenticated, IsMedicalStaff]
+    permission_classes = [IsAuthenticated]
+
+    # Enable filtering by practitioner and valid booking status
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["practitioner", "is_booked"]
 
     def get_permissions(self) -> list[Any]:
         """
         Doctors only for create/update/delete.
-        Medical staff for read operations.
+        All authenticated users for read operations (Patient Portal).
         """
         if self.action in ["create", "update", "partial_update", "destroy"]:
             return [IsAuthenticated(), IsDoctor()]
-        return [IsAuthenticated(), IsMedicalStaff()]
+        return [IsAuthenticated()]

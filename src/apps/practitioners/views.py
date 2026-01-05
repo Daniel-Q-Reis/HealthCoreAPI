@@ -7,8 +7,6 @@ from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import BaseSerializer
 
-from src.apps.core.permissions import IsAdmin, IsMedicalStaff
-
 from . import services
 from .models import Practitioner
 from .serializers import PractitionerSerializer
@@ -27,12 +25,9 @@ class PractitionerViewSet(viewsets.ModelViewSet[Practitioner]):
     queryset = Practitioner.objects.active()
     serializer_class = PractitionerSerializer
     lookup_field = "id"
-    permission_classes = [
-        IsAuthenticated,
-        IsMedicalStaff | IsAdmin,
-    ]  # Allow staff/admin to view practitioners
+    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
-    search_fields = ["given_name", "family_name", "specialization", "license_number"]
+    search_fields = ["given_name", "family_name", "specialty", "license_number", "role"]
 
     def perform_create(self, serializer: BaseSerializer[Practitioner]) -> None:
         """
