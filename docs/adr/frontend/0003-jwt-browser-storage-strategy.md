@@ -119,13 +119,13 @@ const TOKEN_KEYS = {
 function encrypt(text: string): string {
     const key = 'HealthCore2025'; // Production: use env variable
     let encrypted = '';
-    
+
     for (let i = 0; i < text.length; i++) {
         encrypted += String.fromCharCode(
             text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
         );
     }
-    
+
     return btoa(encrypted); // Base64 encode
 }
 ```
@@ -150,7 +150,7 @@ function encrypt(text: string): string {
 // Access token with 15-minute expiry
 setAccessToken(token: string): void {
     localStorage.setItem(TOKEN_KEYS.ACCESS, encrypt(token));
-    
+
     const expiry = Date.now() + 15 * 60 * 1000; // 15 minutes
     localStorage.setItem(`${TOKEN_KEYS.ACCESS}_expiry`, expiry.toString());
 }
@@ -158,7 +158,7 @@ setAccessToken(token: string): void {
 // Refresh token with 7-day expiry
 setRefreshToken(token: string): void {
     localStorage.setItem(TOKEN_KEYS.REFRESH, encrypt(token));
-    
+
     const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
     localStorage.setItem(`${TOKEN_KEYS.REFRESH}_expiry`, expiry.toString());
 }
@@ -213,7 +213,7 @@ if (inactiveTime > THIRTY_MINUTES) {
 
 1. **Content Security Policy (CSP):**
    ```html
-   <meta http-equiv="Content-Security-Policy" 
+   <meta http-equiv="Content-Security-Policy"
          content="default-src 'self'; script-src 'self'">
    ```
 

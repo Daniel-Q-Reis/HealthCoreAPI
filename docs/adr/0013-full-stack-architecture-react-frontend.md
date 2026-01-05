@@ -76,7 +76,7 @@ We will implement a **Full Stack Architecture** by adding a **React + TypeScript
 > - CI/CD workflow modifications
 > - Python import path adjustments
 > - DevContainer and scripts updates
-> 
+>
 > The current structure (backend at root, frontend in `/frontend`) is maintainable and well-documented. This decision prioritizes stability over cosmetic organization.
 
 ### Positive

@@ -494,5 +494,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and guidelines.
 
 ---
 
-**Author**: Daniel de Queiroz Reis  
+**Author**: Daniel de Queiroz Reis
 📧 [danielqreis@gmail.com](mailto:danielqreis@gmail.com) | 💼 [LinkedIn](https://www.linkedin.com/in/danielqreis) | 🐙 [GitHub](https://github.com/Daniel-Q-Reis)
