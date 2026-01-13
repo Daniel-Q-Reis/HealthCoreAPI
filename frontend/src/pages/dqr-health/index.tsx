@@ -20,7 +20,7 @@ import {
 import { ProviderSearchPage } from '@/features/scheduling/pages/ProviderSearchPage';
 import { AuthProvider } from '@/features/auth/context/AuthProvider';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
-import { PatientsVisitorsPage, HealthResourcesPage, UnitsAndFloorsPage } from '@/features/medical-center';
+import { PatientsVisitorsPage, HealthResourcesPage, UnitsAndFloorsPage, DevelopersPage } from '@/features/medical-center';
 
 export function DQRHealthRoutes() {
     return (
@@ -99,6 +99,7 @@ export function DQRHealthRoutes() {
                 <Route path="/patients-visitors" element={<PatientsVisitorsPage />} />
                 <Route path="/health-resources" element={<HealthResourcesPage />} />
                 <Route path="/units" element={<UnitsAndFloorsPage />} />
+                <Route path="/developers" element={<DevelopersPage />} />
             </Routes>
         </AuthProvider>
     );

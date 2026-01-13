@@ -65,6 +65,7 @@ export const HomePage = () => {
                             <Link to="/dqr-health/patients-visitors" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</Link>
                             <Link to="/dqr-health/health-resources" className="py-4 hover:text-[#0066CC]">Health Resources</Link>
                             <Link to="/dqr-health/units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</Link>
+                            <Link to="/dqr-health/developers" className="py-4 hover:text-[#0066CC]">For Developers</Link>
                         </div>
                     </div>
                 </div>
