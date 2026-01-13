@@ -110,7 +110,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                                 />
                             </div>
                             <div className="flex gap-4 items-center">
-                                <span className="hidden md:inline">📞 +55 (11) 9999-9999</span>
+                                <span className="hidden md:inline">📞 +55 (35) 99190-2471</span>
                                 <button className="hover:text-gray-200 hidden md:inline">🌐 Translate</button>
                                 <button className="hover:text-gray-200">🔍 Search</button>
                             </div>
