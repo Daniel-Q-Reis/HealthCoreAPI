@@ -1,7 +1,18 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { HeaderDropdown } from '@/shared/components/HeaderDropdown';
+import { SecurityModal } from '@/shared/components/SecurityModal';
 
 export const HomePage = () => {
+    const [modalConfig, setModalConfig] = useState<{ isOpen: boolean, title: string, url: string }>(
+        { isOpen: false, title: '', url: '' }
+    );
+
+    const openModal = (title: string, url: string) => {
+        setModalConfig({ isOpen: true, title, url });
+    };
+
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
@@ -12,8 +23,40 @@ export const HomePage = () => {
                         <div className="flex gap-6">
                             <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
                             <a href="#" className="hover:text-gray-200">myDQRHealth</a>
-                            <a href="#" className="hover:text-gray-200">News & Insights</a>
-                            <a href="#" className="hover:text-gray-200">Contact Us</a>
+                            <HeaderDropdown
+                                title="News & Insights"
+                                items={[
+                                    {
+                                        label: "Latest Health News (BBC)",
+                                        href: "https://www.bbc.com/news/health",
+                                        target: "_blank",
+                                        rel: "noopener noreferrer"
+                                    },
+                                    {
+                                        label: "HIPAA Compliance (Video)",
+                                        onClick: () => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')
+                                    },
+                                    {
+                                        label: "Security & RBAC (Video)",
+                                        onClick: () => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')
+                                    }
+                                ]}
+                            />
+                            <HeaderDropdown
+                                title="Contact Us"
+                                items={[
+                                    {
+                                        label: "📧 Mail Us",
+                                        href: "mailto:danielqreis@gmail.com"
+                                    },
+                                    {
+                                        label: "📱 WhatsApp",
+                                        href: "https://wa.me/5535991902471",
+                                        target: "_blank",
+                                        rel: "noopener noreferrer"
+                                    }
+                                ]}
+                            />
                         </div>
                         <div className="flex gap-4 items-center">
                             <span>📞 +55 (11) 9999-9999</span>
@@ -30,10 +73,10 @@ export const HomePage = () => {
                         </div>
                         <div className="flex gap-8">
                             <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Find Care</Link>
-                            <a href="#" className="hover:text-gray-200">Patient Resources</a>
-                            <a href="#" className="hover:text-gray-200">Treatment Options</a>
-                            <a href="#" className="hover:text-gray-200">Locations</a>
-                            <a href="#" className="hover:text-gray-200">Discover</a>
+                            <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Patient Resources</Link>
+                            <Link to="/dqr-health/results" className="hover:text-gray-200">Treatment Options</Link>
+                            <Link to="/dqr-health/schedule" className="hover:text-gray-200">Locations</Link>
+                            <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Discover</Link>
                         </div>
                         <Link
                             to="/dqr-health/dashboard"
@@ -268,6 +311,13 @@ export const HomePage = () => {
                     </div>
                 </div>
             </footer>
-        </div>
+
+            <SecurityModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                title={modalConfig.title}
+                videoUrl={modalConfig.url}
+            />
+        </div >
     );
 };

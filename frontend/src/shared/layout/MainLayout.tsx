@@ -9,6 +9,7 @@ interface MainLayoutProps {
 }
 
 import { SecurityModal } from '@/shared/components/SecurityModal';
+import { HeaderDropdown } from '@/shared/components/HeaderDropdown';
 
 export function MainLayout({ children }: MainLayoutProps) {
     const { user, logout, isAuthenticated } = useAuth();
@@ -71,8 +72,42 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <div className="flex gap-6">
                                 <a href="#" className="hover:text-gray-200 hidden md:block">Explore DQR Health</a>
                                 <Link to="/dqr-health" className="hover:text-gray-200 font-semibold">myDQRHealth</Link>
-                                <a href="#" className="hover:text-gray-200 hidden md:block">News & Insights</a>
-                                <a href="#" className="hover:text-gray-200 hidden md:block">Contact Us</a>
+                                <HeaderDropdown
+                                    title="News & Insights"
+                                    className="hidden md:block"
+                                    items={[
+                                        {
+                                            label: "Latest Health News (BBC)",
+                                            href: "https://www.bbc.com/news/health",
+                                            target: "_blank",
+                                            rel: "noopener noreferrer"
+                                        },
+                                        {
+                                            label: "HIPAA Compliance (Video)",
+                                            onClick: () => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')
+                                        },
+                                        {
+                                            label: "Security & RBAC (Video)",
+                                            onClick: () => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')
+                                        }
+                                    ]}
+                                />
+                                <HeaderDropdown
+                                    title="Contact Us"
+                                    className="hidden md:block"
+                                    items={[
+                                        {
+                                            label: "📧 Mail Us",
+                                            href: "mailto:danielqreis@gmail.com"
+                                        },
+                                        {
+                                            label: "📱 WhatsApp",
+                                            href: "https://wa.me/5535991902471",
+                                            target: "_blank",
+                                            rel: "noopener noreferrer"
+                                        }
+                                    ]}
+                                />
                             </div>
                             <div className="flex gap-4 items-center">
                                 <span className="hidden md:inline">📞 +55 (11) 9999-9999</span>
@@ -107,9 +142,9 @@ export function MainLayout({ children }: MainLayoutProps) {
                                     </Link>
                                 )}
 
-                                <a href="#" className="hover:text-[#0066CC] transition">Patient Resources</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Treatment Options</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Locations</a>
+                                <Link to="/dqr-health/dashboard" className="hover:text-[#0066CC] transition">Patient Resources</Link>
+                                <Link to="/dqr-health/results" className="hover:text-[#0066CC] transition">Treatment Options</Link>
+                                <Link to="/dqr-health/schedule" className="hover:text-[#0066CC] transition">Locations</Link>
                             </div>
 
                             <div className="flex gap-3 items-center">
