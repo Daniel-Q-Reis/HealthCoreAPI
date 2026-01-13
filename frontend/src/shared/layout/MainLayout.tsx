@@ -8,12 +8,21 @@ interface MainLayoutProps {
     children: ReactNode;
 }
 
+import { SecurityModal } from '@/shared/components/SecurityModal';
+
 export function MainLayout({ children }: MainLayoutProps) {
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{ isOpen: boolean, title: string, url: string }>(
+        { isOpen: false, title: '', url: '' }
+    );
+
+    const openModal = (title: string, url: string) => {
+        setModalConfig({ isOpen: true, title, url });
+    };
 
     const handleLogout = () => {
         logout();
@@ -173,7 +182,14 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <ul className="space-y-2 text-sm text-gray-300">
                                 <li><a href="#" className="hover:text-white">Patient Portal</a></li>
                                 <li><a href="#" className="hover:text-white">Medical Records</a></li>
-                                <li><a href="#" className="hover:text-white">Billing</a></li>
+                                <li>
+                                    <button
+                                        onClick={() => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')}
+                                        className="hover:text-blue-300 transition text-left"
+                                    >
+                                        HIPAA Compliance (Video)
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <div>
@@ -181,7 +197,14 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <ul className="space-y-2 text-sm text-gray-300">
                                 <li><a href="#" className="hover:text-white">About Us</a></li>
                                 <li><a href="#" className="hover:text-white">Careers</a></li>
-                                <li><a href="#" className="hover:text-white">Contact</a></li>
+                                <li>
+                                    <button
+                                        onClick={() => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')}
+                                        className="hover:text-blue-300 transition text-left"
+                                    >
+                                        Security & RBAC (Video)
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -191,6 +214,13 @@ export function MainLayout({ children }: MainLayoutProps) {
                     </div>
                 </div>
             </footer>
+
+            <SecurityModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                title={modalConfig.title}
+                videoUrl={modalConfig.url}
+            />
         </div>
     );
 }
