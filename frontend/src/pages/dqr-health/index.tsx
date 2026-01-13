@@ -3,6 +3,7 @@ import { HomePage } from './home';
 import { DashboardPage } from './dashboard';
 import { PatientsPage } from './patients';
 import { AppointmentsPage } from './appointments';
+import { ResultsPage } from './results';
 // import { PharmacyPage } from './pharmacy'; // Removed placeholder
 import { ExperiencePage } from './experience';
 import { PharmacyLayout } from '@/features/pharmacy/layouts/PharmacyLayout';
@@ -63,6 +64,14 @@ export function DQRHealthRoutes() {
                     element={
                         <ProtectedRoute>
                             <ProviderSearchPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/results"
+                    element={
+                        <ProtectedRoute>
+                            <ResultsPage />
                         </ProtectedRoute>
                     }
                 />

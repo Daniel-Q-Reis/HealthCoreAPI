@@ -204,13 +204,16 @@ export const DashboardPage = () => {
                                 </div>
 
                                 {/* Lab Results */}
-                                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
+                                <div
+                                    onClick={() => navigate('/dqr-health/results')}
+                                    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group"
+                                >
                                     <div className="bg-yellow-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-100 transition">
                                         <FaFlask className="text-2xl text-[#FFD100]" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Lab Results</h3>
                                     <p className="text-gray-600 mb-4">View your recent blood work.</p>
-                                    <span className="text-sm font-medium text-gray-400">Coming Soon</span>
+                                    <span className="text-[#2774AE] font-semibold group-hover:underline">View Reports →</span>
                                 </div>
 
                                 {/* Medical Records */}
