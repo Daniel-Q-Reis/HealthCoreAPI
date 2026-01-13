@@ -519,3 +519,13 @@ GEMINI_MODEL = config("GEMINI_MODEL", default="models/gemini-2.5-flash")
 # OpenAI (Alternative - Requires Paid Credits)
 OPENAI_API_KEY = config("OPENAI_API_KEY", default=None)
 OPENAI_MODEL = config("OPENAI_MODEL", default="gpt-3.5-turbo")
+
+# Azure OpenAI (Enterprise/Cloud)
+AZURE_OPENAI_API_KEY = config("AZURE_OPENAI_API_KEY", default=None)
+AZURE_OPENAI_ENDPOINT = config("AZURE_OPENAI_ENDPOINT", default="")
+AZURE_OPENAI_DEPLOYMENT_NAME = config(
+    "AZURE_OPENAI_DEPLOYMENT_NAME", default="gpt-4o-mini"
+)
+AZURE_OPENAI_API_VERSION = config(
+    "AZURE_OPENAI_API_VERSION", default="2024-02-15-preview"
+)

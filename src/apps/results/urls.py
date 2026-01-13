@@ -13,5 +13,10 @@ router = DefaultRouter()
 router.register(r"reports", DiagnosticReportViewSet, basename="report")
 
 urlpatterns = [
+    path(
+        "reports/analyze-diagnosis/",
+        DiagnosticReportViewSet.as_view({"post": "analyze_diagnosis"}),
+        name="analyze-diagnosis",
+    ),
     path("", include(router.urls)),
 ]

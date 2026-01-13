@@ -16,6 +16,13 @@ class Patient(ActivatableModel):
     """
 
     # Identifiers
+    user = models.OneToOneField(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="patient_profile",
+        null=True,
+        blank=True,
+    )
     mrn = models.CharField(
         max_length=255, unique=True, help_text="Medical Record Number", blank=True
     )
