@@ -62,9 +62,9 @@ export const HomePage = () => {
                     <div className="container mx-auto px-4">
                         <div className="flex gap-8 text-[#004B87] font-semibold">
                             <a href="#about" className="py-4 border-b-4 border-[#004B87]">About the Medical Center</a>
-                            <a href="#patients" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</a>
-                            <a href="#resources" className="py-4 hover:text-[#0066CC]">Health Resources</a>
-                            <a href="#units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</a>
+                            <Link to="/dqr-health/patients-visitors" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</Link>
+                            <Link to="/dqr-health/health-resources" className="py-4 hover:text-[#0066CC]">Health Resources</Link>
+                            <Link to="/dqr-health/units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</Link>
                         </div>
                     </div>
                 </div>
