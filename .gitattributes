@@ -1,24 +1,29 @@
+# Git attributes file to normalize line endings
 
-# Auto-detect text files and perform LF normalization
-* text=auto
-
-# Declare files that will always have CRLF line endings on checkout.
-*.sln text eol=crlf
-*.bat text eol=crlf
-*.cmd text eol=crlf
-*.ps1 text eol=crlf
-
-# Declare files that will always have LF line endings on checkout.
+# Force LF line endings for shell scripts (prevent CRLF issues in containers)
 *.sh text eol=lf
-*.ts text eol=lf
-*.tsx text eol=lf
-*.js text eol=lf
-*.json text eol=lf
-*.css text eol=lf
-*.scss text eol=lf
-*.html text eol=lf
-*.md text eol=lf
+
+# Standard text files
 *.py text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+
+# Docker files
 Dockerfile text eol=lf
-docker-compose.yml text eol=lf
-.env text eol=lf
+docker-compose*.yml text eol=lf
+.dockerignore text eol=lf
