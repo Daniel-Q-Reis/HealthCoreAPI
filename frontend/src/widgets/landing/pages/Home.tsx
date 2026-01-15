@@ -6,6 +6,7 @@ import { CostComparison } from '../components/CostComparison';
 import { Projects } from '../components/Projects';
 import { Footer } from '../components/Footer';
 
+
 export const Home = () => {
     return (
         <div className="min-h-screen bg-brand-dark text-slate-300">

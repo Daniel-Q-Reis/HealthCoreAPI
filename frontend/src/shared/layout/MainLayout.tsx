@@ -8,12 +8,22 @@ interface MainLayoutProps {
     children: ReactNode;
 }
 
+import { SecurityModal } from '@/shared/components/SecurityModal';
+import { HeaderDropdown } from '@/shared/components/HeaderDropdown';
+
 export function MainLayout({ children }: MainLayoutProps) {
     const { user, logout, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{ isOpen: boolean, title: string, url: string }>(
+        { isOpen: false, title: '', url: '' }
+    );
+
+    const openModal = (title: string, url: string) => {
+        setModalConfig({ isOpen: true, title, url });
+    };
 
     const handleLogout = () => {
         logout();
@@ -62,11 +72,45 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <div className="flex gap-6">
                                 <a href="#" className="hover:text-gray-200 hidden md:block">Explore DQR Health</a>
                                 <Link to="/dqr-health" className="hover:text-gray-200 font-semibold">myDQRHealth</Link>
-                                <a href="#" className="hover:text-gray-200 hidden md:block">News & Insights</a>
-                                <a href="#" className="hover:text-gray-200 hidden md:block">Contact Us</a>
+                                <HeaderDropdown
+                                    title="News & Insights"
+                                    className="hidden md:block"
+                                    items={[
+                                        {
+                                            label: "Latest Health News (BBC)",
+                                            href: "https://www.bbc.com/news/health",
+                                            target: "_blank",
+                                            rel: "noopener noreferrer"
+                                        },
+                                        {
+                                            label: "HIPAA Compliance (Video)",
+                                            onClick: () => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')
+                                        },
+                                        {
+                                            label: "Security & RBAC (Video)",
+                                            onClick: () => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')
+                                        }
+                                    ]}
+                                />
+                                <HeaderDropdown
+                                    title="Contact Us"
+                                    className="hidden md:block"
+                                    items={[
+                                        {
+                                            label: "📧 Mail Us",
+                                            href: "mailto:danielqreis@gmail.com"
+                                        },
+                                        {
+                                            label: "📱 WhatsApp",
+                                            href: "https://wa.me/5535991902471",
+                                            target: "_blank",
+                                            rel: "noopener noreferrer"
+                                        }
+                                    ]}
+                                />
                             </div>
                             <div className="flex gap-4 items-center">
-                                <span className="hidden md:inline">📞 +55 (11) 9999-9999</span>
+                                <span className="hidden md:inline">📞 +55 (35) 99190-2471</span>
                                 <button className="hover:text-gray-200 hidden md:inline">🌐 Translate</button>
                                 <button className="hover:text-gray-200">🔍 Search</button>
                             </div>
@@ -98,9 +142,9 @@ export function MainLayout({ children }: MainLayoutProps) {
                                     </Link>
                                 )}
 
-                                <a href="#" className="hover:text-[#0066CC] transition">Patient Resources</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Treatment Options</a>
-                                <a href="#" className="hover:text-[#0066CC] transition">Locations</a>
+                                <Link to="/dqr-health/dashboard" className="hover:text-[#0066CC] transition">Patient Resources</Link>
+                                <Link to="/dqr-health/results" className="hover:text-[#0066CC] transition">Treatment Options</Link>
+                                <Link to="/dqr-health/schedule" className="hover:text-[#0066CC] transition">Locations</Link>
                             </div>
 
                             <div className="flex gap-3 items-center">
@@ -173,7 +217,14 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <ul className="space-y-2 text-sm text-gray-300">
                                 <li><a href="#" className="hover:text-white">Patient Portal</a></li>
                                 <li><a href="#" className="hover:text-white">Medical Records</a></li>
-                                <li><a href="#" className="hover:text-white">Billing</a></li>
+                                <li>
+                                    <button
+                                        onClick={() => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')}
+                                        className="hover:text-blue-300 transition text-left"
+                                    >
+                                        HIPAA Compliance (Video)
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <div>
@@ -181,7 +232,14 @@ export function MainLayout({ children }: MainLayoutProps) {
                             <ul className="space-y-2 text-sm text-gray-300">
                                 <li><a href="#" className="hover:text-white">About Us</a></li>
                                 <li><a href="#" className="hover:text-white">Careers</a></li>
-                                <li><a href="#" className="hover:text-white">Contact</a></li>
+                                <li>
+                                    <button
+                                        onClick={() => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')}
+                                        className="hover:text-blue-300 transition text-left"
+                                    >
+                                        Security & RBAC (Video)
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -191,6 +249,13 @@ export function MainLayout({ children }: MainLayoutProps) {
                     </div>
                 </div>
             </footer>
+
+            <SecurityModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                title={modalConfig.title}
+                videoUrl={modalConfig.url}
+            />
         </div>
     );
 }

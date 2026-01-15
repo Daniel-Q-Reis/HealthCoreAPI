@@ -179,44 +179,47 @@ export const DashboardPage = () => {
                                 {isAdmin && (
                                     <div
                                         onClick={() => navigate('/dqr-health/admin/credentials')}
-                                        className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-purple-600 group"
+                                        className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-[#004B87] group"
                                     >
-                                        <div className="bg-purple-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                            <FaShieldAlt className="text-2xl text-purple-600" />
+                                        <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                            <FaShieldAlt className="text-2xl text-[#004B87]" />
                                         </div>
                                         <h3 className="text-xl font-bold text-gray-900 mb-2">Admin Dashboard</h3>
                                         <p className="text-gray-600 mb-4">Manage users and settings.</p>
-                                        <span className="text-purple-600 font-semibold group-hover:underline">Manage System →</span>
+                                        <span className="text-[#004B87] font-semibold group-hover:underline">Manage System →</span>
                                     </div>
                                 )}
 
                                 {/* Schedule Appointment */}
                                 <div
                                     onClick={() => navigate('/dqr-health/schedule')}
-                                    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group"
+                                    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border-t-4 border-[#004B87] group"
                                 >
-                                    <div className="bg-green-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-100 transition">
-                                        <FaCalendarCheck className="text-2xl text-[#00A651]" />
+                                    <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
+                                        <FaCalendarCheck className="text-2xl text-[#004B87]" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Schedule Appointment</h3>
                                     <p className="text-gray-600 mb-4">Book a consultation with our specialists.</p>
-                                    <span className="text-[#2774AE] font-semibold group-hover:underline">Find a Doctor →</span>
+                                    <span className="text-[#004B87] font-semibold group-hover:underline">Find a Doctor →</span>
                                 </div>
 
                                 {/* Lab Results */}
-                                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
-                                    <div className="bg-yellow-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-100 transition">
-                                        <FaFlask className="text-2xl text-[#FFD100]" />
+                                <div
+                                    onClick={() => navigate('/dqr-health/results')}
+                                    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border-t-4 border-[#004B87] group"
+                                >
+                                    <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
+                                        <FaFlask className="text-2xl text-[#004B87]" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Lab Results</h3>
                                     <p className="text-gray-600 mb-4">View your recent blood work.</p>
-                                    <span className="text-sm font-medium text-gray-400">Coming Soon</span>
+                                    <span className="text-[#004B87] font-semibold group-hover:underline">View Reports →</span>
                                 </div>
 
                                 {/* Medical Records */}
-                                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border border-gray-100 group">
-                                    <div className="bg-red-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-100 transition">
-                                        <FaNotesMedical className="text-2xl text-red-500" />
+                                <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border-t-4 border-[#004B87] group">
+                                    <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
+                                        <FaNotesMedical className="text-2xl text-[#004B87]" />
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">My Records</h3>
                                     <p className="text-gray-600 mb-4">Access complete history.</p>
@@ -227,14 +230,14 @@ export const DashboardPage = () => {
                                 {(isAdmin || isMedicalStaff) && (
                                     <div
                                         onClick={() => navigate('/dqr-health/pharmacy/inventory')}
-                                        className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-teal-600 group"
+                                        className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer border-t-4 border-[#004B87] group"
                                     >
-                                        <div className="bg-teal-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                            <FaPills className="text-2xl text-teal-600" />
+                                        <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                            <FaPills className="text-2xl text-[#004B87]" />
                                         </div>
                                         <h3 className="text-xl font-bold text-gray-900 mb-2">Pharmacy & Stock</h3>
                                         <p className="text-gray-600 mb-4">Manage inventory and dispensing.</p>
-                                        <span className="text-teal-600 font-semibold group-hover:underline">Open Pharmacy →</span>
+                                        <span className="text-[#004B87] font-semibold group-hover:underline">Open Pharmacy →</span>
                                     </div>
                                 )}
 
@@ -242,14 +245,14 @@ export const DashboardPage = () => {
                                 {isPatientUser && profile && (
                                     <div
                                         onClick={() => navigate('/dqr-health/request-access')}
-                                        className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border-t-4 border-[#2774AE] group opacity-75 hover:opacity-100"
+                                        className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer border-t-4 border-[#004B87] group opacity-75 hover:opacity-100"
                                     >
                                         <div className="bg-blue-50 w-12 h-12 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                            <FaUserMd className="text-2xl text-[#2774AE]" />
+                                            <FaUserMd className="text-2xl text-[#004B87]" />
                                         </div>
                                         <h3 className="text-xl font-bold text-gray-900 mb-2">Are you a Provider?</h3>
                                         <p className="text-gray-600 mb-4">Request professional access.</p>
-                                        <span className="text-[#2774AE] font-semibold group-hover:underline">Request Access →</span>
+                                        <span className="text-[#004B87] font-semibold group-hover:underline">Request Access →</span>
                                     </div>
                                 )}
 

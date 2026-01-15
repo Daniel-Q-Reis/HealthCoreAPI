@@ -3,6 +3,7 @@ import { HomePage } from './home';
 import { DashboardPage } from './dashboard';
 import { PatientsPage } from './patients';
 import { AppointmentsPage } from './appointments';
+import { ResultsPage } from './results';
 // import { PharmacyPage } from './pharmacy'; // Removed placeholder
 import { ExperiencePage } from './experience';
 import { PharmacyLayout } from '@/features/pharmacy/layouts/PharmacyLayout';
@@ -19,6 +20,7 @@ import {
 import { ProviderSearchPage } from '@/features/scheduling/pages/ProviderSearchPage';
 import { AuthProvider } from '@/features/auth/context/AuthProvider';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
+import { PatientsVisitorsPage, HealthResourcesPage, UnitsAndFloorsPage, DevelopersPage } from '@/features/medical-center';
 
 export function DQRHealthRoutes() {
     return (
@@ -66,6 +68,14 @@ export function DQRHealthRoutes() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/results"
+                    element={
+                        <ProtectedRoute>
+                            <ResultsPage />
+                        </ProtectedRoute>
+                    }
+                />
 
                 {/* Pharmacy Module */}
                 <Route
@@ -82,7 +92,14 @@ export function DQRHealthRoutes() {
                 </Route>
 
                 <Route path="/experience" element={<ExperiencePage />} />
+                <Route path="/experience" element={<ExperiencePage />} />
                 <Route path="/showcase" element={<ComponentShowcase />} />
+
+                {/* Public Medical Center Info */}
+                <Route path="/patients-visitors" element={<PatientsVisitorsPage />} />
+                <Route path="/health-resources" element={<HealthResourcesPage />} />
+                <Route path="/units" element={<UnitsAndFloorsPage />} />
+                <Route path="/developers" element={<DevelopersPage />} />
             </Routes>
         </AuthProvider>
     );

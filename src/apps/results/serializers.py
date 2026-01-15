@@ -43,3 +43,10 @@ class CreateDiagnosticReportSerializer(serializers.Serializer[Any]):
     conclusion = serializers.CharField()
     observations = CreateObservationSerializer(many=True)
     status = serializers.CharField(max_length=50, required=False)
+
+
+class LifestyleAdviceSerializer(serializers.Serializer[Any]):
+    """Serializer for AI Lifestyle Advice response."""
+
+    advice = serializers.CharField()
+    model_used = serializers.CharField()

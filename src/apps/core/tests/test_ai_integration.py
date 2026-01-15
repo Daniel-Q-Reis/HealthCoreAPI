@@ -49,28 +49,50 @@ def authenticated_client(api_client: APIClient, doctor_user):
 class TestAIClient:
     """Tests for the core AIClient (provider-agnostic)."""
 
-    def test_ai_client_is_configured_when_gemini_key_present(self, settings):
-        """Test client reports configured when Gemini API key is set."""
-        settings.GEMINI_API_KEY = "test-gemini-key"
-
-        from src.apps.core.ai_client import get_ai_client
-
-        get_ai_client.cache_clear()
-
-        client = get_ai_client()
-        assert client.is_configured() is True
-
-    def test_ai_client_not_configured_when_key_missing(self, settings):
-        """Test client reports not configured when API key is missing."""
-        settings.GEMINI_API_KEY = None
-        settings.OPENAI_API_KEY = None
-
-        from src.apps.core.ai_client import get_ai_client
+    def test_ai_client_configuration(self, settings):
+        """Test client reports configured when correct API keys are present."""
+        from src.apps.core.ai_client import (
+            AzureClient,
+            GeminiClient,
+            OpenAIClient,
+            get_ai_client,
+        )
 
         get_ai_client.cache_clear()
+        # Determine the active client type first
+        initial_client = get_ai_client()
+        get_ai_client.cache_clear()
 
-        client = get_ai_client()
-        assert client.is_configured() is False
+        if isinstance(initial_client, AzureClient):
+            settings.AZURE_OPENAI_API_KEY = "test-azure-key"
+            settings.AZURE_OPENAI_ENDPOINT = "https://test.openai.azure.com"
+            client = get_ai_client()
+            assert client.is_configured() is True
+
+            get_ai_client.cache_clear()
+            settings.AZURE_OPENAI_API_KEY = None
+            client = get_ai_client()
+            assert client.is_configured() is False
+
+        elif isinstance(initial_client, GeminiClient):
+            settings.GEMINI_API_KEY = "test-gemini-key"
+            client = get_ai_client()
+            assert client.is_configured() is True
+
+            get_ai_client.cache_clear()
+            settings.GEMINI_API_KEY = None
+            client = get_ai_client()
+            assert client.is_configured() is False
+
+        elif isinstance(initial_client, OpenAIClient):
+            settings.OPENAI_API_KEY = "test-openai-key"
+            client = get_ai_client()
+            assert client.is_configured() is True
+
+            get_ai_client.cache_clear()
+            settings.OPENAI_API_KEY = None
+            client = get_ai_client()
+            assert client.is_configured() is False
 
 
 # --- Pharmacy AI Tests ---
@@ -110,6 +132,7 @@ class TestPharmacyAIDrugInfo:
             "**Generic Name:** Metformin\n"
             "**Drug Class:** Biguanide"
         )
+        mock_client.generate_lifestyle_advice.return_value = "Lifestyle advice"
         mock_get_client.return_value = mock_client
 
         response = authenticated_client.post(

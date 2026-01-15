@@ -1,7 +1,18 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { HeaderDropdown } from '@/shared/components/HeaderDropdown';
+import { SecurityModal } from '@/shared/components/SecurityModal';
 
 export const HomePage = () => {
+    const [modalConfig, setModalConfig] = useState<{ isOpen: boolean, title: string, url: string }>(
+        { isOpen: false, title: '', url: '' }
+    );
+
+    const openModal = (title: string, url: string) => {
+        setModalConfig({ isOpen: true, title, url });
+    };
+
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
@@ -12,8 +23,40 @@ export const HomePage = () => {
                         <div className="flex gap-6">
                             <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
                             <a href="#" className="hover:text-gray-200">myDQRHealth</a>
-                            <a href="#" className="hover:text-gray-200">News & Insights</a>
-                            <a href="#" className="hover:text-gray-200">Contact Us</a>
+                            <HeaderDropdown
+                                title="News & Insights"
+                                items={[
+                                    {
+                                        label: "Latest Health News (BBC)",
+                                        href: "https://www.bbc.com/news/health",
+                                        target: "_blank",
+                                        rel: "noopener noreferrer"
+                                    },
+                                    {
+                                        label: "HIPAA Compliance (Video)",
+                                        onClick: () => openModal('HIPAA Compliance', 'https://www.youtube.com/watch?v=s9znUYvVO4A')
+                                    },
+                                    {
+                                        label: "Security & RBAC (Video)",
+                                        onClick: () => openModal('Role-Based Access Control', 'https://www.youtube.com/watch?v=fxa8Jo1ViqA')
+                                    }
+                                ]}
+                            />
+                            <HeaderDropdown
+                                title="Contact Us"
+                                items={[
+                                    {
+                                        label: "📧 Mail Us",
+                                        href: "mailto:danielqreis@gmail.com"
+                                    },
+                                    {
+                                        label: "📱 WhatsApp",
+                                        href: "https://wa.me/5535991902471",
+                                        target: "_blank",
+                                        rel: "noopener noreferrer"
+                                    }
+                                ]}
+                            />
                         </div>
                         <div className="flex gap-4 items-center">
                             <span>📞 +55 (11) 9999-9999</span>
@@ -30,10 +73,10 @@ export const HomePage = () => {
                         </div>
                         <div className="flex gap-8">
                             <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Find Care</Link>
-                            <a href="#" className="hover:text-gray-200">Patient Resources</a>
-                            <a href="#" className="hover:text-gray-200">Treatment Options</a>
-                            <a href="#" className="hover:text-gray-200">Locations</a>
-                            <a href="#" className="hover:text-gray-200">Discover</a>
+                            <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Patient Resources</Link>
+                            <Link to="/dqr-health/results" className="hover:text-gray-200">Treatment Options</Link>
+                            <Link to="/dqr-health/schedule" className="hover:text-gray-200">Locations</Link>
+                            <Link to="/dqr-health/dashboard" className="hover:text-gray-200">Discover</Link>
                         </div>
                         <Link
                             to="/dqr-health/dashboard"
@@ -169,7 +212,7 @@ export const HomePage = () => {
                     <div className="grid md:grid-cols-3 gap-8">
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#004B87] to-[#0066CC] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">🧬</div>
                             <h3 className="text-2xl font-bold mb-4">AI Pharmacy Assistant</h3>
@@ -179,7 +222,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/pharmacy"
-                                className="inline-block bg-[#FFD100] text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-[#FFC700] transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 Try AI Assistant
                             </Link>
@@ -187,7 +230,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#00A3AD] to-[#00C4CC] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">📊</div>
                             <h3 className="text-2xl font-bold mb-4">Smart Diagnostics</h3>
@@ -197,7 +240,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/dashboard"
-                                className="inline-block bg-white text-[#00A3AD] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 View Dashboard
                             </Link>
@@ -205,7 +248,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#00A651] to-[#00C96D] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">💬</div>
                             <h3 className="text-2xl font-bold mb-4">Patient Experience AI</h3>
@@ -215,7 +258,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/experience"
-                                className="inline-block bg-white text-[#00A651] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 Share Feedback
                             </Link>
@@ -268,6 +311,13 @@ export const HomePage = () => {
                     </div>
                 </div>
             </footer>
-        </div>
+
+            <SecurityModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+                title={modalConfig.title}
+                videoUrl={modalConfig.url}
+            />
+        </div >
     );
 };

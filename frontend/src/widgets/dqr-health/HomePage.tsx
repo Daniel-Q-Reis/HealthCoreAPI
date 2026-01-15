@@ -62,9 +62,10 @@ export const HomePage = () => {
                     <div className="container mx-auto px-4">
                         <div className="flex gap-8 text-[#004B87] font-semibold">
                             <a href="#about" className="py-4 border-b-4 border-[#004B87]">About the Medical Center</a>
-                            <a href="#patients" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</a>
-                            <a href="#resources" className="py-4 hover:text-[#0066CC]">Health Resources</a>
-                            <a href="#units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</a>
+                            <Link to="/dqr-health/patients-visitors" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</Link>
+                            <Link to="/dqr-health/health-resources" className="py-4 hover:text-[#0066CC]">Health Resources</Link>
+                            <Link to="/dqr-health/units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</Link>
+                            <Link to="/dqr-health/developers" className="py-4 hover:text-[#0066CC]">For Developers</Link>
                         </div>
                     </div>
                 </div>
@@ -129,7 +130,7 @@ export const HomePage = () => {
                     <div className="grid md:grid-cols-3 gap-8">
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#004B87] to-[#0066CC] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">🧬</div>
                             <h3 className="text-2xl font-bold mb-4">AI Pharmacy Assistant</h3>
@@ -139,7 +140,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/pharmacy"
-                                className="inline-block bg-[#FFD100] text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-[#FFC700] transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 Try AI Assistant
                             </Link>
@@ -147,7 +148,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#00A3AD] to-[#00C4CC] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">📊</div>
                             <h3 className="text-2xl font-bold mb-4">Smart Diagnostics</h3>
@@ -157,7 +158,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/dashboard"
-                                className="inline-block bg-white text-[#00A3AD] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 View Dashboard
                             </Link>
@@ -165,7 +166,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-gradient-to-br from-[#00A651] to-[#00C96D] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
                         >
                             <div className="text-4xl mb-4">💬</div>
                             <h3 className="text-2xl font-bold mb-4">Patient Experience AI</h3>
@@ -175,7 +176,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/experience"
-                                className="inline-block bg-white text-[#00A651] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
                             >
                                 Share Feedback
                             </Link>
