@@ -79,6 +79,7 @@ Quick reference guide for all project documentation.
 | [ADR-0013](./docs/adr/0013-full-stack-architecture-react-frontend.md) | Full-Stack Architecture React Frontend |
 | [ADR-0014](./docs/adr/0014-observability-event-driven-architecture.md) | Observability Event-Driven Architecture |
 | [ADR-0015](./docs/adr/0015-modern-dependency-management-uv.md) | Modern Dependency Management (uv) |
+| [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Log Microservice (Go + DynamoDB) |
 
 ### Frontend ADRs
 

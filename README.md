@@ -31,6 +31,9 @@
 | **Prometheus** | Latest | Metrics Collection |
 | **PyBreaker** | 1.2+ | Circuit Breaker Pattern |
 | **Google Gemini** | 2.5 Flash | AI Integration |
+| **Go** | 1.24 | Audit Microservice |
+| **gRPC** | 1.60+ | Inter-service Communication |
+| **DynamoDB** | Local/AWS | Audit Log Storage (NoSQL) |
 
 ### **Frontend**
 | Technology | Version | Purpose |
