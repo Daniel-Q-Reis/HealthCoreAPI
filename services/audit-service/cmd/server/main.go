@@ -2,11 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net"
 	"os"
 
+	grpcservice "github.com/Daniel-Q-Reis/HealthCoreAPI/services/audit-service/internal/grpc"
 	"github.com/Daniel-Q-Reis/HealthCoreAPI/services/audit-service/internal/kafka"
 	"github.com/Daniel-Q-Reis/HealthCoreAPI/services/audit-service/internal/repository"
+	pb "github.com/Daniel-Q-Reis/HealthCoreAPI/services/audit-service/proto"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -28,22 +33,28 @@ func main() {
 	}
 	log.Printf("📨 Kafka Brokers: %s", kafkaBrokers)
 
-	// We listen to the topic where pure domain events are published
-	// Assuming 'healthcore.events' or broadly '*' for pattern matching?
-	// For now, let's assume we consume the specific audit/domain topic.
-	// In the Django producer (producer.py), we need to ensure where we send events.
-	// Let's assume a topic "healthcore.audit.events" exists or we reuse "healthcore.events".
-	// Let's stick to "healthcore.events" for now.
 	topic := "healthcore.events"
-
 	consumer := kafka.NewConsumer(kafkaBrokers, topic, repo)
 
 	// 3. Start Consumer in Goroutine
 	go consumer.Start(ctx)
 
-	// 4. Start gRPC Server (Todo)
-	log.Println("📡 gRPC Server listening on port 50051 (Placeholder)")
+	// 4. Start gRPC Server
+	log.Println("📡 Starting gRPC Server on port 50051...")
+	if err := startGRPCServer(repo); err != nil {
+		log.Fatalf("Failed to start gRPC server: %v", err)
+	}
+}
 
-	// Block forever
-	select {}
+func startGRPCServer(repo *repository.DynamoRepository) error {
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		return fmt.Errorf("failed to listen: %w", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	pb.RegisterAuditServiceServer(grpcServer, grpcservice.NewAuditServer(repo))
+
+	log.Println("✅ gRPC Server listening on :50051")
+	return grpcServer.Serve(lis)
 }
