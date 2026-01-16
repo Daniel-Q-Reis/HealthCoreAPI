@@ -16,6 +16,12 @@
 *.ts text eol=lf
 *.tsx text eol=lf
 
+# Go files
+*.go text eol=lf
+*.mod text eol=lf
+*.sum text eol=lf
+*.proto text eol=lf
+
 # Binary files
 *.png binary
 *.jpg binary
