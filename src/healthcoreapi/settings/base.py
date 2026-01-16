@@ -425,8 +425,15 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # dj-rest-auth & allauth registration settings
-ACCOUNT_LOGIN_METHODS = {"email", "username"}
-ACCOUNT_SIGNUP_FIELDS = ["email", "username"]
+ACCOUNT = {
+    "SIGNUP_FIELDS": {
+        "username": {"required": True},
+        "email": {"required": True},
+    },
+    "LOGIN_BY_CODE_ENABLED": False,
+    "EMAIL_VERIFICATION": "optional",
+    "AUTHENTICATION_METHOD": "username_email",
+}
 ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
 
 # Development: Print emails to console instead of sending (fixes 500 error)
