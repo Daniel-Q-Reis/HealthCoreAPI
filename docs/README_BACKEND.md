@@ -810,6 +810,152 @@ See [ADR-0008](docs/adr/0008-rbac-implementation.md) for architectural decisions
 
 ---
 
+## 🚀 Microservices Integration
+
+### Audit Log Microservice (Go + DynamoDB)
+
+The HealthCoreAPI implements a **polyglot microservices architecture** with a dedicated Go service for high-performance audit logging, demonstrating event-driven architecture and inter-service communication.
+
+#### Architecture Overview
+
+```
+Django (Python) ──[Kafka Event]──> Go Consumer ──[Write]──> DynamoDB
+       │                                ▲                        │
+       └──────────[gRPC Query]──────────┘                        │
+                  (Port 50051) <───────────────────────────────┘
+```
+
+**Technology Stack:**
+- **Language**: Go 1.24 (high concurrency, low memory footprint)
+- **Database**: DynamoDB Local/AWS (infinite-scaling NoSQL)
+- **Communication**: Kafka (async ingestion) + gRPC (sync queries)
+- **Deployment**: Docker-ready for Azure Container Apps
+
+#### Key Components
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **Go gRPC Server** | services/audit-service/internal/grpc/ | Exposes LogEvent and GetAuditLogs RPC methods |
+| **Kafka Consumer** | services/audit-service/internal/kafka/ | Consumes healthcore.events topic |
+| **DynamoDB Repository** | services/audit-service/internal/repository/ | Stores logs (PK: 	arget_id, SK: 	imestamp) |
+| **Protobuf Contract** | services/audit-service/proto/audit.proto | gRPC service definition |
+| **Python gRPC Client** | src/apps/core/services/grpc_client.py | Django integration for querying logs |
+| **Kafka Producer** | src/apps/core/services/audit_logger.py | Publishes audit events from Django |
+| **DTOs** | src/apps/core/services/dto.py | Type-safe event payloads |
+
+#### Using the gRPC Client
+
+```python
+from src.apps.core.services.grpc_client import AuditGRPCClient
+
+# Context manager usage (recommended)
+with AuditGRPCClient(host='audit-service', port=50051) as client:
+    # Log an event
+    event_id = client.log_event(
+        actor_id='DOC-456',
+        action='PATIENT_VIEW',
+        target_id='PAT-789',
+        resource_type='PATIENT',
+        ip_address='192.168.1.100',
+        user_agent='Mozilla/5.0...',
+        details={'reason': 'Treatment review'}
+    )
+    print(f"Event logged: {event_id}")
+
+    # Query logs
+    logs = client.get_audit_logs(target_id='PAT-789', limit=10)
+    for log in logs:
+        print(f"{log['timestamp']}: {log['action']} by {log['actorId']}")
+```
+
+#### Using the Kafka Audit Logger
+
+```python
+from src.apps.core.services.audit_logger import (
+    log_audit_event,
+    log_user_login,
+    log_resource_access
+)
+
+# Generic audit event
+log_audit_event(
+    actor_id='USER-123',
+    action='PATIENT_UPDATE',
+    target_id='PAT-456',
+    resource_type='PATIENT',
+    ip_address=request.META.get('REMOTE_ADDR'),
+    user_agent=request.META.get('HTTP_USER_AGENT'),
+    details={'fields_changed': ['email', 'phone']}
+)
+
+# Helper for login events
+log_user_login(
+    user_id='USER-123',
+    ip_address='192.168.1.1',
+    user_agent='Mozilla/5.0...',
+    success=True
+)
+
+# Helper for resource access
+log_resource_access(
+    actor_id='DOC-789',
+    resource_type='PATIENT',
+    resource_id='PAT-456',
+    action='VIEW',
+    ip_address='10.0.0.1',
+    user_agent='...'
+)
+```
+
+#### Testing Microservices
+
+```bash
+# E2E gRPC Test (Python → Go → DynamoDB)
+docker-compose exec web python scripts/test_grpc.py
+
+# E2E Kafka Test (Django → Kafka → Go → DynamoDB)
+docker-compose exec web python scripts/test_kafka_integration.py
+
+# Generate protobuf stubs
+bash scripts/generate_proto.sh
+```
+
+#### Querying DynamoDB
+
+```bash
+# Scan all audit logs
+docker-compose exec dynamodb-local aws dynamodb scan \\
+  --table-name AuditLogs \\
+  --endpoint-url http://localhost:8000 \\
+  --region us-east-1
+
+# Query specific target ID
+docker-compose exec dynamodb-local aws dynamodb query \\
+  --table-name AuditLogs \\
+  --key-condition-expression \"target_id = :tid\" \\
+  --expression-attribute-values '{\":tid\":{\"S\":\"PATIENT-123\"}}' \\
+  --endpoint-url http://localhost:8000 \\
+  --region us-east-1
+```
+
+#### Performance Characteristics
+
+- **Cold Start**: ~100ms (Go service)
+- **Event Ingestion**: <5ms (Kafka publish from Django)
+- **DynamoDB Write**: ~10-20ms (local), <5ms (AWS production)
+- **gRPC Query**: <100ms round-trip (local)
+
+#### Implementation Reference
+
+- **ADR**: [0016-audit-microservice-go.md](adr/0016-audit-microservice-go.md)
+- **Go Source**: [services/audit-service/](../services/audit-service/)
+- **Protobuf**: [proto/audit.proto](../services/audit-service/proto/audit.proto)
+
+---
+
+
+---
+
 ## ⚖️ License
 
 Licensed under the **Apache-2.0 License** - see [LICENSE](LICENSE) file for complete terms and conditions.

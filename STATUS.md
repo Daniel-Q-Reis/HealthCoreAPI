@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 01/04/2026
+**Last Updated:** 01/17/2026
 **Owner:** Daniel Reis
 
 ## Current Status: Phase 14 - Documentation & Frontend Development 🚧
@@ -55,13 +55,17 @@
 | **Landing** | ✅ Complete | Hero, TechStack, Bilingual |
 | **Patients** | 🚧 In Progress | Patient Directory |
 | **Experience** | 📋 Planned | Feedback, AI Analysis |
-| **Audit** | 🚧 In Progress | Go Microservice, DynamoDB, gRPC |
+| **Audit** | ✅ Complete | Go Microservice, DynamoDB, gRPC, Kafka |
 
 ### Phase 15: Microservices Architecture
-- **Slice 36: Audit Microservice (`feat/audit-microservice-go`)** (In Progress)
-  - Extracting Audit Logs to Go Service
-  - Implementing DynamoDB and gRPC
-  - Target: Azure Container Apps
+- **Slice 36: Audit Microservice (`feat/audit-microservice-go`)** ✅ COMPLETED
+  - Go 1.24 microservice with gRPC server (port 50051)
+  - Kafka consumer for `healthcore.events` topic
+  - DynamoDB repository with auto-table creation
+  - Python gRPC client and Kafka producer integration
+  - End-to-end testing (gRPC + Kafka)
+  - ADR-0016 and ADR-0017 documented
+  - Ready for Azure Container Apps deployment
 
 ## Concluded
 
@@ -191,8 +195,11 @@
 - **Type Safety**: 100% (MyPy strict, 0 errors)
 - **Code Quality**: 100% (Ruff, 0 violations)
 - **Security**: 0 critical vulnerabilities
-- **Documentation**: 15 ADRs + comprehensive guides
+- **Documentation**: 17 ADRs + comprehensive guides
 - **Bounded Contexts**: 12 distinct domains
 - **API Endpoints**: 50+ RESTful endpoints
 - **Event Types**: 6 Kafka event types
 - **Dashboards**: 5 Grafana dashboards
+- **Microservices**: 1 Go service (Audit) + Django monolith
+- **Databases**: 2 (PostgreSQL + DynamoDB)
+- **Tech Stack**: Python, Go, React, TypeScript

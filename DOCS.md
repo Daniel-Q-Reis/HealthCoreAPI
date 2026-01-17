@@ -50,6 +50,19 @@ Quick reference guide for all project documentation.
 
 ---
 
+## Microservices Architecture
+
+| Document | Description |
+|----------|-------------|
+| [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Log Microservice extraction (Go + DynamoDB + gRPC) |
+| [services/audit-service/](./services/audit-service/) | Go microservice source code and Protobuf definitions |
+| [gRPC Client](./src/apps/core/services/grpc_client.py) | Python gRPC client for audit service integration |
+| [Kafka Producer](./src/apps/core/services/audit_logger.py) | Django audit event publisher |
+| [test_grpc.py](./scripts/test_grpc.py) | End-to-end gRPC integration test |
+| [test_kafka_integration.py](./scripts/test_kafka_integration.py) | End-to-end Kafka integration test |
+
+---
+
 ## AI Integration
 
 | Document | Description |
@@ -80,6 +93,7 @@ Quick reference guide for all project documentation.
 | [ADR-0014](./docs/adr/0014-observability-event-driven-architecture.md) | Observability Event-Driven Architecture |
 | [ADR-0015](./docs/adr/0015-modern-dependency-management-uv.md) | Modern Dependency Management (uv) |
 | [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Log Microservice (Go + DynamoDB) |
+| [ADR-0017](./docs/adr/0017-pragmatic-linting-strategy.md) | Pragmatic Linting Strategy |
 
 ### Frontend ADRs
 

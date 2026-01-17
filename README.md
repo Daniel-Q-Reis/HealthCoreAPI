@@ -165,6 +165,60 @@ This project demonstrates **Enterprise-Grade Software Architecture** designed as
 
 ---
 
+## 🚀 Microservices Architecture
+
+The project demonstrates **polyglot microservices** alongside the Django monolith, implementing event-driven architecture with Kafka and gRPC.
+
+### **Audit Log Microservice (Go)**
+
+```
+┌─────────────┐   Kafka Event      ┌──────────────┐   Write    ┌──────────┐
+│   Django    │──healthcore.events─>│ Go Consumer  │──────────> │ DynamoDB │
+│  (Python)   │                     │   (Kafka)    │            │  (NoSQL) │
+└─────────────┘                     └──────────────┘            └──────────┘
+       │                                    ▲                         │
+       │           gRPC Query               │                         │
+       └────────────────────────────────────┘                         │
+                             (Port 50051)  ◄─────────────────────────┘
+```
+
+**Technology Stack:**
+- **Language**: Go 1.24 (high concurrency, low memory footprint)
+- **Database**: DynamoDB (infinite scaling for time-series logs)
+- **Storage**: Partition Key (`target_id`) + Sort Key (`timestamp`)
+- **Communication**: gRPC (queries) + Kafka (ingestion)
+- **Deployment**: Docker-ready for Azure Container Apps
+
+**What It Does:**
+- Consumes audit events from `healthcore.events` Kafka topic
+- Stores immutable logs in DynamoDB (HIPAA-compliant)
+- Exposes gRPC API for querying logs by `target_id`
+- Scales independently from the Django monolith
+
+**Key Benefits:**
+- **Performance**: Offloads PostgreSQL write pressure
+- **Decoupling**: Events queue in Kafka if service is down
+- **Scalability**: Horizontal scaling with KEDA (Kafka lag metric)
+- **Observability**: Structured logging with correlation IDs
+
+**Implementation:**
+- **Go Code**: [`services/audit-service/`](services/audit-service/)
+- **Python gRPC Client**: [`src/apps/core/services/grpc_client.py`](src/apps/core/services/grpc_client.py)
+- **Kafka Producer**: [`src/apps/core/services/audit_logger.py`](src/apps/core/services/audit_logger.py)
+- **ADR**: [ADR-0016: Audit Microservice Extraction](docs/adr/0016-audit-microservice-go.md)
+
+**Testing:**
+```bash
+# E2E gRPC Test: Python → Go → DynamoDB
+docker-compose exec web python scripts/test_grpc.py
+
+# Kafka Integration: Django → Kafka → Go → DynamoDB
+docker-compose exec web python scripts/test_kafka_integration.py
+```
+
+
+---
+
 ## 🔐 RBAC & HIPAA Compliance
 
 **HealthCoreAPI implements production-grade Role-Based Access Control (RBAC)** with 6 healthcare roles, designed to meet HIPAA Security Rule requirements.
@@ -238,7 +292,7 @@ HealthCoreAPI/
 │           └── configmap.yaml    # Configuration management
 │
 ├── docs/                         # Comprehensive project documentation
-│   ├── adr/                      # Architecture Decision Records (15+ backend)
+│   ├── adr/                      # Architecture Decision Records (17 total)
 │   │   ├── 0001-modular-monolith-with-service-repository-pattern.md
 │   │   ├── 0002-jwt-for-api-authentication.md
 │   │   ├── 0003-celery-and-redis-for-asynchronous-tasks.md
@@ -254,6 +308,8 @@ HealthCoreAPI/
 │   │   ├── 0013-full-stack-architecture-react-frontend.md
 │   │   ├── 0014-observability-event-driven-architecture.md
 │   │   ├── 0015-modern-dependency-management-uv.md
+│   │   ├── 0016-audit-microservice-go.md  # Go microservice extraction (Kafka+gRPC+DynamoDB)
+│   │   ├── 0017-pragmatic-linting-strategy.md  # Focused Python linting approach
 │   │   └── frontend/             # Frontend-specific ADRs (3)
 │   │       ├── 0001-feature-sliced-design-architecture.md
 │   │       ├── 0002-healthcare-credential-verification-security.md
@@ -321,8 +377,33 @@ HealthCoreAPI/
 ├── scripts/                      # Utility and deployment scripts
 │   ├── entrypoint.sh             # Docker entrypoint
 │   ├── wait-for-services.sh      # Service health checks
+│   ├── celery-worker.sh          # Celery worker startup with volume checks
+│   ├── celery-beat.sh            # Celery beat scheduler startup
+│   ├── generate_proto.sh         # Protobuf stub generation (Python from Go .proto)
+│   ├── test_grpc.py              # E2E gRPC test (Python → Go → DynamoDB)
+│   ├── test_kafka_integration.py # E2E Kafka test (Django → Kafka → Go → DynamoDB)
 │   ├── kafka_consumer.py         # Kafka event consumer example
 │   └── seed_admin_test.py        # Test data seeding
+│
+├── services/                     # Microservices (Polyglot Architecture)
+│   └── audit-service/            # Go Audit Log Microservice
+│       ├── cmd/
+│       │   └── server/
+│       │       └── main.go       # Application entry point
+│       ├── internal/
+│       │   ├── grpc/
+│       │   │   └── server.go     # gRPC server implementation (LogEvent, GetAuditLogs)
+│       │   ├── kafka/
+│       │   │   └── consumer.go   # Kafka consumer (healthcore.events topic)
+│       │   └── repository/
+│       │       └── dynamo.go     # DynamoDB repository (PK: target_id, SK: timestamp)
+│       ├── proto/
+│       │   ├── audit.proto       # Protobuf contract (gRPC service definition)
+│       │   ├── audit_pb2.go      # Generated Go protobuf code
+│       │   └── audit_grpc.pb.go  # Generated Go gRPC code
+│       ├── Dockerfile            # Multi-stage build (Go 1.24)
+│       ├── go.mod                # Go module definition
+│       └── go.sum                # Go dependencies lockfile
 │
 ├── terraform/                    # Infrastructure as Code (Azure AKS)
 │   ├── providers.tf              # Terraform & Azure provider config
@@ -340,6 +421,21 @@ HealthCoreAPI/
 │   │   ├── core/                 # Shared functionality & RBAC
 │   │   │   ├── fixtures/
 │   │   │   │   └── roles.json    # 6 RBAC roles (Admins, Doctors, Nurses, Patients, Receptionists, Pharmacists)
+│   │   │   ├── grpc_proto/       # Generated Python protobuf stubs
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── audit_pb2.py  # Protobuf message definitions
+│   │   │   │   ├── audit_pb2.pyi # Type stubs for MyPy
+│   │   │   │   └── audit_pb2_grpc.py  # gRPC service stubs
+│   │   │   ├── kafka/            # Kafka integration
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── producer.py   # Kafka producer (singleton, healthcore.* topics)
+│   │   │   │   └── events.py     # Domain events (Patient, Appointment, 6 types)
+│   │   │   ├── services/         # Business services
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── core_services.py  # Core business logic (create_post)
+│   │   │   │   ├── grpc_client.py    # gRPC client for Audit Service
+│   │   │   │   ├── audit_logger.py   # Kafka audit logger (wrapper)
+│   │   │   │   └── dto.py            # Data Transfer Objects (KafkaAuditEvent)
 │   │   │   ├── permissions.py    # RBAC permission classes (490 lines)
 │   │   │   ├── ai_client.py      # Unified AI client (Gemini + OpenAI)
 │   │   │   ├── middleware.py     # Correlation ID, logging
