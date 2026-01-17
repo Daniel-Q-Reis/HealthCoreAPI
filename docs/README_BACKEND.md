@@ -71,8 +71,11 @@ HealthCoreAPI/
 ├── .devcontainer/                 # Development container configuration
 │   ├── devcontainer.json         # VS Code devcontainer settings
 │   └── setup.sh                  # Automated development environment setup
+│
 ├── .github/                      # GitHub workflows and templates
 │   └── workflows/                # CI/CD pipelines with quality gates
+│       └── ci.yml                # Main CI pipeline (lint, test, build)
+│
 ├── charts/                       # Production-ready Kubernetes Helm Charts
 │   └── healthcoreapi/            # Main application Helm chart
 │       ├── Chart.yaml            # Chart metadata and dependencies
@@ -83,105 +86,167 @@ HealthCoreAPI/
 │           ├── ingress.yaml      # Ingress configuration with TLS
 │           ├── hpa.yaml          # Horizontal Pod Autoscaling
 │           └── configmap.yaml    # Configuration management
+│
 ├── docs/                         # Comprehensive project documentation
-│   ├── adr/                      # Architecture Decision Records (ADRs)
-│   │   ├── 0001-django-rest-framework.md
-│   │   ├── 0002-postgresql-database.md
-│   │   ├── 0003-celery-redis-async-tasks.md
-│   │   ├── 0004-prometheus-monitoring.md
-│   │   ├── 0005-circuit-breaker-resilience.md
-│   │   ├── 0006-kubernetes-helm-deployment.md
-│   │   ├── 0007-terraform-infrastructure-code.md
+│   ├── adr/                      # Architecture Decision Records (17 total)
+│   │   ├── 0001-modular-monolith-with-service-repository-pattern.md
+│   │   ├── 0002-jwt-for-api-authentication.md
+│   │   ├── 0003-celery-and-redis-for-asynchronous-tasks.md
+│   │   ├── 0004-prometheus-for-application-metrics.md
+│   │   ├── 0005-pybreaker-for-circuit-breaking.md
+│   │   ├── 0006-helm-for-kubernetes-packaging.md
+│   │   ├── 0007-terraform-for-infrastructure-as-code.md
 │   │   ├── 0008-rbac-implementation.md
-│   │   ├── 0009-pharmacy-module.md
-│   │   ├── 0010-equipment-module.md
-│   │   └── 0011-clinical-orders-service-request.md
-│   ├── CCP_IMPLEMENTATION_STATUS.md  # Critical Control Points implementation status
-│   ├── CRITICAL_CONTROL_POINTS.md    # HIPAA/healthcare compliance critical controls
-│   ├── DOCKER.md                 # Docker configuration and best practices
-│   ├── GRAFANA.md                # Grafana dashboards guide and best practices
-│   ├── KAFKA.md                  # Kafka event streaming guide and patterns
-│   ├── PROMETHEUS.md             # Prometheus monitoring guide and PromQL queries
-│   ├── VSCODE_SETUP.md           # VS Code development environment guide
-│   └── WSL2_OPTIMIZATION.md      # WSL2 performance optimization guide
+│   │   ├── 0009-pharmacy-inventory-management.md
+│   │   ├── 0010-equipment-logistics-flow.md
+│   │   ├── 0011-clinical-orders-service-request.md
+│   │   ├── 0012-ai-integration-strategy.md
+│   │   ├── 0013-full-stack-architecture-react-frontend.md
+│   │   ├── 0014-observability-event-driven-architecture.md
+│   │   ├── 0015-modern-dependency-management-uv.md
+│   │   ├── 0016-audit-microservice-go.md  # Go microservice extraction (Kafka+gRPC+DynamoDB)
+│   │   ├── 0017-pragmatic-linting-strategy.md  # Focused Python linting approach
+│   │   └── frontend/             # Frontend-specific ADRs (3)
+│   │       ├── 0001-feature-sliced-design-architecture.md
+│   │       ├── 0002-healthcare-credential-verification-security.md
+│   │       └── 0003-jwt-browser-storage-strategy.md
+│   ├── README_BACKEND.md         # Detailed backend documentation
+│   ├── README_FRONTEND.md        # Detailed frontend documentation
+│   ├── CCP_IMPLEMENTATION_STATUS.md  # Critical Control Points status
+│   ├── CRITICAL_CONTROL_POINTS.md    # HIPAA compliance controls
+│   ├── DOCKER.md                 # Docker configuration guide
+│   ├── GRAFANA.md                # Grafana dashboards guide
+│   ├── KAFKA.md                  # Kafka event streaming guide (400+ lines)
+│   ├── PROMETHEUS.md             # Prometheus monitoring guide
+│   ├── VSCODE_SETUP.md           # VS Code development environment
+│   └── WSL2_OPTIMIZATION.md      # Windows WSL2 performance guide
+│
 ├── grafana/                      # Grafana observability configuration
-│   └── provisioning/             # Auto-provisioning configs
-│       ├── datasources/          # Datasource configurations (Prometheus)
-│       └── dashboards/           # Dashboard definitions
-├── landing-page/                 # React + TypeScript landing page
-│   ├── public/                   # Static assets
-│   ├── src/                      # Source code
-│   │   ├── assets/               # Images and media
-│   │   ├── components/           # React components (Hero, TechStack, Features, etc.)
-│   │   ├── hooks/                # Custom React hooks (useHealthCheck)
-│   │   ├── i18n/                 # Internationalization (PT/EN)
-│   │   ├── pages/                # Page components
-│   │   ├── types/                # TypeScript type definitions
-│   │   ├── App.tsx               # Main application component
-│   │   ├── main.tsx              # Application entry point
-│   │   └── index.css             # Global styles
-│   ├── Dockerfile                # Frontend container configuration
-│   ├── package.json              # Node.js dependencies
-│   ├── tsconfig.json             # TypeScript configuration
-│   ├── vite.config.ts            # Vite build configuration
-│   └── tailwind.config.js        # Tailwind CSS configuration
-├── logs/                         # Application log files
+│   └── provisioning/
+│       ├── datasources/          # Prometheus datasource
+│       └── dashboards/           # Dashboard JSON definitions
+│
+├── prometheus/                   # Prometheus configuration
+│   └── prometheus.yml            # Scrape configuration
+│
 ├── scripts/                      # Utility and deployment scripts
+│   ├── entrypoint.sh             # Docker entrypoint
+│   ├── wait-for-services.sh      # Service health checks
+│   ├── celery-worker.sh          # Celery worker startup with volume checks
+│   ├── celery-beat.sh            # Celery beat scheduler startup
+│   ├── generate_proto.sh         # Protobuf stub generation (Python from Go .proto)
+│   ├── test_grpc.py              # E2E gRPC test (Python → Go → DynamoDB)
+│   ├── test_kafka_integration.py # E2E Kafka test (Django → Kafka → Go → DynamoDB)
+│   ├── kafka_consumer.py         # Kafka event consumer example
+│   └── seed_admin_test.py        # Test data seeding
+│
+├── services/                     # Microservices (Polyglot Architecture)
+│   └── audit-service/            # Go Audit Log Microservice
+│       ├── cmd/
+│       │   └── server/
+│       │       └── main.go       # Application entry point
+│       ├── internal/
+│       │   ├── grpc/
+│       │   │   └── server.go     # gRPC server implementation (LogEvent, GetAuditLogs)
+│       │   ├── kafka/
+│       │   │   └── consumer.go   # Kafka consumer (healthcore.events topic)
+│       │   └── repository/
+│       │       └── dynamo.go     # DynamoDB repository (PK: target_id, SK: timestamp)
+│       ├── proto/
+│       │   ├── audit.proto       # Protobuf contract (gRPC service definition)
+│       │   ├── audit_pb2.go      # Generated Go protobuf code
+│       │   └── audit_grpc.pb.go  # Generated Go gRPC code
+│       ├── Dockerfile            # Multi-stage build (Go 1.24)
+│       ├── go.mod                # Go module definition
+│       └── go.sum                # Go dependencies lockfile
+│
 ├── terraform/                    # Infrastructure as Code (Azure AKS)
-│   ├── providers.tf              # Terraform and Azure provider configuration
-│   ├── variables.tf              # Configurable infrastructure parameters
-│   └── main.tf                   # Azure resources (AKS, Resource Group, Monitoring)
-├── src/                          # Source code organized by domain
-│   ├── apps/                     # Django applications (Bounded Contexts)
-│   │   ├── admissions/           # Hospital admissions and bed management
-│   │   ├── core/                 # Shared core functionality and base models
-│   │   │   └── fixtures/         # Initial data fixtures
-│   │   │       └── roles.json    # RBAC role definitions (Admins, Doctors, Nurses, Patients)
-│   │   ├── departments/          # Department and medical specialty management
-│   │   ├── equipment/            # Medical equipment tracking and maintenance
-│   │   ├── experience/           # Patient experience and feedback systems
-│   │   ├── orders/               # Clinical orders and service requests (FHIR ServiceRequest)
-│   │   ├── patients/             # Patient data management and electronic records
-│   │   ├── pharmacy/             # Medication inventory and dispensation tracking
-│   │   ├── practitioners/        # Medical staff management and credentials
-│   │   ├── results/              # Diagnostic results and medical imaging
-│   │   ├── scheduling/           # Appointment scheduling and calendar management
-│   │   └── shifts/               # Staff shift management and availability
+│   ├── providers.tf              # Terraform & Azure provider config
+│   ├── variables.tf              # Configurable parameters
+│   └── main.tf                   # Azure resources (AKS, RG, Monitoring)
+│
+├── src/                          # Django Backend Source Code
+│   ├── apps/                     # Bounded Contexts (12 domains)
+│   │   ├── admissions/           # Hospital admissions & bed management
+│   │   │   ├── models.py         # Admission, Bed, Ward models
+│   │   │   ├── services.py       # Admission business logic
+│   │   │   ├── views.py          # API viewsets
+│   │   │   └── tests/            # Unit & integration tests
+│   │   │
+│   │   ├── core/                 # Shared functionality & RBAC
+│   │   │   ├── fixtures/
+│   │   │   │   └── roles.json    # 6 RBAC roles (Admins, Doctors, Nurses, Patients, Receptionists, Pharmacists)
+│   │   │   ├── grpc_proto/       # Generated Python protobuf stubs
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── audit_pb2.py  # Protobuf message definitions
+│   │   │   │   ├── audit_pb2.pyi # Type stubs for MyPy
+│   │   │   │   └── audit_pb2_grpc.py  # gRPC service stubs
+│   │   │   ├── kafka/            # Kafka integration
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── producer.py   # Kafka producer (singleton, healthcore.* topics)
+│   │   │   │   └── events.py     # Domain events (Patient, Appointment, 6 types)
+│   │   │   ├── services/         # Business services
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── core_services.py  # Core business logic (create_post)
+│   │   │   │   ├── grpc_client.py    # gRPC client for Audit Service
+│   │   │   │   ├── audit_logger.py   # Kafka audit logger (wrapper)
+│   │   │   │   └── dto.py            # Data Transfer Objects (KafkaAuditEvent)
+│   │   │   ├── permissions.py    # RBAC permission classes (490 lines)
+│   │   │   ├── ai_client.py      # Unified AI client (Gemini + OpenAI)
+│   │   │   ├── middleware.py     # Correlation ID, logging
+│   │   │   └── health.py         # Health check endpoints
+│   │   │
+│   │   ├── departments/          # Department & specialty management
+│   │   ├── equipment/            # Medical equipment tracking
+│   │   ├── experience/           # Patient feedback & AI analysis
+│   │   ├── orders/               # Clinical orders (FHIR ServiceRequest)
+│   │   ├── patients/             # Patient records & EHR
+│   │   ├── pharmacy/             # Medication inventory & AI drug info
+│   │   ├── practitioners/        # Medical staff management
+│   │   ├── results/              # Diagnostic results & imaging
+│   │   ├── scheduling/           # Appointment booking
+│   │   └── shifts/               # Staff shift management
+│   │
 │   ├── healthcoreapi/            # Django project configuration
-│   │   ├── settings/             # Environment-specific settings (dev/test/prod)
-│   │   ├── asgi.py               # ASGI configuration for async support
-│   │   ├── celery.py             # Celery configuration for background tasks
-│   │   ├── urls.py               # URL routing and API versioning
-│   │   └── wsgi.py               # WSGI configuration for deployment
-│   ├── static/                   # Static files and assets
-│   ├── templates/                # HTML templates and email templates
-│   └── conftest.py               # Pytest fixtures and test configuration
+│   │   ├── settings/             # Environment-specific settings
+│   │   │   ├── base.py           # Base settings
+│   │   │   ├── development.py    # Development overrides
+│   │   │   ├── production.py     # Production settings
+│   │   │   └── test.py           # Test configuration
+│   │   ├── celery.py             # Celery configuration
+│   │   ├── urls.py               # URL routing & API versioning
+│   │   └── wsgi.py               # WSGI configuration
+│   │
+│   ├── static/                   # Static files
+│   ├── templates/                # HTML & email templates
+│   └── conftest.py               # Pytest fixtures
+│
 ├── .dockerignore                 # Docker build optimization
-├── .env.example                  # Environment variables template and documentation
+├── .env.example                  # Environment variables template
 ├── .gitignore                    # Git ignore patterns
-├── .pre-commit-config.yaml       # Automated code quality and security checks
-├── ARCHITECTURE.md               # System architecture and design documentation
-├── CONTRIBUTING.md               # Contribution guidelines and development workflow
-├── Dockerfile                    # Multi-stage Docker image with security hardening
+├── .pre-commit-config.yaml       # Code quality hooks
+├── ARCHITECTURE.md               # System architecture documentation
+├── CONTRIBUTING.md               # Contribution guidelines
+├── Dockerfile                    # Multi-stage Docker build
 ├── LICENSE                       # Apache-2.0 License
-├── Makefile                      # Development workflow automation
+├── Makefile                      # Development automation
 ├── README.md                     # This file
-├── ROADMAP.md                    # Project roadmap and feature development plan
-├── SECURITY.md                   # Security policies and vulnerability reporting
-├── STATUS.md                     # Current project status and completed features
-├── deploy.sh                     # Production deployment automation script
-├── docker-compose.yml            # Development environment orchestration
-├── docker-compose.prod.yml       # Production environment configuration
-├── docker-compose.override.yml   # Local development overrides
+├── ROADMAP.md                    # Project roadmap
+├── SECURITY.md                   # Security policies
+├── SHOWCASE.md                   # Technical showcase with screenshots
+├── STATUS.md                     # Current project status
+├── docker-compose.yml            # Development orchestration
+├── docker-compose.prod.yml       # Production configuration
+├── docker-compose.override.yml   # Local overrides
 ├── manage.py                     # Django management script
-├── mypy.ini                      # MyPy static type checking configuration
-├── nginx.conf                    # Nginx configuration for production deployment
-├── pyproject.toml                # Python project configuration and tool settings
-├── pytest.ini                   # Pytest configuration and coverage settings
-├── requirements.in               # Production dependencies specification
-├── requirements.txt              # Pinned production dependencies
-├── requirements-dev.in           # Development dependencies specification
-└── requirements-dev.txt          # Pinned development dependencies
+├── mypy.ini                      # MyPy configuration
+├── nginx.conf                    # Nginx production config
+├── pyproject.toml                # Python project config
+├── pytest.ini                    # Pytest configuration
+├── requirements.in               # Production dependencies
+├── requirements.txt              # Pinned dependencies
+├── requirements-dev.in           # Development dependencies
+└── requirements-dev.txt          # Pinned dev dependencies
 ```
 
 ---
