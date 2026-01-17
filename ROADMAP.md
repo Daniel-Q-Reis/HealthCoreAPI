@@ -262,10 +262,12 @@ This document outlines the tactical, sequential plan for implementing the featur
 
 ## Phase 15: Microservices Architecture (Go + DynamoDB)
 
-- [ ] **Slice 36: Audit Microservice Extraction (`feat/audit-microservice-go`)**
+- [x] **Slice 36: Audit Microservice Extraction (`feat/audit-microservice-go`)**
   - [x] Create ADR-0016 for Audit Microservice (Go + DynamoDB).
-  - [ ] Implement Go gRPC Service (v1.24).
-  - [ ] Implement Kafka Consumer for Audit Events.
-  - [ ] Implement DynamoDB Repository.
-  - [ ] Integrate Django with gRPC Client.
-  - [ ] Deploy with Azure Container Apps configuration.
+  - [x] Implement Go gRPC Service (v1.24).
+  - [x] Implement Kafka Consumer for Audit Events.
+  - [x] Implement DynamoDB Repository.
+  - [x] Integrate Django with gRPC Client.
+  - [x] End-to-end testing (gRPC + Kafka integration tests).
+  - [x] Create ADR-0017 for Pragmatic Linting Strategy.
+  - [ ] Deploy with Azure Container Apps configuration (future).
