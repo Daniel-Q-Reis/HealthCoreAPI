@@ -15,10 +15,12 @@ import django
 
 django.setup()
 
+from typing import Any  # noqa: E402
+
 from src.apps.core.services.grpc_client import AuditGRPCClient  # noqa: E402
 
 
-def test_grpc_connection():
+def test_grpc_connection() -> bool:
     """Test 1: Basic gRPC connection"""
     print("\n🧪 Test 1: Testing gRPC connection...")
     try:
@@ -32,7 +34,7 @@ def test_grpc_connection():
         return False
 
 
-def test_log_event():
+def test_log_event() -> str | None:
     """Test 2: Log an audit event via gRPC"""
     print("\n🧪 Test 2: Logging audit event via gRPC...")
     try:
@@ -56,7 +58,7 @@ def test_log_event():
         return None
 
 
-def test_get_logs(target_id):
+def test_get_logs(target_id: str) -> list[dict[str, Any]] | None:
     """Test 3: Retrieve audit logs via gRPC"""
     print(f"\n🧪 Test 3: Retrieving logs for target_id={target_id}...")
     try:

@@ -20,7 +20,7 @@ from src.apps.core.services.audit_logger import log_audit_event  # noqa: E402
 from src.apps.core.services.grpc_client import AuditGRPCClient  # noqa: E402
 
 
-def test_kafka_to_audit_service():
+def test_kafka_to_audit_service() -> bool:
     """Test: Publish event via Kafka, verify it reaches DynamoDB"""
     print("\n" + "=" * 60)
     print("🧪 KAFKA → GO AUDIT SERVICE INTEGRATION TEST")
