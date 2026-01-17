@@ -24,9 +24,9 @@ exclude = [
     "node_modules",
     "venv",
     # Protobuf generated files (DO NOT EDIT)
-    "**/proto/*_pb2.py",
-    "**/proto/*_pb2.pyi",
-    "**/proto/*_pb2_grpc.py",
+    "**/grpc_proto/*_pb2.py",
+    "**/grpc_proto/*_pb2.pyi",
+    "**/grpc_proto/*_pb2_grpc.py",
 ]
 
 [tool.ruff.lint]

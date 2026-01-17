@@ -13,7 +13,7 @@ from typing import Any, Optional
 import grpc
 from google.protobuf import json_format
 
-from src.apps.core.proto import audit_pb2, audit_pb2_grpc
+from src.apps.core.grpc_proto import audit_pb2, audit_pb2_grpc
 
 logger = logging.getLogger(__name__)
 
@@ -49,20 +49,20 @@ class AuditGRPCClient:
         self.port = port
         self.timeout = timeout
         self.channel: Optional[grpc.Channel] = None
-        self.stub = None
+        self.stub: Optional[Any] = None  # audit_pb2_grpc.AuditServiceStub
 
-    def connect(self):
+    def connect(self) -> None:
         """Establish connection to the Audit gRPC service."""
         try:
             target = f"{self.host}:{self.port}"
             self.channel = grpc.insecure_channel(target)
-            self.stub = audit_pb2_grpc.AuditServiceStub(self.channel)
+            self.stub = audit_pb2_grpc.AuditServiceStub(self.channel)  # type: ignore[no-untyped-call]
             logger.info(f"✅ Connected to Audit Service at {target}")
         except Exception as e:
             logger.error(f"❌ Failed to connect to Audit Service: {e}")
             raise
 
-    def close(self):
+    def close(self) -> None:
         """Close the gRPC channel."""
         if self.channel:
             self.channel.close()
@@ -110,9 +110,10 @@ class AuditGRPCClient:
                 timestamp=int(timestamp.timestamp()) if timestamp else 0,
             )
 
+            assert self.stub is not None, "Stub not initialized"
             response = self.stub.LogEvent(request, timeout=self.timeout)
             logger.info(f"✅ Audit event logged: {response.event_id}")
-            return response.event_id
+            return str(response.event_id)
 
         except grpc.RpcError as e:
             logger.error(f"❌ gRPC error logging event: {e.code()} - {e.details()}")
@@ -143,6 +144,7 @@ class AuditGRPCClient:
                 target_id=target_id, limit=limit, next_token=next_token or ""
             )
 
+            assert self.stub is not None, "Stub not initialized"
             response = self.stub.GetAuditLogs(request, timeout=self.timeout)
 
             logs = []
@@ -159,12 +161,12 @@ class AuditGRPCClient:
             logger.error(f"❌ Error retrieving audit logs: {e}")
             raise
 
-    def __enter__(self):
+    def __enter__(self) -> "AuditGRPCClient":
         """Context manager entry."""
         self.connect()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Context manager exit."""
         self.close()
 
