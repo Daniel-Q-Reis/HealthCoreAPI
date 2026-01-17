@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package audit;
+
+option go_package = "github.com/Daniel-Q-Reis/HealthCoreAPI/services/audit-service/proto";
+
+// Service definition
+service AuditService {
+    // Records a new audit event
+    rpc LogEvent (LogEventRequest) returns (LogEventResponse);
+
+    // Retrieves audit logs for a specific entity (e.g., Patient, User)
+    rpc GetAuditLogs (GetAuditLogsRequest) returns (GetAuditLogsResponse);
+}
+
+message LogEventRequest {
+    string actor_id = 1;       // Who performed the action (e.g., "DOC-123")
+    string action = 2;         // What action was performed (e.g., "PATIENT_VIEW")
+    string target_id = 3;      // ID of the resource accessed (e.g., "PAT-456")
+    string resource_type = 4;  // Type of resource (e.g., "PATIENT", "PRESCRIPTION")
+    string ip_address = 5;     // Source IP address
+    string user_agent = 6;     // Client user agent
+    string details = 7;        // JSON string with extra details (optional)
+    int64 timestamp = 8;       // Unix timestamp (optional, defaults to now)
+}
+
+message LogEventResponse {
+    bool success = 1;
+    string event_id = 2;
+}
+
+message GetAuditLogsRequest {
+    string target_id = 1;      // Entity ID to filter by (PK)
+    int32 limit = 2;           // Max number of records to return
+    string next_token = 3;     // Pagination token
+}
+
+message AuditLogEntry {
+    string event_id = 1;
+    string actor_id = 2;
+    string action = 3;
+    string target_id = 4;
+    string resource_type = 5;
+    string ip_address = 6;
+    string details = 7;
+    string timestamp = 8;      // ISO 8601 string
+}
+
+message GetAuditLogsResponse {
+    repeated AuditLogEntry logs = 1;
+    string next_token = 2;
+}

@@ -55,6 +55,13 @@
 | **Landing** | ✅ Complete | Hero, TechStack, Bilingual |
 | **Patients** | 🚧 In Progress | Patient Directory |
 | **Experience** | 📋 Planned | Feedback, AI Analysis |
+| **Audit** | 🚧 In Progress | Go Microservice, DynamoDB, gRPC |
+
+### Phase 15: Microservices Architecture
+- **Slice 36: Audit Microservice (`feat/audit-microservice-go`)** (In Progress)
+  - Extracting Audit Logs to Go Service
+  - Implementing DynamoDB and gRPC
+  - Target: Azure Container Apps
 
 ## Concluded
 

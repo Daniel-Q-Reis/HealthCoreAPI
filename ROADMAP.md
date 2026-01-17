@@ -252,3 +252,20 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [ ] Portfolio showcase section.
 
 *(This roadmap will be updated as slices are completed and new priorities are defined.)*
+
+## Phase 14: Documentation & Full-Stack Maturity
+
+- [x] **Slice 34: Documentation Debt Resolution (`docs/update-documentation`)**
+  - [x] Created ADR-0003 (Frontend JWT Browser Storage Strategy).
+  - [x] Restructured README: concise overview + detailed docs.
+  - [x] Created `docs/README_BACKEND.md` and `docs/README_FRONTEND.md`.
+
+## Phase 15: Microservices Architecture (Go + DynamoDB)
+
+- [ ] **Slice 36: Audit Microservice Extraction (`feat/audit-microservice-go`)**
+  - [x] Create ADR-0016 for Audit Microservice (Go + DynamoDB).
+  - [ ] Implement Go gRPC Service (v1.24).
+  - [ ] Implement Kafka Consumer for Audit Events.
+  - [ ] Implement DynamoDB Repository.
+  - [ ] Integrate Django with gRPC Client.
+  - [ ] Deploy with Azure Container Apps configuration.

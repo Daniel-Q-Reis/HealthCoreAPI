@@ -63,6 +63,28 @@ start_celery_worker() {
 # Handle signals gracefully
 trap 'log_warning "Received shutdown signal, stopping Celery worker..."; exit 0' SIGTERM SIGINT
 
+# Wait for volume to be ready (prevents I/O errors on Windows/WSL2)
+wait_for_volume() {
+    log "Checking if volume is mounted..."
+    local max_attempts=30
+    local attempt=0
+
+    while [ $attempt -lt $max_attempts ]; do
+        if [ -d "/usr/src/app/src/templates" ] && [ -r "/usr/src/app/src/templates/.gitkeep" ]; then
+            log_success "Volume is ready!"
+            return 0
+        fi
+
+        attempt=$((attempt + 1))
+        log "Waiting for volume mount... (attempt $attempt/$max_attempts)"
+        sleep 1
+    done
+
+    log_error "Timeout waiting for volume mount"
+    exit 1
+}
+
 # Main execution
+wait_for_volume
 wait_for_web_service
 start_celery_worker

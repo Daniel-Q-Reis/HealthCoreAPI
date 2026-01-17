@@ -275,3 +275,6 @@ pyrightconfig.json
 frontend/package-lock.json
 frontend/package-lock.json
 frontend/package-lock.json
+# Generated protobuf files
+**.pb.go
+*_grpc.pb.go
