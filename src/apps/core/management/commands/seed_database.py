@@ -462,11 +462,11 @@ class Command(BaseCommand):
                 for i in range(14):
                     day = today + datetime.timedelta(days=i)
 
-                    # Varied start times: 8 AM to 5 PM
-                    start_hour = 8
+                    # Slot times: 5 AM to 5 PM (12 hours = 24 slots)
+                    start_hour = 5
 
-                    # 18 slots per day (9 hours * 2 slots/hr) to cover 8am - 5pm
-                    for j in range(18):
+                    # 24 slots per day (12 hours * 2 slots/hr) to cover 5am - 5pm
+                    for j in range(24):
                         start_time = datetime.datetime.combine(
                             day,
                             datetime.time(start_hour + (j // 2), (j % 2) * 30),

@@ -323,7 +323,7 @@ class TestGenerateFutureSlotsTask:
     def test_slots_generated_within_business_hours(
         self, practitioner: Practitioner
     ) -> None:
-        """Test that slots are only created during business hours (8 AM - 5 PM)."""
+        """Test that slots are only created during business hours (5 AM - 5 PM)."""
         practitioner.role = "doctor"
         practitioner.save()
 
@@ -334,4 +334,4 @@ class TestGenerateFutureSlotsTask:
         slots = Slot.objects.filter(practitioner=practitioner)
         for slot in slots:
             start_hour = slot.start_time.hour
-            assert 8 <= start_hour < 17  # 8 AM to 5 PM (last slot starts at 4:30 PM)
+            assert 5 <= start_hour < 17  # 5 AM to 5 PM (last slot starts at 4:30 PM)

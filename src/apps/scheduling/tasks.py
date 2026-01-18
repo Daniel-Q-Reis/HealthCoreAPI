@@ -112,10 +112,11 @@ def generate_future_slots() -> None:
         current_date = today
 
         while current_date <= target_end_date:
-            # Create 18 slots per day (8 AM to 5 PM, 30-minute intervals)
-            for hour_offset in range(9):  # 9 hours: 8 AM to 5 PM
+            # Create 24 slots per day (5 AM to 5 PM, 30-minute intervals)
+            # 5 AM to 5 PM = 12 hours = 24 slots
+            for hour_offset in range(12):  # 12 hours: 5 AM to 5 PM
                 for minute_offset in [0, 30]:  # Two slots per hour
-                    start_hour = 8 + hour_offset
+                    start_hour = 5 + hour_offset
                     from datetime import datetime, time
 
                     start_time = timezone.make_aware(
