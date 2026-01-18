@@ -271,3 +271,16 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] End-to-end testing (gRPC + Kafka integration tests).
   - [x] Create ADR-0017 for Pragmatic Linting Strategy.
   - [ ] Deploy with Azure Container Apps configuration (future).
+
+## Phase 16: Pre-Deployment Adjustments
+
+- [x] **Slice 37: Pre-Deployment Final Adjustments (`chore/pre-deployment-final-adjustments`)**
+  - [x] Fix django-allauth deprecation warnings (ACCOUNT.SIGNUP_FIELDS configuration).
+  - [x] Implement Celery scheduled tasks per ADR 0003:
+    - [x] Daily appointment reminders (24-hour schedule)
+    - [x] Hourly auto-completion of past appointments
+    - [x] Weekly slot generation for 14-day rolling availability
+  - [x] All tasks use dynamic date calculations for automation.
+  - [x] Write comprehensive unit tests (11 tests, 100% pass rate).
+  - [x] Verify Azure Open AI configuration and integration.
+  - [x] Ensure all code passes linting (Ruff) and type checking (MyPy).
