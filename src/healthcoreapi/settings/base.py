@@ -455,6 +455,23 @@ ACCOUNT = {
 }
 ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
 
+# Suppress dj-rest-auth internal deprecation warnings
+# The library hasn't been updated yet to use SIGNUP_FIELDS API
+import warnings  # noqa: E402
+
+warnings.filterwarnings(
+    "ignore",
+    message="app_settings.USERNAME_REQUIRED is deprecated",
+    category=UserWarning,
+    module="dj_rest_auth.registration.serializers",
+)
+warnings.filterwarnings(
+    "ignore",
+    message="app_settings.EMAIL_REQUIRED is deprecated",
+    category=UserWarning,
+    module="dj_rest_auth.registration.serializers",
+)
+
 # Development: Print emails to console instead of sending (fixes 500 error)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
