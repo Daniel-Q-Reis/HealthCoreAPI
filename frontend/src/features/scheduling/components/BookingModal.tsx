@@ -54,23 +54,37 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
         );
     }
 
-    // Group slots by date, filtering out past dates
-    // Group slots by date, filtering out past dates
+    // Helper function to format time in UTC (hospital timezone)
+    const formatTimeInHospitalTZ = (utcDateString: string) => {
+        const utcDate = new Date(utcDateString);
+
+        // Use UTC hours/minutes directly (no conversion)
+        const hours = utcDate.getUTCHours();
+        const minutes = utcDate.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        const displayMinutes = minutes.toString().padStart(2, '0');
+
+        return `${displayHours}:${displayMinutes} ${ampm}`;
+    };
+
+    // Group slots by date in UTC
     const slotsByDate = slots.reduce((acc, slot) => {
-        const slotDate = new Date(slot.start_time);
+        const utcDate = new Date(slot.start_time);
+
         const today = new Date();
 
-        // Fix: Use local date strings for comparison to avoid timezone shifts
-        // (e.g. 8 PM today should not be filtered out if UTC thinks it's tomorrow,
-        // and yesterday should definitely be gone).
-        const slotDateStr = slotDate.toLocaleDateString('en-CA'); // YYYY-MM-DD local
-        const todayStr = today.toLocaleDateString('en-CA');       // YYYY-MM-DD local
+        // Compare dates in UTC
+        const slotDateOnly = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate()));
+        const todayOnly = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
 
-        // If simple string comparison (lexicographical) shows it's before today
-        if (slotDateStr < todayStr) return acc;
+        // Skip past dates
+        if (slotDateOnly < todayOnly) return acc;
 
-        if (!acc[slotDateStr]) acc[slotDateStr] = [];
-        acc[slotDateStr].push(slot);
+        // Group by UTC date (YYYY-MM-DD)
+        const dateKey = utcDate.toISOString().split('T')[0];
+        if (!acc[dateKey]) acc[dateKey] = [];
+        acc[dateKey].push(slot);
         return acc;
     }, {} as Record<string, Slot[]>);
 
@@ -140,7 +154,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
                                                             : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'}
                                                     `}
                                                 >
-                                                    {format(new Date(slot.start_time), 'h:mm a')}
+                                                    {formatTimeInHospitalTZ(slot.start_time)}
                                                 </button>
                                             ))}
                                         </div>
