@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { HeaderDropdown } from '@/shared/components/HeaderDropdown';
 import { SecurityModal } from '@/shared/components/SecurityModal';
+import { DarkModeToggle } from '@/shared/components/ui/DarkModeToggle';
 
 export const HomePage = () => {
     const [modalConfig, setModalConfig] = useState<{ isOpen: boolean, title: string, url: string }>(
@@ -14,12 +15,12 @@ export const HomePage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors">
             {/* Navigation */}
-            <nav className="bg-[#004B87] text-white">
+            <nav className="bg-[#004B87] dark:bg-slate-900 text-white transition-colors">
                 <div className="container mx-auto px-4">
                     {/* Top Bar */}
-                    <div className="flex justify-between items-center py-2 text-sm border-b border-white/20">
+                    <div className="flex justify-between items-center py-2 text-sm border-b border-white/20 dark:border-slate-700">
                         <div className="flex gap-6">
                             <a href="#" className="hover:text-gray-200">Explore DQR Health</a>
                             <a href="#" className="hover:text-gray-200">myDQRHealth</a>
@@ -59,6 +60,7 @@ export const HomePage = () => {
                             />
                         </div>
                         <div className="flex gap-4 items-center">
+                            <DarkModeToggle />
                             <span>📞 +55 (11) 9999-9999</span>
                             <button className="hover:text-gray-200">🌐 Translate</button>
                             <button className="hover:text-gray-200">🔍 Search</button>
@@ -89,15 +91,15 @@ export const HomePage = () => {
             </nav>
 
             {/* Hero Section */}
-            <section className="relative h-[600px] overflow-hidden">
+            <section className="relative h-[600px] overflow-hidden bg-gray-50 dark:bg-zinc-900 transition-colors">
                 {/* Background Image */}
-                <div className="absolute inset-0">
+                <div className="absolute inset-0 opacity-100 dark:opacity-50 transition-opacity">
                     <img
                         src="/docs/images/Gemini_Generated_Image_5i1ve15i1ve15i1v.png"
                         alt="DQR Health Medical Center"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#004B87]/90 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#004B87]/90 to-transparent dark:from-zinc-900 dark:to-zinc-900/0" />
                 </div>
 
                 {/* Content */}
@@ -116,7 +118,7 @@ export const HomePage = () => {
                         <h1 className="text-5xl md:text-6xl font-bold mb-4">
                             DQR Health Medical Center
                         </h1>
-                        <p className="text-xl md:text-2xl mb-8 text-gray-100">
+                        <p className="text-xl md:text-2xl mb-8 text-gray-100 dark:text-gray-300">
                             Advanced Healthcare with AI-Powered Intelligence
                         </p>
 
@@ -141,26 +143,26 @@ export const HomePage = () => {
                 </div>
 
                 {/* Bottom Tabs */}
-                <div className="absolute bottom-0 left-0 right-0 bg-white shadow-lg">
+                <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-lg transition-colors">
                     <div className="container mx-auto px-4">
-                        <div className="flex gap-8 text-[#004B87] font-semibold">
-                            <a href="#about" className="py-4 border-b-4 border-[#004B87]">About the Medical Center</a>
-                            <a href="#patients" className="py-4 hover:text-[#0066CC]">For Patients & Visitors</a>
-                            <a href="#resources" className="py-4 hover:text-[#0066CC]">Health Resources</a>
-                            <a href="#units" className="py-4 hover:text-[#0066CC]">Our Units & Floors</a>
+                        <div className="flex gap-8 text-[#004B87] dark:text-blue-400 font-semibold">
+                            <a href="#about" className="py-4 border-b-4 border-[#004B87] dark:border-blue-500">About the Medical Center</a>
+                            <a href="#patients" className="py-4 hover:text-[#0066CC] dark:hover:text-blue-300">For Patients & Visitors</a>
+                            <a href="#resources" className="py-4 hover:text-[#0066CC] dark:hover:text-blue-300">Health Resources</a>
+                            <a href="#units" className="py-4 hover:text-[#0066CC] dark:hover:text-blue-300">Our Units & Floors</a>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Respected Around the World Section */}
-            <section className="py-16 bg-gray-50">
+            <section className="py-16 bg-gray-50 dark:bg-slate-900 transition-colors">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-4xl font-bold text-[#004B87] mb-6">
+                    <h2 className="text-4xl font-bold text-[#004B87] dark:text-blue-400 mb-6">
                         Respected Around the World for Research and Patient Care
                     </h2>
                     <div className="grid md:grid-cols-2 gap-12">
-                        <div className="space-y-4 text-gray-700 leading-relaxed">
+                        <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
                             <p>
                                 DQR Health Medical Center has been a beacon of medical excellence since its founding.
                                 Renowned for its award-winning care, the hospital prioritizes healing through open spaces,
@@ -204,15 +206,15 @@ export const HomePage = () => {
             </section>
 
             {/* AI-Powered Features Section */}
-            <section className="py-16 bg-white">
+            <section className="py-16 bg-white dark:bg-slate-950 transition-colors">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-4xl font-bold text-[#004B87] mb-12 text-center">
+                    <h2 className="text-4xl font-bold text-[#004B87] dark:text-blue-400 mb-12 text-center">
                         AI-Powered Healthcare Innovation
                     </h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] dark:bg-slate-900 text-white p-8 rounded-2xl shadow-xl border border-transparent dark:border-slate-800"
                         >
                             <div className="text-4xl mb-4">🧬</div>
                             <h3 className="text-2xl font-bold mb-4">AI Pharmacy Assistant</h3>
@@ -222,7 +224,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/pharmacy"
-                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white dark:bg-slate-800 text-[#004B87] dark:text-blue-300 px-6 py-2 rounded font-semibold hover:bg-gray-100 dark:hover:bg-slate-700 transition"
                             >
                                 Try AI Assistant
                             </Link>
@@ -230,7 +232,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] dark:bg-slate-900 text-white p-8 rounded-2xl shadow-xl border border-transparent dark:border-slate-800"
                         >
                             <div className="text-4xl mb-4">📊</div>
                             <h3 className="text-2xl font-bold mb-4">Smart Diagnostics</h3>
@@ -240,7 +242,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/dashboard"
-                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white dark:bg-slate-800 text-[#004B87] dark:text-blue-300 px-6 py-2 rounded font-semibold hover:bg-gray-100 dark:hover:bg-slate-700 transition"
                             >
                                 View Dashboard
                             </Link>
@@ -248,7 +250,7 @@ export const HomePage = () => {
 
                         <motion.div
                             whileHover={{ y: -5 }}
-                            className="bg-[#003366] text-white p-8 rounded-2xl shadow-xl"
+                            className="bg-[#003366] dark:bg-slate-900 text-white p-8 rounded-2xl shadow-xl border border-transparent dark:border-slate-800"
                         >
                             <div className="text-4xl mb-4">💬</div>
                             <h3 className="text-2xl font-bold mb-4">Patient Experience AI</h3>
@@ -258,7 +260,7 @@ export const HomePage = () => {
                             </p>
                             <Link
                                 to="/dqr-health/experience"
-                                className="inline-block bg-white text-[#004B87] px-6 py-2 rounded font-semibold hover:bg-gray-100 transition"
+                                className="inline-block bg-white dark:bg-slate-800 text-[#004B87] dark:text-blue-300 px-6 py-2 rounded font-semibold hover:bg-gray-100 dark:hover:bg-slate-700 transition"
                             >
                                 Share Feedback
                             </Link>
@@ -268,7 +270,7 @@ export const HomePage = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-[#003366] text-white py-12">
+            <footer className="bg-[#003366] dark:bg-slate-900 text-white py-12 transition-colors">
                 <div className="container mx-auto px-4">
                     <div className="grid md:grid-cols-4 gap-8">
                         <div>

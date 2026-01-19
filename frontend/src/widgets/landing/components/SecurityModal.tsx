@@ -17,13 +17,13 @@ export const SecurityModal = ({ isOpen, onClose, title, videoUrl }: SecurityModa
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-            <div className="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col border border-slate-700">
-                <div className="flex justify-between items-center p-4 border-b border-slate-700 bg-slate-800">
+            <div className="bg-white dark:bg-dark-surface rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col border border-gray-200 dark:border-dark-border transition-colors">
+                <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-zinc-900 transition-colors">
                     <div className="flex items-center gap-3">
-                        <FaYoutube className="text-red-500 text-2xl" />
-                        <h3 className="text-xl font-bold text-white">{title}</h3>
+                        <FaYoutube className="text-red-600 dark:text-red-500 text-2xl" />
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-zinc-100 transition-colors">{title}</h3>
                     </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition-colors">
                         <FaTimes className="text-2xl" />
                     </button>
                 </div>

@@ -5,7 +5,11 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Inter', sans-serif;
+  @apply bg-white text-slate-900 transition-colors duration-300;
+}
+
+:root[class~="dark"] body {
+  @apply bg-[#09090b] text-zinc-100;
 }
 
 .tech-font {
