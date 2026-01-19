@@ -32,6 +32,15 @@ HealthCoreAPI is a **comprehensive hospital management system** built with **ent
 
 ---
 
+### Dark Mode Experience
+
+| Homepage (Dark) | Scheduling (Dark) |
+|:---:|:---:|
+| ![Dark Homepage](frontend/public/images/project/dark_homepage.png) | ![Dark Schedule](frontend/public/images/project/dark_schedule.png) |
+| *Fully integrated Dark Mode using a "Graphite/Charcoal" theme for visual comfort and reduced eye strain during night shifts.* | *Consistent dark theme application across complex interfaces like the scheduling grid, ensuring clarity and contrast.* |
+
+---
+
 ### Authentication
 
 | Login Modal | Google OAuth |
