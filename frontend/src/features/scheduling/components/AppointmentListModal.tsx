@@ -59,8 +59,29 @@ export const AppointmentListModal: React.FC<AppointmentListModalProps> = ({
                             {upcomingAppointments.map((apt) => {
                                 const slot = apt.slot as any;
                                 const practitioner = apt.practitioner as any; // expanded
-                                const startTime = new Date(slot.start_time);
-                                const endTime = new Date(slot.end_time);
+
+                                // Parse UTC times and display them directly (no timezone conversion)
+                                const startTimeUTC = new Date(slot.start_time);
+                                const endTimeUTC = new Date(slot.end_time);
+
+                                // Format time in UTC
+                                const formatUTCTime = (date: Date) => {
+                                    const hours = date.getUTCHours();
+                                    const minutes = date.getUTCMinutes();
+                                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                                    const displayHours = hours % 12 || 12;
+                                    const displayMinutes = minutes.toString().padStart(2, '0');
+                                    return `${displayHours}:${displayMinutes} ${ampm}`;
+                                };
+
+                                // Format date in UTC
+                                const formatUTCDate = (date: Date, formatStr: string) => {
+                                    const year = date.getUTCFullYear();
+                                    const month = date.getUTCMonth();
+                                    const day = date.getUTCDate();
+                                    const utcDate = new Date(Date.UTC(year, month, day));
+                                    return format(utcDate, formatStr);
+                                };
 
                                 return (
                                     <div
@@ -69,16 +90,16 @@ export const AppointmentListModal: React.FC<AppointmentListModalProps> = ({
                                     >
                                         {/* Date Box */}
                                         <div className="bg-blue-50 text-[#003B5C] p-3 rounded-lg text-center min-w-[80px]">
-                                            <div className="text-xs font-bold uppercase">{format(startTime, 'MMM')}</div>
-                                            <div className="text-2xl font-bold">{format(startTime, 'dd')}</div>
-                                            <div className="text-xs text-gray-500">{format(startTime, 'yyyy')}</div>
+                                            <div className="text-xs font-bold uppercase">{formatUTCDate(startTimeUTC, 'MMM')}</div>
+                                            <div className="text-2xl font-bold">{formatUTCDate(startTimeUTC, 'dd')}</div>
+                                            <div className="text-xs text-gray-500">{formatUTCDate(startTimeUTC, 'yyyy')}</div>
                                         </div>
 
                                         {/* Details */}
                                         <div className="flex-1">
                                             <div className="flex items-center gap-2 text-[#003B5C] font-semibold text-lg mb-1">
                                                 <FaClock className="text-[#2774AE]" />
-                                                {format(startTime, 'h:mm a')} - {format(endTime, 'h:mm a')}
+                                                {formatUTCTime(startTimeUTC)} - {formatUTCTime(endTimeUTC)}
                                             </div>
 
                                             <div className="flex items-center gap-2 text-gray-700 mb-2">

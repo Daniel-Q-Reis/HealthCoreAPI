@@ -68,21 +68,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
         return `${displayHours}:${displayMinutes} ${ampm}`;
     };
 
-    // Group slots by date in UTC
+    // Group slots by date in UTC, filtering out past slots
     const slotsByDate = slots.reduce((acc, slot) => {
-        const utcDate = new Date(slot.start_time);
+        const slotDate = new Date(slot.start_time);
+        const now = new Date();
 
-        const today = new Date();
-
-        // Compare dates in UTC
-        const slotDateOnly = new Date(Date.UTC(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate()));
-        const todayOnly = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-
-        // Skip past dates
-        if (slotDateOnly < todayOnly) return acc;
+        // Skip slots that have already passed (compare full timestamps)
+        if (slotDate < now) return acc;
 
         // Group by UTC date (YYYY-MM-DD)
-        const dateKey = utcDate.toISOString().split('T')[0];
+        const dateKey = slotDate.toISOString().split('T')[0];
         if (!acc[dateKey]) acc[dateKey] = [];
         acc[dateKey].push(slot);
         return acc;
