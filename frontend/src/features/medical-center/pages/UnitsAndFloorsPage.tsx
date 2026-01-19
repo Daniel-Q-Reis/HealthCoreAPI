@@ -45,7 +45,7 @@ export const UnitsAndFloorsPage = () => {
                 image="/images/full_hospital.png"
             />
 
-            <div className="py-16 bg-gray-50">
+            <div className="py-16 bg-gray-50 dark:bg-dark-bg transition-colors">
                 <div className="container mx-auto px-4">
                     <div className="space-y-16">
                         {units.map((unit, index) => (
@@ -59,7 +59,7 @@ export const UnitsAndFloorsPage = () => {
                                         <img
                                             src={unit.image}
                                             alt={unit.title}
-                                            className="w-full h-80 object-cover transform group-hover:scale-105 transition duration-700"
+                                            className="w-full h-80 object-cover transform group-hover:scale-105 transition duration-700 dark:opacity-90"
                                         />
                                         <div className="absolute top-4 left-4 bg-[#FFD100] text-[#003B5C] font-bold px-4 py-1 rounded shadow-md">
                                             {unit.floor}
@@ -69,11 +69,11 @@ export const UnitsAndFloorsPage = () => {
 
                                 {/* Content */}
                                 <div className="w-full lg:w-1/2">
-                                    <h2 className="text-3xl font-bold text-[#003B5C] mb-6 relative">
+                                    <h2 className="text-3xl font-bold text-[#003B5C] dark:text-zinc-100 mb-6 relative">
                                         {unit.title}
                                         <span className="block h-1 w-20 bg-[#00A3AD] mt-2 rounded"></span>
                                     </h2>
-                                    <p className="text-lg text-gray-700 leading-relaxed">
+                                    <p className="text-lg text-gray-700 dark:text-zinc-300 leading-relaxed">
                                         {unit.desc}
                                     </p>
                                 </div>

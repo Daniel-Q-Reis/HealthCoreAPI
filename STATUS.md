@@ -1,11 +1,11 @@
 # Project Status
 
-**Last Updated:** 01/17/2026
+**Last Updated:** 01/18/2026
 **Owner:** Daniel Reis
 
-## Current Status: Phase 14 - Documentation & Frontend Development 🚧
+## Current Status: Phase 16 - Pre-Deployment Final Adjustments ✅
 
-**Latest Achievement**: Comprehensive documentation restructuring with detailed READMEs, frontend ADRs, and project organization.
+**Latest Achievement**: Completed pre-deployment adjustments: fixed django-allauth deprecation warnings, implemented three Celery scheduled tasks with dynamic date handling (daily reminders, hourly auto-completion, weekly slot generation), confirmed Azure OpenAI configuration.
 
 ## In Progress
 
@@ -22,12 +22,12 @@
   - Added real-world use cases for Pharmacy AI and Experience AI
   - Highlighted competitive advantages and production-ready status
 
-- **Slice 32: UV Dependency Management** (Next)
+- **Slice 32: UV Dependency Management** ✅
   - Migrate from pip-tools to UV
   - 10-100x faster dependency installation
   - Update CI/CD pipeline
 
-- **Slice 33: Parallel Testing with pytest-xdist** (Next)
+- **Slice 33: Parallel Testing with pytest-xdist** ✅
   - Configure parallel test execution
   - Reduce test execution time by 50-70%
 
@@ -40,10 +40,24 @@
   - Added 6-image gallery in main README
   - Updated ADR-0013 with folder structure decision note
 
-- **Slice 35: Frontend Phase 1 - AI-Enabled Modules** (In Progress)
+- **Slice 35: Frontend Phase 1 - AI-Enabled Modules** ✅
   - Pharmacy module with inventory and dispensation
   - Scheduling module with appointment booking
   - Auth module with Google OAuth and JWT
+
+### Phase 16: Pre-Deployment Final Adjustments ✅
+- **Pre-Deployment Adjustments (`chore/pre-deployment-final-adjustments`)** ✅
+  - Fixed django-allauth deprecation warnings in settings configuration
+  - Implemented three Celery scheduled tasks for appointment automation:
+    - Daily appointment reminders (executes every 24 hours)
+    - Hourly auto-completion of past appointments
+    - Weekly slot generation for 14-day rolling availability
+  - All tasks use dynamic date calculations (`timezone.now()`)
+  - Created 11 comprehensive unit tests (100% pass rate)
+  - Confirmed Azure OpenAI configuration and integration
+  - All linting (Ruff) and type checking (MyPy) passing
+  - **New:** Implemented Dark Mode for Frontend (consistent "Graphite/Charcoal" theme)
+  - **New:** Achieved >90% test coverage (90.28% with 283 tests)
 
 ### Frontend Implementation Status
 

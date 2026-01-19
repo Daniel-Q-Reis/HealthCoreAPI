@@ -17,8 +17,8 @@ export const schedulingApi = {
         // This ensures the backend (PractitionerViewSet) returns actual doctors even if they are deep in the db.
         const term = search ? `${search} doctor` : 'doctor';
 
-        // Request 1000 items as requested by user to ensure we capture all doctors
-        const params = { search: term, limit: 1000, page_size: 1000 };
+        // Request 10000 items to ensure we capture all doctors
+        const params = { search: term, limit: 10000, page_size: 10000 };
         const response = await api.get('/v1/practitioners/', { params });
         const data = response.data.results || response.data;
 
@@ -40,7 +40,7 @@ export const schedulingApi = {
         // In a real app, filtering by date range is essential
         // For MVP, getting all slots for the practitioner
         const response = await api.get('/v1/scheduling/slots/', {
-            params: { practitioner: practitionerId, is_booked: false, limit: 1000, page_size: 1000 }
+            params: { practitioner: practitionerId, is_booked: false, limit: 10000, page_size: 10000 }
         });
         const allSlots = response.data.results || response.data;
 

@@ -14,7 +14,7 @@ HealthCoreAPI is a **comprehensive hospital management system** built with **ent
 
 ### Key Achievements
 
-- ✅ **90.31% Test Coverage** with 229 comprehensive tests
+- ✅ **90.28% Test Coverage** with 283 comprehensive tests
 - ✅ **100% Type Safety** with MyPy strict mode (zero errors)
 - ✅ **Event-Driven Architecture** with Kafka streaming
 - ✅ **Production-Ready** CI/CD with automated quality gates
@@ -29,6 +29,15 @@ HealthCoreAPI is a **comprehensive hospital management system** built with **ent
 ### Landing Page
 ![Landing Page](frontend/public/images/project/landingpage5173.png)
 *Modern React + TypeScript landing page showcasing the project's technical capabilities, features, and bilingual support (PT/EN). Built with Tailwind CSS and smooth animations.*
+
+---
+
+### Dark Mode Experience
+
+| Homepage (Dark) | Scheduling (Dark) |
+|:---:|:---:|
+| ![Dark Homepage](frontend/public/images/project/dark_homepage.png) | ![Dark Schedule](frontend/public/images/project/dark_schedule.png) |
+| *Fully integrated Dark Mode using a "Graphite/Charcoal" theme for visual comfort and reduced eye strain during night shifts.* | *Consistent dark theme application across complex interfaces like the scheduling grid, ensuring clarity and contrast.* |
 
 ---
 
@@ -89,7 +98,7 @@ HealthCoreAPI is a **comprehensive hospital management system** built with **ent
 | Docker Containers | Test Coverage |
 |:---:|:---:|
 | ![Containers](frontend/public/images/project/project_containers.png) | ![Coverage](frontend/public/images/project/test_coverage.png) |
-| *Full microservices stack: Django, Go Audit Service, PostgreSQL, DynamoDB, Kafka, Redis, Prometheus, Grafana* | *89.41% test coverage across 264 tests with MyPy strict mode compliance* |
+| *Full microservices stack: Django, Go Audit Service, PostgreSQL, DynamoDB, Kafka, Redis, Prometheus, Grafana* | *90.28% test coverage across 283 tests with MyPy strict mode compliance* |
 
 ---
 
@@ -294,7 +303,7 @@ Not just backend - complete solution:
 
 ### Code Quality
 
-- **Test Coverage**: 90.31% (264 tests)
+- **Test Coverage**: 90.28% (283 tests)
 - **Type Safety**: 100% (MyPy strict mode, 0 errors)
 - **Code Style**: 100% (Ruff, 0 violations)
 - **Security**: 0 critical vulnerabilities

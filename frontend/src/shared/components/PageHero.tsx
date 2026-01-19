@@ -11,15 +11,15 @@ interface PageHeroProps {
 
 export const PageHero: React.FC<PageHeroProps> = ({ title, description, image, parentSection = "Medical Center" }) => {
     return (
-        <div className="bg-[#003B5C] text-white py-12 relative overflow-hidden -mt-[108px] pt-[150px]">
+        <div className="bg-[#003B5C] dark:bg-zinc-900 text-white py-12 relative overflow-hidden -mt-[108px] pt-[150px] transition-colors">
             {/* Background Image */}
-            <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0 opacity-20 dark:opacity-50 transition-opacity">
                 <img
                     src={image}
                     alt="Background"
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#003B5C] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#003B5C] to-transparent dark:from-zinc-900 dark:to-zinc-900/0 transition-colors" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">

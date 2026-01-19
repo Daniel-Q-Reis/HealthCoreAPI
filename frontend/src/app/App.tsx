@@ -4,6 +4,8 @@ import { LandingPage } from '@/pages/landing';
 import { DQRHealthRoutes } from '@/pages/dqr-health';
 import '@/app/styles/index.css';
 
+import { ThemeProvider } from '@/shared/contexts/ThemeContext';
+
 // Create a client
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -16,16 +18,18 @@ const queryClient = new QueryClient({
 
 export function App() {
     return (
-        <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-                <Routes>
-                    {/* Landing Page (Portfolio) */}
-                    <Route path="/" element={<LandingPage />} />
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <Routes>
+                        {/* Landing Page (Portfolio) */}
+                        <Route path="/" element={<LandingPage />} />
 
-                    {/* DQR Health Application */}
-                    <Route path="/dqr-health/*" element={<DQRHealthRoutes />} />
-                </Routes>
-            </BrowserRouter>
-        </QueryClientProvider>
+                        {/* DQR Health Application */}
+                        <Route path="/dqr-health/*" element={<DQRHealthRoutes />} />
+                    </Routes>
+                </BrowserRouter>
+            </QueryClientProvider>
+        </ThemeProvider>
     );
 }

@@ -350,7 +350,7 @@ class IsMedicalStaff(permissions.BasePermission):
             request.user
             and request.user.is_authenticated
             and request.user.groups.filter(
-                name__in=["Doctors", "Nurses", "Pharmacists"]
+                name__in=["Doctors", "Nurses", "Pharmacists", "Admins"]
             ).exists()
         )
 

@@ -213,13 +213,13 @@ class TestIsMedicalStaffPermission:
         permission = IsMedicalStaff()
         assert permission.has_permission(request, None) is False
 
-    def test_admin_is_not_medical_staff(self, admin_user, request_factory):
-        """Test that Admin is NOT considered medical staff."""
+    def test_admin_is_medical_staff(self, admin_user, request_factory):
+        """Test that Admin IS considered medical staff (fixes AI Permission 403)."""
         request = request_factory.get("/")
         request.user = admin_user
 
         permission = IsMedicalStaff()
-        assert permission.has_permission(request, None) is False
+        assert permission.has_permission(request, None) is True
 
 
 @pytest.mark.django_db

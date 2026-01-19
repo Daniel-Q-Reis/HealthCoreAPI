@@ -4,6 +4,7 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {
@@ -24,7 +25,13 @@ export default {
                     800: '#3730a3',
                     900: '#312e81',
                     950: '#1e1b4b',
-                }
+                    26: '#1e1b4b',
+                },
+                // Custom Dark Mode Palette - Graphite/Zinc
+                'dark-bg': '#09090b', // Zinc-950
+                'dark-surface': '#18181b', // Zinc-900
+                'dark-border': '#27272a', // Zinc-800
+                'dark-hover': '#27272a', // Zinc-800
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],

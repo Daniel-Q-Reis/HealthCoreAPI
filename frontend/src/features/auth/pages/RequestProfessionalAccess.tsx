@@ -88,13 +88,13 @@ export function RequestProfessionalAccess() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="min-h-screen bg-gray-50 dark:bg-dark-bg flex items-center justify-center p-4 transition-colors">
+                <div className="max-w-md w-full bg-white dark:bg-dark-surface rounded-xl shadow-lg p-8 text-center transition-colors">
                     <div className="flex justify-center mb-4">
                         <FaCheckCircle className="text-green-500 text-6xl" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Request Submitted!</h2>
-                    <p className="text-gray-600 mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-zinc-100 mb-2">Request Submitted!</h2>
+                    <p className="text-gray-600 dark:text-zinc-400 mb-6">
                         Your request for professional access involves manual verification.
                         Our team will review your credentials within 24-48 hours.
                     </p>
@@ -120,27 +120,27 @@ export function RequestProfessionalAccess() {
     return (
 
         <MainLayout>
-            <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-gray-50 dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8 transition-colors">
                 <div className="max-w-3xl mx-auto">
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div className="bg-white dark:bg-dark-surface rounded-xl shadow-lg overflow-hidden transition-colors">
                         {/* Header */}
-                        <div className="bg-[#2774AE] px-8 py-6">
+                        <div className="bg-[#2774AE] dark:bg-zinc-800 px-8 py-6 transition-colors">
                             <h1 className="text-3xl font-bold text-white">Request Professional Access</h1>
-                            <p className="text-blue-100 mt-2">
+                            <p className="text-blue-100 dark:text-zinc-400 mt-2">
                                 Submit your credentials for verification to access clinical features.
                             </p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-8 space-y-8">
                             {error && (
-                                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
                                     {error}
                                 </div>
                             )}
 
                             {/* 1. Role Selection */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4 pb-2 border-b dark:border-zinc-700">
                                     1. Select Role
                                 </h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -150,8 +150,8 @@ export function RequestProfessionalAccess() {
                                             className={`
                                                 flex items-center justify-center p-4 border rounded-lg cursor-pointer transition-all
                                                 ${formData.role_requested === role
-                                                    ? 'border-[#2774AE] bg-blue-50 text-[#2774AE] ring-2 ring-[#2774AE] ring-opacity-50'
-                                                    : 'border-gray-200 hover:border-[#2774AE]'}
+                                                    ? 'border-[#2774AE] bg-blue-50 dark:bg-blue-900/20 text-[#2774AE] dark:text-blue-400 ring-2 ring-[#2774AE] ring-opacity-50'
+                                                    : 'border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:border-[#2774AE] dark:hover:border-blue-400'}
                                             `}
                                         >
                                             <input
@@ -170,12 +170,12 @@ export function RequestProfessionalAccess() {
 
                             {/* 2. License Information */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4 pb-2 border-b dark:border-zinc-700">
                                     2. License Information
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
                                             License Number *
                                         </label>
                                         <input
@@ -184,12 +184,12 @@ export function RequestProfessionalAccess() {
                                             value={formData.license_number}
                                             onChange={handleInputChange}
                                             required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none transition-colors"
                                             placeholder="e.g. A1234567"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
                                             License State *
                                         </label>
                                         <select
@@ -197,7 +197,7 @@ export function RequestProfessionalAccess() {
                                             value={formData.license_state}
                                             onChange={handleInputChange}
                                             required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none"
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none transition-colors"
                                         >
                                             <option value="">Select State</option>
                                             {US_STATES.map((state) => (
@@ -207,7 +207,7 @@ export function RequestProfessionalAccess() {
                                     </div>
                                     {formData.role_requested === 'Doctors' && (
                                         <div className="sm:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
                                                 Specialty
                                             </label>
                                             <input
@@ -215,7 +215,7 @@ export function RequestProfessionalAccess() {
                                                 name="specialty"
                                                 value={formData.specialty}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none"
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none transition-colors"
                                                 placeholder="e.g. Cardiology, Pediatrics"
                                             />
                                         </div>
@@ -225,20 +225,20 @@ export function RequestProfessionalAccess() {
 
                             {/* 3. Documents */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4 pb-2 border-b dark:border-zinc-700">
                                     3. Required Documents
                                 </h3>
                                 <div className="space-y-6">
                                     {/* License Document (Required) */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
                                             Professional License (PDF/Image) *
                                         </label>
                                         <div className="flex items-center justify-center w-full">
-                                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-zinc-700 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <FaUpload className="w-8 h-8 text-gray-400 mb-2" />
-                                                    <p className="text-sm text-gray-500">
+                                                    <FaUpload className="w-8 h-8 text-gray-400 dark:text-zinc-500 mb-2" />
+                                                    <p className="text-sm text-gray-500 dark:text-zinc-400">
                                                         {files.license_document ? files.license_document.name : 'Click to upload or drag and drop'}
                                                     </p>
                                                 </div>
@@ -256,13 +256,13 @@ export function RequestProfessionalAccess() {
 
                                     {/* Certification (Optional) */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
                                             Board Certification (Optional)
                                         </label>
                                         <div className="flex items-center justify-center w-full">
-                                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                            <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 dark:border-zinc-700 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors">
                                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <p className="text-sm text-gray-500">
+                                                    <p className="text-sm text-gray-500 dark:text-zinc-400">
                                                         {files.certification_document ? files.certification_document.name : 'Click to upload or drag and drop'}
                                                     </p>
                                                 </div>
@@ -281,11 +281,11 @@ export function RequestProfessionalAccess() {
 
                             {/* 4. Reason */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 pb-2 border-b">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 mb-4 pb-2 border-b dark:border-zinc-700">
                                     4. Reason for Request
                                 </h3>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
                                         Please explain why you need professional access *
                                     </label>
                                     <textarea
@@ -295,10 +295,10 @@ export function RequestProfessionalAccess() {
                                         required
                                         minLength={50}
                                         rows={4}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none"
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 rounded-lg focus:ring-2 focus:ring-[#2774AE] focus:border-transparent outline-none transition-colors"
                                         placeholder="I am a new physician joining the Cardiology department..."
                                     />
-                                    <p className="text-xs text-gray-500 mt-1 text-right">
+                                    <p className="text-xs text-gray-500 dark:text-zinc-500 mt-1 text-right">
                                         {formData.reason.length} / 50 characters minimum
                                     </p>
                                 </div>

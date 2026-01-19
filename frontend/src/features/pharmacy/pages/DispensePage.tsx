@@ -103,13 +103,13 @@ export const DispensePage: React.FC = () => {
         <div className="mx-auto max-w-4xl">
             <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Dispense Medication</h1>
-                    <p className="mt-1 text-sm text-gray-500">Record a new medication dispensation for a patient.</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Dispense Medication</h1>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">Record a new medication dispensation for a patient.</p>
                 </div>
                 {selectedMedication && (
                     <button
                         onClick={() => setIsAIModalOpen(true)}
-                        className="inline-flex items-center rounded-full bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200"
+                        className="inline-flex items-center rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
                     >
                         <BrainCircuit className="mr-2 h-4 w-4" />
                         Ask AI Assistant
@@ -120,7 +120,7 @@ export const DispensePage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-1">
                 {/* Main Form */}
                 <div className="lg:col-span-2 space-y-6">
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 rounded-lg bg-white dark:bg-dark-surface p-6 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800 transition-colors">
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             {/* Patient Selection */}
                             <div className="col-span-2 md:col-span-1">
@@ -181,11 +181,11 @@ export const DispensePage: React.FC = () => {
 
                             {/* Quantity */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Quantity</label>
                                 <input
                                     type="number"
                                     {...register('quantity', { required: 'Quantity is required', min: 1 })}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3"
+                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3"
                                 />
                                 {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity.message}</p>}
                             </div>
@@ -193,31 +193,31 @@ export const DispensePage: React.FC = () => {
 
                         {/* Notes */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Clinical Notes</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300">Clinical Notes</label>
                             <textarea
                                 {...register('notes')}
                                 rows={3}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3"
+                                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm py-2 px-3"
                                 placeholder="Add any relevant clinical notes..."
                             />
                         </div>
 
                         {/* Error Display */}
                         {errorMessage && (
-                            <div className="rounded-md bg-red-50 p-4">
+                            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
                                 <div className="flex">
                                     <div className="flex-shrink-0">
                                         <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
                                     </div>
                                     <div className="ml-3">
-                                        <h3 className="text-sm font-medium text-red-800">Submission Error</h3>
-                                        <div className="mt-2 text-sm text-red-700">{errorMessage}</div>
+                                        <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Submission Error</h3>
+                                        <div className="mt-2 text-sm text-red-700 dark:text-red-400">{errorMessage}</div>
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        <div className="flex justify-end pt-4 border-t border-gray-100">
+                        <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-zinc-800">
                             <button
                                 type="submit"
                                 disabled={isLoading}
@@ -238,20 +238,20 @@ export const DispensePage: React.FC = () => {
             {/* AI Assistant Modal */}
             {isAIModalOpen && selectedMedication && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black bg-opacity-50 p-4 backdrop-blur-sm">
-                    <div className="relative w-full max-w-4xl rounded-lg bg-white shadow-2xl ring-1 ring-gray-200">
-                        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                            <h3 className="text-lg font-medium text-gray-900 flex items-center">
-                                <BrainCircuit className="mr-2 h-5 w-5 text-indigo-600" />
+                    <div className="relative w-full max-w-4xl rounded-lg bg-white dark:bg-dark-surface shadow-2xl ring-1 ring-gray-200 dark:ring-zinc-800">
+                        <div className="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 px-6 py-4">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                                <BrainCircuit className="mr-2 h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                 AI Drug Information Assistant
                             </h3>
                             <button
                                 onClick={() => setIsAIModalOpen(false)}
-                                className="text-gray-400 hover:text-gray-500"
+                                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
                             >
                                 <X className="h-6 w-6" />
                             </button>
                         </div>
-                        <div className="p-6 max-h-[80vh] overflow-y-auto">
+                        <div className="p-6 max-h-[80vh] overflow-y-auto dark:text-zinc-200">
                             <DrugInfoAssistant
                                 medicationName={selectedMedication.name}
                                 patientContext="Standard adult patient" // TODO: Dynamically bind to selected patient info if possible

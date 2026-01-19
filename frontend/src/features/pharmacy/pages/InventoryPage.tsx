@@ -53,32 +53,32 @@ export const InventoryPage: React.FC = () => {
                     </div>
                     <input
                         type="text"
-                        className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6 dark:bg-zinc-900 dark:ring-zinc-700 dark:text-white dark:placeholder-zinc-500 transition-colors"
                         placeholder="Search by name, brand, or SKU..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-                <div className="text-sm text-gray-500">
-                    Total Items: <span className="font-medium text-gray-900">{filteredMedications?.length || 0}</span>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Total Items: <span className="font-medium text-gray-900 dark:text-white">{filteredMedications?.length || 0}</span>
                 </div>
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-lg border border-gray-200 shadow sm:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 shadow sm:rounded-lg transition-colors">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-zinc-800">
+                    <thead className="bg-gray-50 dark:bg-zinc-900/50">
                         <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 Medication
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 SKU / Batch
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 Expiry
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                 Status
                             </th>
                             <th scope="col" className="relative px-6 py-3">
@@ -86,32 +86,32 @@ export const InventoryPage: React.FC = () => {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
+                    <tbody className="divide-y divide-gray-200 dark:divide-zinc-800 bg-white dark:bg-dark-surface">
                         {filteredMedications?.map((med: Medication) => (
                             <tr key={med.id}>
                                 <td className="whitespace-nowrap px-6 py-4">
                                     <div className="flex items-center">
-                                        <div className="h-10 w-10 flex-shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <div className="h-10 w-10 flex-shrink-0 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                             <Package className="h-5 w-5" />
                                         </div>
                                         <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">{med.name}</div>
-                                            <div className="text-sm text-gray-500">{med.brand}</div>
+                                            <div className="text-sm font-medium text-gray-900 dark:text-white">{med.name}</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">{med.brand}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="whitespace-nowrap px-6 py-4">
-                                    <div className="text-sm text-gray-900">{med.sku}</div>
-                                    <div className="text-sm text-gray-500">{med.batch_number}</div>
+                                    <div className="text-sm text-gray-900 dark:text-white">{med.sku}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">{med.batch_number}</div>
                                 </td>
                                 <td className="whitespace-nowrap px-6 py-4">
-                                    <div className="text-sm text-gray-500">{format(new Date(med.expiry_date), 'MMM d, yyyy')}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400">{format(new Date(med.expiry_date), 'MMM d, yyyy')}</div>
                                 </td>
                                 <td className="whitespace-nowrap px-6 py-4">
                                     <StockLevelBadge quantity={med.stock_quantity} />
                                 </td>
                                 <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                    <button className="text-primary-600 hover:text-primary-900">Details</button>
+                                    <button className="text-primary-600 dark:text-blue-400 hover:text-primary-900 dark:hover:text-blue-300">Details</button>
                                 </td>
                             </tr>
                         ))}

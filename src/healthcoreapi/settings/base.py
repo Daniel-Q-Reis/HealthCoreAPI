@@ -292,7 +292,26 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
-CELERY_BEAT_SCHEDULE: dict[str, Any] = {}
+CELERY_BEAT_SCHEDULE: dict[str, Any] = {
+    # Daily appointment reminders at 8 AM UTC
+    "send-appointment-reminders": {
+        "task": "src.apps.scheduling.tasks.send_appointment_reminders",
+        "schedule": timedelta(hours=24),  # Daily
+        "options": {"expires": 3600},  # Task expires after 1 hour if not executed
+    },
+    # Hourly auto-completion of past appointments
+    "auto-complete-past-appointments": {
+        "task": "src.apps.scheduling.tasks.auto_complete_past_appointments",
+        "schedule": timedelta(hours=1),  # Hourly
+        "options": {"expires": 1800},  # Task expires after 30 minutes
+    },
+    # Weekly slot generation on Mondays at 00:00 UTC
+    "generate-future-slots": {
+        "task": "src.apps.scheduling.tasks.generate_future_slots",
+        "schedule": timedelta(days=7),  # Weekly
+        "options": {"expires": 7200},  # Task expires after 2 hours
+    },
+}
 
 # KAFKA CONFIGURATION
 # ------------------------------------------------------------------------------
@@ -435,6 +454,23 @@ ACCOUNT = {
     "AUTHENTICATION_METHOD": "username_email",
 }
 ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+
+# Suppress dj-rest-auth internal deprecation warnings
+# The library hasn't been updated yet to use SIGNUP_FIELDS API
+import warnings  # noqa: E402
+
+warnings.filterwarnings(
+    "ignore",
+    message="app_settings.USERNAME_REQUIRED is deprecated",
+    category=UserWarning,
+    module="dj_rest_auth.registration.serializers",
+)
+warnings.filterwarnings(
+    "ignore",
+    message="app_settings.EMAIL_REQUIRED is deprecated",
+    category=UserWarning,
+    module="dj_rest_auth.registration.serializers",
+)
 
 # Development: Print emails to console instead of sending (fixes 500 error)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

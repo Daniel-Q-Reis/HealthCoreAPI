@@ -46,11 +46,11 @@ export const HeaderDropdown: React.FC<HeaderDropdownProps> = ({ title, items, cl
             </button>
 
             {isOpen && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100 border border-gray-100">
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-dark-surface rounded-lg shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100 border border-gray-100 dark:border-dark-border transition-colors">
                     {/* Triangle pointer if desired, but sticking to clean flat design for now to match image */}
                     <div className="flex flex-col">
                         {items.map((item, index) => {
-                            const itemClass = "px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 text-left transition-colors w-full flex items-center";
+                            const itemClass = "px-4 py-3 text-sm text-gray-700 dark:text-zinc-200 hover:bg-gray-50 dark:hover:bg-zinc-800 hover:text-blue-600 dark:hover:text-brand-accent text-left transition-colors w-full flex items-center";
 
                             if (item.onClick) {
                                 return (
