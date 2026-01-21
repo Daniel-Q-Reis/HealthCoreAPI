@@ -286,3 +286,30 @@ This document outlines the tactical, sequential plan for implementing the featur
   - [x] Ensure all code passes linting (Ruff) and type checking (MyPy).
   - [x] Implement Dark Mode for Frontend (consistent "Graphite/Charcoal" theme).
   - [x] Achieve >90% test coverage (90.28% with 283 tests).
+
+## Phase 17: Azure Deployment & Intelligent Features
+
+- [x] **Slice 38: MongoDB Migration for Audit Service (`feat/azure-deployment`)**
+  - [x] Create ADR-0018 (Azure Container Apps deployment strategy).
+  - [x] Create ADR-0019 (MongoDB migration decision - career ROI).
+  - [x] Migrate Go Audit Service from DynamoDB to MongoDB.
+  - [x] Implement `MongoRepository` with BSON serialization (156 lines).
+  - [x] Update gRPC server and Kafka consumer for time.Time handling.
+  - [x] Update docker-compose.yml (replace DynamoDB with MongoDB 7.0).
+  - [x] Add MongoDB indexes (target_id, timestamp, actor_id).
+  - [x] End-to-end testing: Django → Kafka → Go → MongoDB (4 events verified).
+  - [x] Prepare for Azure Cosmos DB for MongoDB deployment.
+  - [ ] Create Terraform configurations for Azure infrastructure.
+  - [ ] Deploy to Azure Container Apps + Cosmos DB.
+
+- [ ] **Slice 39: AI Response Caching System (`feat/ai-cache-semantic-search`)** 📋 PLANNED
+  - [x] Create ADR-0020 (AI Response Caching with Semantic Search) ✅.
+  - [ ] Install pgvector extension in PostgreSQL.
+  - [ ] Implement `AILifestyleCache` model with vector embeddings.
+  - [ ] Implement `LifestyleCacheService` with similarity search (85% threshold).
+  - [ ] Update lifestyle advice endpoint to use caching.
+  - [ ] Implement `LifestyleTrendsService` for analytics (top 10-20 topics).
+  - [ ] Add cache metrics tracking (hit rate, tokens saved, cost savings).
+  - [ ] Create admin dashboard for trending topics and cache management.
+  - [ ] Monitor and tune similarity threshold based on metrics.
+  - **Expected ROI:** 89% cost reduction, 6x faster responses, trending topics analytics.

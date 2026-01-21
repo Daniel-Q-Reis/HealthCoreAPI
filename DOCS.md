@@ -94,6 +94,9 @@ Quick reference guide for all project documentation.
 | [ADR-0015](./docs/adr/0015-modern-dependency-management-uv.md) | Modern Dependency Management (uv) |
 | [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Log Microservice (Go + DynamoDB) |
 | [ADR-0017](./docs/adr/0017-pragmatic-linting-strategy.md) | Pragmatic Linting Strategy |
+| [ADR-0018](./docs/adr/0018-azure-container-apps-deployment.md) | Azure Container Apps Deployment Strategy |
+| [ADR-0019](./docs/adr/0019-mongodb-audit-service.md) | MongoDB for Audit Service (Azure Cosmos DB) |
+| [ADR-0020](./docs/adr/0020-ai-response-caching.md) | AI Response Caching with Semantic Search |
 
 ### Frontend ADRs
 
