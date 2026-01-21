@@ -27,10 +27,10 @@ type EventPayload struct {
 
 type Consumer struct {
 	reader *kafka.Reader
-	repo   *repository.DynamoRepository
+	repo   *repository.MongoRepository
 }
 
-func NewConsumer(brokers string, topic string, repo *repository.DynamoRepository) *Consumer {
+func NewConsumer(brokers string, topic string, repo *repository.MongoRepository) *Consumer {
 	brokersList := strings.Split(brokers, ",")
 
 	// Custom dialer to force TCP network and proper DNS resolution
@@ -86,10 +86,17 @@ func (c *Consumer) Start(ctx context.Context) {
 			continue
 		}
 
+		// Parse timestamp string to time.Time for MongoDB
+		timestamp, err := time.Parse(time.RFC3339, event.Timestamp)
+		if err != nil {
+			log.Printf("Error parsing timestamp, using current time: %v", err)
+			timestamp = time.Now().UTC()
+		}
+
 		// Transform to AuditLog
 		auditLog := repository.AuditLog{
 			TargetID:     event.Payload.TargetID,
-			Timestamp:    event.Timestamp,
+			Timestamp:    timestamp, // time.Time for MongoDB
 			EventID:      event.EventID,
 			ActorID:      event.Payload.ActorID,
 			Action:       event.Payload.Action,
@@ -102,9 +109,9 @@ func (c *Consumer) Start(ctx context.Context) {
 			auditLog.TargetID = auditLog.ActorID
 		}
 
-		// Save to DynamoDB
+		// Save to MongoDB
 		if err := c.repo.SaveLog(context.Background(), auditLog); err != nil {
-			log.Printf("Error saving to DynamoDB: %v", err)
+			log.Printf("Error saving to MongoDB: %v", err)
 		} else {
 			log.Println("✅ Audit Log saved successfully via Kafka!")
 		}

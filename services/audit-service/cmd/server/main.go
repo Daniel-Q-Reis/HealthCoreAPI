@@ -19,12 +19,12 @@ func main() {
 
 	ctx := context.Background()
 
-	// 1. Initialize DynamoDB
-	repo, err := repository.NewDynamoRepository(ctx)
+	// 1. Initialize MongoDB
+	repo, err := repository.NewMongoRepository(ctx)
 	if err != nil {
-		log.Fatalf("Failed to initialize DynamoDB: %v", err)
+		log.Fatalf("Failed to initialize MongoDB: %v", err)
 	}
-	log.Println("✅ DynamoDB Connection Established")
+	log.Println("✅ MongoDB Connection Established")
 
 	// 2. Initialize Kafka Consumer
 	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
@@ -46,7 +46,7 @@ func main() {
 	}
 }
 
-func startGRPCServer(repo *repository.DynamoRepository) error {
+func startGRPCServer(repo *repository.MongoRepository) error {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)

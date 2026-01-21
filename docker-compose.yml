@@ -195,30 +195,37 @@ services:
       - ./services/audit-service:/app
     environment:
       - KAFKA_BROKERS=kafka:9092
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - MONGODB_URI=mongodb://mongodb:27017
     depends_on:
       kafka:
         condition: service_started
-      dynamodb-local:
+      mongodb:
         condition: service_started
     command: [ "sh", "-c", "protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/audit.proto && go mod tidy && sleep 5 && go run ./cmd/server/main.go" ]
     restart: unless-stopped
 
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    container_name: dynamodb-local
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
     ports:
-      - "8002:8000"
-    # Using in-memory mode to avoid volume permission issues
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=audit_logs
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db-data:
   grafana-data:
   kafka-data:
   prometheus-data:
-  dynamodb-data:
+  mongodb-data:
 
 
 networks:
