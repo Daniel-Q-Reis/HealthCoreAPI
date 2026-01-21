@@ -307,7 +307,7 @@ Not just backend - complete solution:
 - **Type Safety**: 100% (MyPy strict mode, 0 errors)
 - **Code Style**: 100% (Ruff, 0 violations)
 - **Security**: 0 critical vulnerabilities
-- **Documentation**: 12 ADRs + comprehensive guides
+- **Documentation**: 20 ADRs + comprehensive guides
 
 ### Performance
 
@@ -635,6 +635,11 @@ class AIClient:
 13. **Full-Stack** - React frontend
 14. **Observability** - Monitoring & events
 15. **UV** - Modern dependency management
+16. **Audit Microservice** - Go + gRPC + Kafka
+17. **Pragmatic Linting** - golangci-lint strategy
+18. **Azure Container Apps** - Cloud deployment strategy
+19. **MongoDB Migration** - Career ROI (15-20x job opportunities)
+20. **AI Response Caching** - 89% cost reduction, semantic search
 
 ### Comprehensive Guides
 

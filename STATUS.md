@@ -81,6 +81,23 @@
   - ADR-0016 and ADR-0017 documented
   - Ready for Azure Container Apps deployment
 
+### Phase 17: Azure Deployment & Intelligent Features
+- **Slice 38: MongoDB Migration for Audit Service (`feat/azure-deployment`)** ✅ COMPLETED
+  - Created ADR-0018 (Azure Container Apps deployment strategy)
+  - Created ADR-0019 (MongoDB migration decision - 15-20x job market value)
+  - Migrated Go Audit Service from DynamoDB to MongoDB
+  - Implemented `MongoRepository` with BSON serialization (156 lines)
+  - Updated gRPC server and Kafka consumer for time.Time handling
+  - Updated docker-compose.yml (replaced DynamoDB with MongoDB 7.0)
+  - Added MongoDB indexes (target_id, timestamp, actor_id)
+  - End-to-end testing: Django → Kafka → Go → MongoDB (4 events verified)
+  - **Next:** Create Terraform configurations for Azure infrastructure
+
+- **Slice 39: AI Response Caching System (`feat/ai-cache-semantic-search`)** 📋 PLANNED
+  - Created ADR-0020 (AI Response Caching with Semantic Search)
+  - Proposal: 89% cost reduction, 6x performance, trending topics analytics
+  - **Status:** Awaiting client approval for implementation
+
 ## Concluded
 
 ### Phase 12: Full-Stack Development
@@ -205,15 +222,15 @@
 
 ## Project Metrics
 
-- **Test Coverage**: 90.31% (229 tests)
+- **Test Coverage**: 90.28% (283 tests)
 - **Type Safety**: 100% (MyPy strict, 0 errors)
 - **Code Quality**: 100% (Ruff, 0 violations)
 - **Security**: 0 critical vulnerabilities
-- **Documentation**: 17 ADRs + comprehensive guides
+- **Documentation**: 20 ADRs + comprehensive guides
 - **Bounded Contexts**: 12 distinct domains
 - **API Endpoints**: 50+ RESTful endpoints
 - **Event Types**: 6 Kafka event types
 - **Dashboards**: 5 Grafana dashboards
 - **Microservices**: 1 Go service (Audit) + Django monolith
-- **Databases**: 2 (PostgreSQL + DynamoDB)
+- **Databases**: 2 (PostgreSQL + MongoDB)
 - **Tech Stack**: Python, Go, React, TypeScript
