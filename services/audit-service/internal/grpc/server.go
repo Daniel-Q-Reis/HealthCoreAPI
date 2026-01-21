@@ -14,11 +14,11 @@ import (
 // AuditServer implements the AuditService gRPC interface
 type AuditServer struct {
 	pb.UnimplementedAuditServiceServer
-	repo *repository.DynamoRepository
+	repo *repository.MongoRepository
 }
 
 // NewAuditServer creates a new gRPC server instance
-func NewAuditServer(repo *repository.DynamoRepository) *AuditServer {
+func NewAuditServer(repo *repository.MongoRepository) *AuditServer {
 	return &AuditServer{
 		repo: repo,
 	}
@@ -33,9 +33,9 @@ func (s *AuditServer) LogEvent(ctx context.Context, req *pb.LogEventRequest) (*p
 	eventID := uuid.New().String()
 
 	// Use provided timestamp or current time
-	timestamp := time.Now().UTC().Format(time.RFC3339)
+	timestamp := time.Now().UTC()
 	if req.Timestamp > 0 {
-		timestamp = time.Unix(req.Timestamp, 0).UTC().Format(time.RFC3339)
+		timestamp = time.Unix(req.Timestamp, 0).UTC()
 	}
 
 	// Default target to actor if not provided (self-action like login)
@@ -48,7 +48,7 @@ func (s *AuditServer) LogEvent(ctx context.Context, req *pb.LogEventRequest) (*p
 	auditLog := repository.AuditLog{
 		EventID:      eventID,
 		TargetID:     targetID,
-		Timestamp:    timestamp,
+		Timestamp:    timestamp, // time.Time for MongoDB
 		ActorID:      req.ActorId,
 		Action:       req.Action,
 		ResourceType: req.ResourceType,
@@ -56,7 +56,7 @@ func (s *AuditServer) LogEvent(ctx context.Context, req *pb.LogEventRequest) (*p
 		Details:      req.Details,
 	}
 
-	// Save to DynamoDB
+	// Save to MongoDB
 	if err := s.repo.SaveLog(ctx, auditLog); err != nil {
 		log.Printf("❌ Error saving audit log via gRPC: %v", err)
 		return nil, fmt.Errorf("failed to save audit log: %w", err)
@@ -103,7 +103,7 @@ func (s *AuditServer) GetAuditLogs(ctx context.Context, req *pb.GetAuditLogsRequ
 			ResourceType: log.ResourceType,
 			IpAddress:    log.IPAddress,
 			Details:      log.Details,
-			Timestamp:    log.Timestamp,
+			Timestamp:    log.Timestamp.Format(time.RFC3339), // Convert time.Time to string
 		})
 	}
 
