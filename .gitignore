@@ -272,9 +272,7 @@ pyrightconfig.json
 
 # Log files
 /logs/*.log
-frontend/package-lock.json
-frontend/package-lock.json
-frontend/package-lock.json
+# NOTE: package-lock.json should be committed for reproducible builds
 # Generated protobuf files
 **.pb.go
 *_grpc.pb.go
