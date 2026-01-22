@@ -23,6 +23,11 @@ resource "azurerm_postgresql_flexible_server" "main" {
   geo_redundant_backup_enabled = false  # Disable for cost savings (single region)
 
   tags = var.tags
+
+  # Ignore zone changes (Azure assigns zone automatically)
+  lifecycle {
+    ignore_changes = [zone]
+  }
 }
 
 # PostgreSQL Database
@@ -54,7 +59,7 @@ resource "azurerm_redis_cache" "main" {
   capacity            = var.redis_capacity  # Default: 1 (C1 = 1GB)
   family              = "C"
   sku_name            = "Basic"
-  enable_non_ssl_port = false  # Force SSL for security
+  non_ssl_port_enabled = false  # Force SSL for security
   minimum_tls_version = "1.2"
 
   redis_configuration {
@@ -157,6 +162,12 @@ resource "azurerm_cosmosdb_mongo_collection" "events" {
 
   # Partition key for horizontal scaling
   shard_key = "target_id"
+
+  # MongoDB requires _id index (default primary key)
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
 
   # Indexes for efficient queries
   index {

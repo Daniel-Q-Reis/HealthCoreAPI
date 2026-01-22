@@ -278,3 +278,18 @@ frontend/package-lock.json
 # Generated protobuf files
 **.pb.go
 *_grpc.pb.go
+
+# Terraform sensitive files - NEVER COMMIT!
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/tfplan
+terraform/*.tfplan
+terraform/crash.log
+terraform/*.ps1
+
+# Azure credentials
+.azure/
+azure.json

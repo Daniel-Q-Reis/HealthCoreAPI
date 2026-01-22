@@ -25,14 +25,29 @@ log_warning() {
 }
 
 # Configuration from environment variables
-DB_HOST="${DB_HOST:-db}"
-DB_PORT="${DB_PORT:-5432}"
-DB_USER="${DB_USER:-postgres}"
-DB_PASSWORD="${DB_PASSWORD:-postgres}"
-DB_NAME="${DB_NAME:-master_template_db}"
+# If DATABASE_URL is set (production), parse it to extract components
+# Format: postgresql://user:password@host:port/dbname
+if [ -n "${DATABASE_URL:-}" ]; then
+    log "Parsing DATABASE_URL for connection details..."
+    # Extract components using parameter expansion and sed
+    DB_USER=$(echo "$DATABASE_URL" | sed -n 's|.*://\([^:]*\):.*|\1|p')
+    DB_PASSWORD=$(echo "$DATABASE_URL" | sed -n 's|.*://[^:]*:\([^@]*\)@.*|\1|p')
+    DB_HOST=$(echo "$DATABASE_URL" | sed -n 's|.*@\([^:]*\):.*|\1|p')
+    DB_PORT=$(echo "$DATABASE_URL" | sed -n 's|.*:\([0-9]*\)/.*|\1|p')
+    DB_NAME=$(echo "$DATABASE_URL" | sed -n 's|.*/\([^?]*\).*|\1|p')
+    APP_ENV="production"
+else
+    # Fallback to individual environment variables (local development)
+    DB_HOST="${DB_HOST:-db}"
+    DB_PORT="${DB_PORT:-5432}"
+    DB_USER="${DB_USER:-postgres}"
+    DB_PASSWORD="${DB_PASSWORD:-postgres}"
+    DB_NAME="${DB_NAME:-master_template_db}"
+    APP_ENV="${APP_ENV:-development}"
+fi
 
 # Application environment: 'development' or 'production'
-APP_ENV="${APP_ENV:-development}"
+# (already set above based on DATABASE_URL)
 
 # Debugging configuration
 DEBUGPY="${DEBUGPY:-0}"
@@ -43,7 +58,8 @@ DEBUGPY_PORT="${DEBUGPY_PORT:-5678}"
 # Set PGPASSWORD for psql commands
 export PGPASSWORD="${DB_PASSWORD}"
 
-log "Starting Django Master Template container..."
+log "Starting HealthCoreAPI container..."
+log "Environment: ${APP_ENV}"
 log "Database: ${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
 
 wait_for_postgres() {
@@ -148,10 +164,10 @@ seed_database_if_needed() {
 start_server() {
     if [ "${APP_ENV}" = "production" ]; then
         log "Starting Gunicorn server for production..."
-        exec gunicorn src.config.wsgi:application \
+        exec gunicorn healthcoreapi.wsgi:application \
             --bind 0.0.0.0:8000 \
             --workers 3 \
-            --timeout 15 \
+            --timeout 30 \
             --log-level info \
             --access-logfile '-' \
             --error-logfile '-'
@@ -174,24 +190,33 @@ start_server() {
 
 # Main execution flow
 main() {
-    # Fix file ownership in mounted volume
-    if [ -d ".git" ]; then
+    # Fix file ownership in mounted volume (dev only)
+    if [ -d ".git" ] && [ "${APP_ENV}" != "production" ]; then
         log "Fixing .git directory ownership..."
         chown -R appuser:appuser .git || log_warning "Could not change .git ownership. Pre-commit might fail."
     fi
 
-    # CORRECT ORDER:
+    # Wait for database to be ready
     wait_for_postgres
-    create_database_if_needed
-    run_migrations              # ← 1. Migrations first
-    load_rbac_fixtures          # ← 2. THEN load fixtures
-    collect_static_files        # ← 3. Then static files
-    create_superuser_if_needed  # ← 4. Finally superuser
-    seed_database_if_needed     # ← 5. Populate with realistic data
 
-    log_success "Django setup completed successfully!"
-    log "🌟 Access your application at: http://localhost:8000"
-    log "🔐 Admin panel: http://localhost:8000/admin/ (admin/admin123)"
+    if [ "${APP_ENV}" = "production" ]; then
+        # Production: minimal setup
+        run_migrations
+        load_rbac_fixtures
+        collect_static_files
+        log_success "Production setup completed!"
+    else
+        # Development: full setup with seeding
+        create_database_if_needed
+        run_migrations
+        load_rbac_fixtures
+        collect_static_files
+        create_superuser_if_needed
+        seed_database_if_needed
+        log_success "Development setup completed!"
+        log "🌟 Access your application at: http://localhost:8000"
+        log "🔐 Admin panel: http://localhost:8000/admin/ (admin/admin123)"
+    fi
 
     start_server
 }
