@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
-import { PatientDashboardPage } from './pages/PatientDashboardPage';
+import { Dashboard as PatientDashboardPage } from './pages/Dashboard';
 import { PatientsPage } from './pages/Patients';
 import { AppointmentsPage } from './pages/Appointments';
 import { PharmacyPage } from './pages/Pharmacy';
