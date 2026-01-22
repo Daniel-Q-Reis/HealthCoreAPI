@@ -37,8 +37,6 @@ export const Heading = ({
     children,
     ...props
 }: HeadingProps) => {
-    const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-
     const sizeClasses = {
         1: 'text-5xl',
         2: 'text-4xl',
@@ -77,7 +75,17 @@ export const Heading = ({
     ${className}
   `.trim().replace(/\s+/g, ' ');
 
-    return <Tag className={classes} {...props}>{children}</Tag>;
+    // Use createElement to avoid TypeScript issues with dynamic tags
+    const headingElements = {
+        1: (p: HeadingProps) => <h1 className={classes} {...p}>{children}</h1>,
+        2: (p: HeadingProps) => <h2 className={classes} {...p}>{children}</h2>,
+        3: (p: HeadingProps) => <h3 className={classes} {...p}>{children}</h3>,
+        4: (p: HeadingProps) => <h4 className={classes} {...p}>{children}</h4>,
+        5: (p: HeadingProps) => <h5 className={classes} {...p}>{children}</h5>,
+        6: (p: HeadingProps) => <h6 className={classes} {...p}>{children}</h6>,
+    };
+
+    return headingElements[level](props as HeadingProps);
 };
 
 // Text Component

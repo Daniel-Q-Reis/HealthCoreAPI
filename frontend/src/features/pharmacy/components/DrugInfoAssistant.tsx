@@ -18,7 +18,11 @@ export const DrugInfoAssistant: React.FC<DrugInfoAssistantProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const [info, setInfo] = useState<DrugInfoResponse | null>(null);
 
-    const { mutate: fetchInfo, isLoading, error } = useMutation({
+    const { mutate: fetchInfo, isLoading, error } = useMutation<
+        DrugInfoResponse,
+        Error,
+        { medication_name: string; patient_context?: string }
+    >({
         mutationFn: pharmacyApi.getDrugInfo,
         onSuccess: (data) => {
             setInfo(data);
@@ -64,7 +68,7 @@ export const DrugInfoAssistant: React.FC<DrugInfoAssistantProps> = ({
 
             {error && (
                 <div className="mt-3 rounded-md bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
-                    Error consulting AI: {(error as Error).message}
+                    Error consulting AI: {String(error instanceof Error ? error.message : 'Unknown error')}
                 </div>
             )}
 

@@ -17,7 +17,11 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
     const [notes, setNotes] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const { mutate: bookAppointment, isLoading, error } = useMutation({
+    const { mutate: bookAppointment, isLoading, error } = useMutation<
+        unknown,
+        Error,
+        { slot_id: number; notes: string }
+    >({
         mutationFn: schedulingApi.createAppointment,
         onSuccess: () => {
             setIsSuccess(true);
@@ -174,7 +178,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({ practitioner, slots,
 
                             {error && (
                                 <p className="text-xs text-red-600 mb-2">
-                                    {(error as any)?.response?.data?.detail as string || 'Booking failed'}
+                                    {String(error instanceof Error ? error.message : 'Booking failed')}
                                 </p>
                             )}
 
