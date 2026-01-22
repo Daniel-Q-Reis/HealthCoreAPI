@@ -55,11 +55,9 @@ CSP_FONT_SRC = ("'self'",)
 
 # Database Performance
 # ------------------------------------------------------------------------------
-DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes
-DATABASES["default"]["OPTIONS"] = {
-    "MAX_CONNS": 20,
-    "MIN_CONNS": 5,
-}
+DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes - keep connections alive
+# Note: MAX_CONNS/MIN_CONNS removed - not valid psycopg2 options
+# For connection pooling, use PgBouncer or CONN_MAX_AGE
 
 # Static Files Optimization
 # ------------------------------------------------------------------------------

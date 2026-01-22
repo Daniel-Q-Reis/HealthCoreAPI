@@ -59,7 +59,7 @@ output "redis_primary_key" {
 }
 
 output "mongodb_connection_string" {
-  value       = azurerm_cosmosdb_account.main.connection_strings[0]
+  value       = azurerm_cosmosdb_account.main.primary_mongodb_connection_string
   description = "MongoDB (Cosmos DB) connection string"
   sensitive   = true
 }

@@ -16,7 +16,7 @@ variable "environment" {
 variable "location" {
   description = "Azure region for resource deployment"
   type        = string
-  default     = "eastus"  # Cheaper than Brazil South, 150ms latency acceptable
+  default     = "centralus"  # Changed from eastus due to PostgreSQL restrictions
 }
 
 variable "project_name" {
@@ -41,6 +41,18 @@ variable "db_admin_password" {
     condition     = length(var.db_admin_password) >= 8
     error_message = "Database password must be at least 8 characters long."
   }
+}
+
+# GitHub Container Registry Credentials
+variable "ghcr_username" {
+  description = "GitHub username for GHCR authentication"
+  type        = string
+}
+
+variable "ghcr_token" {
+  description = "GitHub Personal Access Token with read:packages permission"
+  type        = string
+  sensitive   = true
 }
 
 variable "postgres_sku" {

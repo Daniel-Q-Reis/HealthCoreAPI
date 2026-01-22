@@ -18,6 +18,18 @@ resource "azurerm_container_app" "django_api" {
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
 
+  # GHCR Private Registry Authentication
+  registry {
+    server               = "ghcr.io"
+    username             = var.ghcr_username
+    password_secret_name = "ghcr-token"
+  }
+
+  secret {
+    name  = "ghcr-token"
+    value = var.ghcr_token
+  }
+
   template {
     min_replicas = var.django_min_replicas  # Default: 0 (scale-to-zero)
     max_replicas = var.django_max_replicas  # Default: 3
@@ -33,6 +45,27 @@ resource "azurerm_container_app" "django_api" {
         value = "healthcoreapi.settings.production"
       }
 
+      # Django security settings for Azure Container Apps
+      env {
+        name  = "ALLOWED_HOSTS"
+        value = ".azurecontainerapps.io,localhost,127.0.0.1"
+      }
+
+      env {
+        name  = "CORS_ALLOWED_ORIGINS"
+        value = "https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+      }
+
+      env {
+        name  = "CSRF_TRUSTED_ORIGINS"
+        value = "https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+      }
+
+      env {
+        name  = "SECRET_KEY"
+        value = "azure-prod-8kJx2Lm9Np3Qr5Tv7Wz-healthcoreapi-2026"
+      }
+
       env {
         name  = "DATABASE_URL"
         value = "postgresql://${var.db_admin_username}:${var.db_admin_password}@${azurerm_postgresql_flexible_server.main.fqdn}:5432/healthcoreapi_db"
@@ -40,6 +73,18 @@ resource "azurerm_container_app" "django_api" {
 
       env {
         name  = "REDIS_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+      }
+
+      # Django cache uses CACHE_URL
+      env {
+        name  = "CACHE_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
+      }
+
+      # Celery broker also needs Redis URL
+      env {
+        name  = "CELERY_BROKER_URL"
         value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
       }
 
@@ -90,6 +135,18 @@ resource "azurerm_container_app" "audit_service" {
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
 
+  # GHCR Private Registry Authentication
+  registry {
+    server               = "ghcr.io"
+    username             = var.ghcr_username
+    password_secret_name = "ghcr-token"
+  }
+
+  secret {
+    name  = "ghcr-token"
+    value = var.ghcr_token
+  }
+
   template {
     min_replicas = 1  # Always-on for audit logs
     max_replicas = 2
@@ -117,7 +174,7 @@ resource "azurerm_container_app" "audit_service" {
 
       env {
         name  = "MONGODB_URI"
-        value = azurerm_cosmosdb_account.main.connection_strings[0]
+        value = azurerm_cosmosdb_account.main.primary_mongodb_connection_string
       }
     }
   }
@@ -146,6 +203,18 @@ resource "azurerm_container_app" "celery_worker" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+
+  # GHCR Private Registry Authentication
+  registry {
+    server               = "ghcr.io"
+    username             = var.ghcr_username
+    password_secret_name = "ghcr-token"
+  }
+
+  secret {
+    name  = "ghcr-token"
+    value = var.ghcr_token
+  }
 
   template {
     min_replicas = 1  # Always-on for scheduled tasks
@@ -190,6 +259,18 @@ resource "azurerm_container_app" "celery_beat" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+
+  # GHCR Private Registry Authentication
+  registry {
+    server               = "ghcr.io"
+    username             = var.ghcr_username
+    password_secret_name = "ghcr-token"
+  }
+
+  secret {
+    name  = "ghcr-token"
+    value = var.ghcr_token
+  }
 
   template {
     min_replicas = 1  # Must be exactly 1 (no duplicates)
