@@ -175,6 +175,7 @@ REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
     "user": "500/hour",
     "login": "5/min",  # Rate limit login attempts
     "register": "3/min",  # Rate limit registration
+    "dj_rest_auth": "10/min",  # Rate limit for dj-rest-auth endpoints
 }
 
 # Add custom throttle classes
