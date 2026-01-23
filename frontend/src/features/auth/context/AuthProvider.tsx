@@ -61,8 +61,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Login with Google OAuth
     const loginWithGoogle = useCallback(() => {
-        // Redirect to Django OAuth endpoint (backend)
-        window.location.href = '/api/auth/login/google-oauth2/';
+        // Redirect to Django OAuth endpoint (backend API)
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+        window.location.href = `${apiUrl}/api/auth/login/google-oauth2/`;
     }, []);
 
     // Register new user
