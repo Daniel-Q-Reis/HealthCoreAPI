@@ -62,8 +62,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Login with Google OAuth
     const loginWithGoogle = useCallback(() => {
         // Redirect to Django OAuth endpoint (backend API)
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        window.location.href = `${apiUrl}/api/auth/login/google-oauth2/`;
+        // VITE_API_URL already includes /api (e.g., https://api.danielqreis.com/api)
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        window.location.href = `${apiUrl}/auth/login/google-oauth2/`;
     }, []);
 
     // Register new user
