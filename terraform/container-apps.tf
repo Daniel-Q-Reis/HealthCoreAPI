@@ -48,17 +48,17 @@ resource "azurerm_container_app" "django_api" {
       # Django security settings for Azure Container Apps
       env {
         name  = "ALLOWED_HOSTS"
-        value = ".azurecontainerapps.io,localhost,127.0.0.1"
+        value = ".azurecontainerapps.io,.danielqreis.com,localhost,127.0.0.1"
       }
 
       env {
         name  = "CORS_ALLOWED_ORIGINS"
-        value = "https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
       }
 
       env {
         name  = "CSRF_TRUSTED_ORIGINS"
-        value = "https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
       }
 
       env {
