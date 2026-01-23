@@ -1,0 +1,31 @@
+# Azure Static Web Apps Ignore File
+# This ensures only the build output (dist/) is deployed
+
+# Dependencies
+node_modules/
+
+# Source files (not needed in production)
+src/
+public/
+
+# Config and development files
+*.config.ts
+*.config.js
+tsconfig*.json
+.eslintrc.cjs
+.env*
+.vite/
+.dockerignore
+Dockerfile
+README.md
+ROADMAP.md
+package.json
+package-lock.json
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+__tests__/
+coverage/
