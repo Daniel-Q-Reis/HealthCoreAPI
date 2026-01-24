@@ -61,6 +61,12 @@ resource "azurerm_container_app" "django_api" {
         value = "https://app.danielqreis.com,https://api.danielqreis.com,https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
       }
 
+      # Frontend URL for OAuth callback redirect
+      env {
+        name  = "FRONTEND_URL"
+        value = "https://app.danielqreis.com"
+      }
+
       env {
         name  = "SECRET_KEY"
         value = "azure-prod-8kJx2Lm9Np3Qr5Tv7Wz-healthcoreapi-2026"

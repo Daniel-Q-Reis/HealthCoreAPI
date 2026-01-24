@@ -8,52 +8,59 @@ export const DevelopersPage = () => {
     const services = [
         {
             name: "Landing Page",
-            url: "http://localhost:5173",
+            url: "https://app.danielqreis.com/dqr-health",
             desc: "Modern React + TypeScript landing page with bilingual support (PT/EN)",
             icon: <FaCode />,
             creds: "-"
         },
         {
-            name: "Django API",
-            url: "http://localhost:8000",
-            desc: "RESTful API with DRF (Backend Core)",
+            name: "RESTful API with DRF",
+            url: "https://github.com/Daniel-Q-Reis/HealthCoreAPI",
+            desc: "Backend Core - Django REST Framework",
             icon: <FaServer />,
-            creds: "user@user.com / user1234"
+            creds: "-"
         },
         {
-            name: "API Documentation",
-            url: "http://localhost:5173/api/docs/",
+            name: "API Documentation (Swagger)",
+            url: "https://api.danielqreis.com/api/docs/",
             desc: "Interactive Swagger UI for API exploration",
             icon: <FaBook />,
             creds: "-"
         },
         {
+            name: "API Documentation (ReDoc)",
+            url: "https://api.danielqreis.com/api/redoc/",
+            desc: "Alternative OpenAPI documentation with ReDoc",
+            icon: <FaBook />,
+            creds: "-"
+        },
+        {
             name: "Django Admin",
-            url: "http://localhost:8000/admin",
+            url: "https://api.danielqreis.com/admin/",
             desc: "Native Django Administration Interface",
             icon: <FaLock />,
-            creds: "user@user.com / user1234"
+            creds: "admin / admin123"
         },
         {
             name: "Grafana",
-            url: "http://localhost:3000",
+            url: "https://ca-grafana.politebush-1e329a2d.centralus.azurecontainerapps.io",
             desc: "Observability dashboards & visualization",
             icon: <FaChartLine />,
-            creds: "admin / admin"
+            creds: "admin / HealthCore2026!"
         },
         {
             name: "Prometheus",
-            url: "http://localhost:9090",
-            desc: "Metrics collection and monitoring",
+            url: "https://ca-prometheus.politebush-1e329a2d.centralus.azurecontainerapps.io",
+            desc: "Metrics collection and monitoring (internal)",
             icon: <FaChartLine />,
             creds: "-"
         }
     ];
 
     const infrastructure = [
-        { name: "PostgreSQL", url: "localhost:5432", desc: "Primary Relational Database", creds: "postgres / postgres" },
-        { name: "Redis", url: "localhost:6379", desc: "Cache layer & Celery broker", creds: "-" },
-        { name: "Kafka", url: "localhost:9092", desc: "Event streaming platform (KRaft mode)", creds: "-" }
+        { name: "PostgreSQL", url: "Azure Database for PostgreSQL", desc: "Primary Relational Database (Managed)", creds: "Configured via Terraform" },
+        { name: "Redis", url: "Azure Cache for Redis", desc: "Cache layer & Celery broker (Managed)", creds: "Configured via Terraform" },
+        { name: "Event Hubs", url: "Azure Event Hubs (Kafka)", desc: "Event streaming platform", creds: "Configured via Terraform" }
     ];
 
     return (
