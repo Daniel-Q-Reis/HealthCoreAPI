@@ -23,7 +23,7 @@
     "globalHeaders": {
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.danielqreis.com https://*.azurecontainerapps.io https://*.azure.com",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://api.danielqreis.com https://*.azurecontainerapps.io https://*.azure.com; frame-src https://www.google.com https://www.youtube.com https://maps.google.com https://*.google.com",
         "Referrer-Policy": "strict-origin-when-cross-origin"
     },
     "mimeTypes": {
