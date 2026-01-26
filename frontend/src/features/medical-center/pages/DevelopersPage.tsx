@@ -57,8 +57,8 @@ export const DevelopersPage = () => {
         },
         {
             name: "Go Audit Microservice (gRPC)",
-            url: "https://github.com/Daniel-Q-Reis/HealthCoreAPI/tree/main/audit-service",
-            desc: "High-performance audit logging with <100ms cold-start latency (Kafka → DynamoDB)",
+            url: "https://github.com/Daniel-Q-Reis/HealthCoreAPI/tree/main/services/audit-service",
+            desc: "High-performance audit logging with <100ms cold-start latency (Kafka → MongoDB)",
             icon: <FaServer />,
             creds: "Internal gRPC service"
         }
@@ -67,6 +67,7 @@ export const DevelopersPage = () => {
     const infrastructure = [
         { name: "PostgreSQL", url: "Azure Database for PostgreSQL", desc: "Primary Relational Database (Managed)", creds: "Configured via Terraform" },
         { name: "Redis", url: "Azure Cache for Redis", desc: "Cache layer & Celery broker (Managed)", creds: "Configured via Terraform" },
+        { name: "MongoDB", url: "Azure CosmosDB (MongoDB API)", desc: "Document database for audit logs (append-only)", creds: "Configured via Terraform" },
         { name: "Event Hubs", url: "Azure Event Hubs (Kafka)", desc: "Event streaming platform", creds: "Configured via Terraform" }
     ];
 
