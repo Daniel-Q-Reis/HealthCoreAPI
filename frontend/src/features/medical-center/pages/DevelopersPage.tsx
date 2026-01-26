@@ -42,18 +42,25 @@ export const DevelopersPage = () => {
             creds: "admin / admin123"
         },
         {
-            name: "Grafana",
-            url: "https://ca-grafana.politebush-1e329a2d.centralus.azurecontainerapps.io",
-            desc: "Observability dashboards & visualization",
+            name: "Grafana Metrics Dashboard",
+            url: "https://ca-grafana.politebush-1e329a2d.centralus.azurecontainerapps.io/a/grafana-metricsdrilldown-app/drilldown",
+            desc: "Real-time observability dashboards with Prometheus metrics (p99 latency, throughput)",
             icon: <FaChartLine />,
-            creds: "admin / HealthCore2026!"
+            creds: "admin / admin123"
         },
         {
             name: "Prometheus",
             url: "https://ca-prometheus.politebush-1e329a2d.centralus.azurecontainerapps.io",
-            desc: "Metrics collection and monitoring (internal)",
+            desc: "Metrics collection and monitoring system",
             icon: <FaChartLine />,
             creds: "-"
+        },
+        {
+            name: "Go Audit Microservice (gRPC)",
+            url: "https://github.com/Daniel-Q-Reis/HealthCoreAPI/tree/main/audit-service",
+            desc: "High-performance audit logging with <100ms cold-start latency (Kafka → DynamoDB)",
+            icon: <FaServer />,
+            creds: "Internal gRPC service"
         }
     ];
 

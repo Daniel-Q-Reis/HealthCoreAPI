@@ -322,7 +322,7 @@ resource "azurerm_container_app" "grafana" {
   revision_mode                = "Single"
 
   template {
-    min_replicas = 0  # Scale to zero during off-hours
+    min_replicas = 1  # Keep always on for monitoring
     max_replicas = 1
 
     container {
@@ -338,12 +338,17 @@ resource "azurerm_container_app" "grafana" {
 
       env {
         name  = "GF_SECURITY_ADMIN_PASSWORD"
-        value = "HealthCore2026!"  # TODO: Move to Azure Key Vault
+        value = "admin123"  # Matches Django admin for easier demo access
       }
 
       env {
         name  = "GF_USERS_ALLOW_SIGN_UP"
         value = "false"
+      }
+
+      env {
+        name  = "GF_INSTALL_PLUGINS"
+        value = ""  # No additional plugins needed
       }
     }
   }
@@ -373,7 +378,7 @@ resource "azurerm_container_app" "prometheus" {
   revision_mode                = "Single"
 
   template {
-    min_replicas = 0  # Scale to zero during off-hours
+    min_replicas = 1  # Keep always on for metrics collection
     max_replicas = 1
 
     container {
@@ -388,7 +393,7 @@ resource "azurerm_container_app" "prometheus" {
   }
 
   ingress {
-    external_enabled = false  # Internal only
+    external_enabled = true  # Enable external access for testing/demos
     target_port      = 9090
 
     traffic_weight {
