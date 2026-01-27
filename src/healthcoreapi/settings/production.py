@@ -191,16 +191,23 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-# Session Security (Senior-level configuration)
+# Session Security (Cross-domain configuration for SPA)
+# CRITICAL: Frontend (app.danielqreis.com) and API (api.danielqreis.com) are different domains!
 SESSION_COOKIE_AGE = 1800  # 30 minutes
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_EXPIRE_AT_BROWSER_CLOSE = (
+    False  # Allow session persistence across browser sessions
+)
+SESSION_SAVE_EVERY_REQUEST = False  # Reduce Redis load and avoid race conditions
+SESSION_COOKIE_HTTPONLY = True  # Prevent XSS attacks
+SESSION_COOKIE_SAMESITE = (
+    "None"  # REQUIRED for cross-domain cookies with CORS_ALLOW_CREDENTIALS
+)
+SESSION_COOKIE_SECURE = True  # Force HTTPS (required when SameSite=None)
 
-# CSRF Protection
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = "Lax"
+# CSRF Protection (Cross-domain configuration)
+CSRF_COOKIE_HTTPONLY = False  # Must be False so JavaScript can read it
+CSRF_COOKIE_SAMESITE = "None"  # Required for cross-domain CSRF protection
+CSRF_COOKIE_SECURE = True  # Force HTTPS (required when SameSite=None)
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default=[])
 
 # Additional Security Headers
