@@ -166,8 +166,9 @@ start_server() {
         log "Starting Gunicorn server for production..."
         exec gunicorn healthcoreapi.wsgi:application \
             --bind 0.0.0.0:8000 \
-            --workers 3 \
-            --timeout 30 \
+            --workers 8 \
+            --threads 2 \
+            --timeout 60 \
             --log-level info \
             --access-logfile '-' \
             --error-logfile '-'
