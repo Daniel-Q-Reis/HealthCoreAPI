@@ -98,9 +98,9 @@ variable "django_memory" {
 }
 
 variable "django_min_replicas" {
-  description = "Minimum Django API replicas (0 for scale-to-zero)"
+  description = "Minimum Django API replicas (2 for high availability, prevents coldstart)"
   type        = number
-  default     = 0  # Save costs during idle hours
+  default     = 2  # Changed from 0 to prevent session issues with concurrent users
 }
 
 variable "django_max_replicas" {
