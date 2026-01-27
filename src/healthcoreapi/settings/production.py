@@ -244,5 +244,4 @@ INSTALLED_APPS.extend(
 # NOTE: Per-site cache middleware REMOVED - it was caching user-specific API responses!
 # This caused critical bug where User A's data was served to User B for CACHE_TIMEOUT (5min)
 # For API endpoints, use @cache_page decorator on specific views instead
-# MIDDLEWARE.insert(1, "django.middleware.cache.UpdateCacheMiddleware")  # DANGEROUS for APIs!
-# MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")    # DANGEROUS for APIs!
+print("CRITICAL: LOADING PRODUCTION SETTINGS - NO CACHE MIDDLEWARE INJECTED")
