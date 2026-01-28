@@ -21,7 +21,7 @@ from .base import (
     DATABASES,
     INSTALLED_APPS,
     LOGGING,
-    MIDDLEWARE,
+    # MIDDLEWARE,
     REST_FRAMEWORK,
     VERSION,  # noqa: F401
 )
@@ -118,7 +118,7 @@ root_handlers.append("file")
 #         level=logging.INFO,  # Capture info and above as breadcrumbs
 #         event_level=logging.ERROR,  # Send errors as events
 #     )
-# 
+#
 #     sentry_sdk.init(
 #         dsn=SENTRY_DSN,
 #         integrations=[
