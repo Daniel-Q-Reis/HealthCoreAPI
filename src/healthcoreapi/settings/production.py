@@ -205,6 +205,9 @@ SESSION_COOKIE_SAMESITE = (
 )
 SESSION_COOKIE_SECURE = True  # Force HTTPS (required when SameSite=None)
 
+# Use Database for Sessions (More stable than Redis for Admin)
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+
 # CSRF Protection (Cross-domain configuration)
 CSRF_COOKIE_HTTPONLY = False  # Must be False so JavaScript can read it
 CSRF_COOKIE_SAMESITE = "None"  # Required for cross-domain CSRF protection
