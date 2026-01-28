@@ -2,7 +2,7 @@
 import React from 'react';
 import { MainLayout } from '@/shared/layout/MainLayout';
 import { PageHero } from '@/shared/components/PageHero';
-import { FaServer, FaDatabase, FaChartLine, FaGithub, FaLinkedin, FaBook, FaLock, FaExternalLinkAlt, FaCode } from 'react-icons/fa';
+import { FaServer, FaDatabase, FaChartLine, FaGithub, FaLinkedin, FaBook, FaLock, FaExternalLinkAlt, FaCode, FaHeartbeat } from 'react-icons/fa';
 
 export const DevelopersPage = () => {
     const services = [
@@ -61,6 +61,20 @@ export const DevelopersPage = () => {
             desc: "High-performance audit logging with <100ms cold-start latency (Kafka → MongoDB)",
             icon: <FaServer />,
             creds: "Internal gRPC service"
+        },
+        {
+            name: "Prometheus Metrics (Raw)",
+            url: "https://api.danielqreis.com/metrics",
+            desc: "Raw metrics exposition in Prometheus format",
+            icon: <FaCode />,
+            creds: "-"
+        },
+        {
+            name: "Health Check API",
+            url: "https://api.danielqreis.com/health/",
+            desc: "Real-time system health status (DB, Cache, Disk, Memory)",
+            icon: <FaHeartbeat />,
+            creds: "-"
         }
     ];
 
