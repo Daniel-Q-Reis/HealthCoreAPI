@@ -163,10 +163,12 @@ seed_database_if_needed() {
 
 start_server() {
     if [ "${APP_ENV}" = "production" ]; then
-        log "Starting Gunicorn server for production..."
+        # Default to 2 workers if not specified (safe for 0.5GB/0.25vCPU)
+        WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+        log "Starting Gunicorn server for production with ${WEB_CONCURRENCY} workers..."
         exec gunicorn healthcoreapi.wsgi:application \
             --bind 0.0.0.0:8000 \
-            --workers 8 \
+            --workers ${WEB_CONCURRENCY} \
             --threads 2 \
             --timeout 60 \
             --log-level info \
