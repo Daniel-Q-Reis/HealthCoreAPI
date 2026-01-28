@@ -40,9 +40,13 @@ resource "azurerm_container_app" "django_api" {
       cpu    = var.django_cpu     # Default: 0.25
       memory = var.django_memory  # Default: 0.5Gi
 
-      env {
         name  = "DJANGO_SETTINGS_MODULE"
         value = "healthcoreapi.settings.production"
+      }
+
+      env {
+        name  = "COLLECTSTATIC"
+        value = "1"
       }
 
       # Django security settings for Azure Container Apps
