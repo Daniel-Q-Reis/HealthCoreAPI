@@ -166,6 +166,8 @@ start_server() {
         # Default to 2 workers if not specified (safe for 0.5GB/0.25vCPU)
         WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
         log "Starting Gunicorn server for production with ${WEB_CONCURRENCY} workers..."
+        # Ensure logs directory exists to prevent FileHandler crash
+        mkdir -p logs
         exec gunicorn healthcoreapi.wsgi:application \
             --bind 0.0.0.0:8000 \
             --workers ${WEB_CONCURRENCY} \
