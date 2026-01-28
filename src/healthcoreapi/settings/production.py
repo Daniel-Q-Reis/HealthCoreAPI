@@ -21,6 +21,7 @@ from .base import (
     DATABASES,
     INSTALLED_APPS,
     LOGGING,
+    MIDDLEWARE,
     REST_FRAMEWORK,
     VERSION,  # noqa: F401
 )
