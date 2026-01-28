@@ -20,7 +20,6 @@ from .base import (
     CACHES,
     DATABASES,
     INSTALLED_APPS,
-    LOGGING,
     REST_FRAMEWORK,
     VERSION,  # noqa: F401
 )
