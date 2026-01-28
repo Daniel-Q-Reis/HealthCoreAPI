@@ -9,9 +9,9 @@ export const DevelopersPage = () => {
         {
             name: "Landing Page",
             url: "https://app.danielqreis.com/dqr-health",
-            desc: "Modern React + TypeScript landing page with bilingual support (PT/EN)",
+            desc: "Modern React + TypeScript landing page with dark theme, login with admin for extra content",
             icon: <FaCode />,
-            creds: "-"
+            creds: "admin / admin123"
         },
         {
             name: "RESTful API with DRF",
