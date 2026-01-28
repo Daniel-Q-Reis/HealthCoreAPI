@@ -60,7 +60,9 @@ DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes - keep connections aliv
 
 # Static Files Optimization
 # ------------------------------------------------------------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Using basic whitenoise storage (not manifest) to avoid issues when collectstatic wasn't run
+# CompressedManifestStaticFilesStorage requires manifest.json and blocks requests without it
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = False
 
