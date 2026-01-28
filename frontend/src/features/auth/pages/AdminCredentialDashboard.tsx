@@ -94,12 +94,16 @@ export function AdminCredentialDashboard() {
     };
 
     // Helper to resolve full media URL
+    // Helper to resolve full media URL
     const getMediaUrl = (path: string | null) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        // Assuming backend is at valid URL. In dev: localhost:8000
-        // We can check local env or hardcode for dev/demo if config is not exposed
-        const baseUrl = 'http://localhost:8000';
+
+        // Use production URL in prod, localhost in dev
+        const baseUrl = import.meta.env.PROD
+            ? 'https://api.danielqreis.com'
+            : 'http://localhost:8000';
+
         return `${baseUrl}${path}`;
     };
 
