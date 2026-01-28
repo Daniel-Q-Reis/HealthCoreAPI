@@ -93,18 +93,18 @@ SERVER_EMAIL = config("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 
 # Logging for Production
 # ------------------------------------------------------------------------------
-# LOGGING["handlers"]["file"] = {
-#     "level": "ERROR",
-#     "class": "logging.handlers.RotatingFileHandler",
-#     "filename": "logs/production.log",
-#     "maxBytes": 1024 * 1024 * 15,  # 15MB
-#     "backupCount": 10,
-#     "formatter": "json",
-# }
+LOGGING["handlers"]["file"] = {
+    "level": "ERROR",
+    "class": "logging.handlers.RotatingFileHandler",
+    "filename": "logs/production.log",
+    "maxBytes": 1024 * 1024 * 15,  # 15MB
+    "backupCount": 10,
+    "formatter": "json",
+}
 
-# File logging disabled for container environment (logs go to stdout)
-# root_handlers = LOGGING["root"]["handlers"]  # type: ignore[index]
-# root_handlers.append("file")
+# Add file handler to root logger
+root_handlers = LOGGING["root"]["handlers"]  # type: ignore[index]
+root_handlers.append("file")
 
 # Error Monitoring with Sentry (Senior-level integration)
 # ------------------------------------------------------------------------------
