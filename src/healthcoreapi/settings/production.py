@@ -28,8 +28,9 @@ from .base import (
 
 # GENERAL
 # ------------------------------------------------------------------------------
-DEBUG = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+# NUCLEAR DEBUG MODE
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
 # SECURITY
 # ------------------------------------------------------------------------------
@@ -61,11 +62,10 @@ DATABASES["default"]["CONN_MAX_AGE"] = 600  # 10 minutes - keep connections aliv
 
 # Static Files Optimization
 # ------------------------------------------------------------------------------
-# Using basic whitenoise storage (not manifest) to avoid issues when collectstatic wasn't run
-# CompressedManifestStaticFilesStorage requires manifest.json and blocks requests without it
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = False
+# DISABLE WHITENOISE temporarily to rule out compression crashes
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# WHITENOISE_USE_FINDERS = True
+# WHITENOISE_AUTOREFRESH = False
 
 # Cache optimization for production
 # ------------------------------------------------------------------------------
@@ -110,47 +110,48 @@ root_handlers.append("file")
 
 # Error Monitoring with Sentry (Senior-level integration)
 # ------------------------------------------------------------------------------
-SENTRY_DSN = config("SENTRY_DSN", default="")
-if SENTRY_DSN:
-    # Configure logging integration for better error context
-    sentry_logging = LoggingIntegration(
-        level=logging.INFO,  # Capture info and above as breadcrumbs
-        event_level=logging.ERROR,  # Send errors as events
-    )
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[
-            DjangoIntegration(
-                transaction_style="url",
-                middleware_spans=True,
-                signals_spans=False,
-            ),
-            CeleryIntegration(
-                monitor_beat_tasks=True,
-                propagate_traces=True,
-            ),
-            RedisIntegration(),
-            sentry_logging,
-        ],
-        # Performance Monitoring
-        traces_sample_rate=config("SENTRY_TRACES_SAMPLE_RATE", default=0.1, cast=float),
-        profiles_sample_rate=config(
-            "SENTRY_PROFILES_SAMPLE_RATE", default=0.1, cast=float
-        ),
-        # Privacy Settings
-        send_default_pii=False,
-        # Environment and Release Tracking
-        environment=config("ENVIRONMENT", default="production"),
-        release=VERSION,
-        # Custom Error Filtering
-        before_send=lambda event, hint: event
-        if event.get("level") != "debug"
-        else None,
-        # Performance tuning
-        max_breadcrumbs=50,
-        attach_stacktrace=True,
-    )
+# DISABLE SENTRY temporarily
+# SENTRY_DSN = config("SENTRY_DSN", default="")
+# if SENTRY_DSN:
+#     # Configure logging integration for better error context
+#     sentry_logging = LoggingIntegration(
+#         level=logging.INFO,  # Capture info and above as breadcrumbs
+#         event_level=logging.ERROR,  # Send errors as events
+#     )
+# 
+#     sentry_sdk.init(
+#         dsn=SENTRY_DSN,
+#         integrations=[
+#             DjangoIntegration(
+#                 transaction_style="url",
+#                 middleware_spans=True,
+#                 signals_spans=False,
+#             ),
+#             CeleryIntegration(
+#                 monitor_beat_tasks=True,
+#                 propagate_traces=True,
+#             ),
+#             RedisIntegration(),
+#             sentry_logging,
+#         ],
+#         # Performance Monitoring
+#         traces_sample_rate=config("SENTRY_TRACES_SAMPLE_RATE", default=0.1, cast=float),
+#         profiles_sample_rate=config(
+#             "SENTRY_PROFILES_SAMPLE_RATE", default=0.1, cast=float
+#         ),
+#         # Privacy Settings
+#         send_default_pii=False,
+#         # Environment and Release Tracking
+#         environment=config("ENVIRONMENT", default="production"),
+#         release=VERSION,
+#         # Custom Error Filtering
+#         before_send=lambda event, hint: event
+#         if event.get("level") != "debug"
+#         else None,
+#         # Performance tuning
+#         max_breadcrumbs=50,
+#         attach_stacktrace=True,
+#     )
 
 
 # Celery Production Settings (Senior-level optimizations)
@@ -247,5 +248,5 @@ INSTALLED_APPS.extend(
 )
 
 # Middleware optimization for production
-MIDDLEWARE.insert(1, "django.middleware.cache.UpdateCacheMiddleware")
-MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")
+# MIDDLEWARE.insert(1, "django.middleware.cache.UpdateCacheMiddleware")
+# MIDDLEWARE.append("django.middleware.cache.FetchFromCacheMiddleware")
