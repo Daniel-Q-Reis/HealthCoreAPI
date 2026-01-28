@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { secureStorage } from '@/shared/api/security';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -10,10 +11,10 @@ export const api = axios.create({
     },
 });
 
-// Request interceptor - add JWT token
+// Request interceptor - add JWT token from unified secure storage
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('access_token');
+        const token = secureStorage.getAccessToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -33,23 +34,22 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const refreshToken = localStorage.getItem('refresh_token');
+                const refreshToken = secureStorage.getRefreshToken();
                 if (refreshToken) {
                     const response = await axios.post(`${API_BASE_URL}/api/v1/token/refresh/`, {
                         refresh: refreshToken,
                     });
 
                     const { access } = response.data;
-                    localStorage.setItem('access_token', access);
+                    secureStorage.setAccessToken(access);
 
                     // Retry original request with new token
                     originalRequest.headers.Authorization = `Bearer ${access}`;
                     return api(originalRequest);
                 }
             } catch (refreshError) {
-                // Refresh failed, logout user
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
+                // Refresh failed, logout user - clear all tokens
+                secureStorage.clearAll();
                 window.location.href = '/dqr-health/login';
                 return Promise.reject(refreshError);
             }

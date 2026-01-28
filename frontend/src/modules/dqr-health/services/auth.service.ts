@@ -1,4 +1,5 @@
 import api from './api';
+import { secureStorage } from '@/shared/api/security';
 
 export interface LoginCredentials {
     username: string;
@@ -15,8 +16,9 @@ export const authService = {
         const response = await api.post<AuthResponse>('/api/v1/token/', credentials);
         const { access, refresh } = response.data;
 
-        localStorage.setItem('access_token', access);
-        localStorage.setItem('refresh_token', refresh);
+        // Use unified secure storage to prevent session isolation issues
+        secureStorage.setAccessToken(access);
+        secureStorage.setRefreshToken(refresh);
 
         return response.data;
     },
@@ -29,15 +31,15 @@ export const authService = {
     },
 
     logout() {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        // Clear all tokens to prevent stale session data
+        secureStorage.clearAll();
     },
 
     isAuthenticated(): boolean {
-        return !!localStorage.getItem('access_token');
+        return secureStorage.isValid();
     },
 
     getToken(): string | null {
-        return localStorage.getItem('access_token');
+        return secureStorage.getAccessToken();
     },
 };
