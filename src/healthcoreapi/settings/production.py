@@ -94,18 +94,18 @@ SERVER_EMAIL = config("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 
 # Logging for Production
 # ------------------------------------------------------------------------------
-LOGGING["handlers"]["file"] = {
-    "level": "ERROR",
-    "class": "logging.handlers.RotatingFileHandler",
-    "filename": "logs/production.log",
-    "maxBytes": 1024 * 1024 * 15,  # 15MB
-    "backupCount": 10,
-    "formatter": "json",
-}
+# LOGGING["handlers"]["file"] = {
+#     "level": "ERROR",
+#     "class": "logging.handlers.RotatingFileHandler",
+#     "filename": "logs/production.log",
+#     "maxBytes": 1024 * 1024 * 15,  # 15MB
+#     "backupCount": 10,
+#     "formatter": "json",
+# }
 
-# Add file handler to root logger
-root_handlers = LOGGING["root"]["handlers"]  # type: ignore[index]
-root_handlers.append("file")
+# File logging disabled for container environment (logs go to stdout)
+# root_handlers = LOGGING["root"]["handlers"]  # type: ignore[index]
+# root_handlers.append("file")
 
 # Error Monitoring with Sentry (Senior-level integration)
 # ------------------------------------------------------------------------------
@@ -246,4 +246,4 @@ INSTALLED_APPS.extend(
 # NOTE: Per-site cache middleware REMOVED - it was caching user-specific API responses!
 # This caused critical bug where User A's data was served to User B for CACHE_TIMEOUT (5min)
 # For API endpoints, use @cache_page decorator on specific views instead
-print("CRITICAL: LOADING PRODUCTION SETTINGS - NO CACHE MIDDLEWARE INJECTED")
+# print("CRITICAL: LOADING PRODUCTION SETTINGS - NO CACHE MIDDLEWARE INJECTED")
