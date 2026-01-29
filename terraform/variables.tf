@@ -55,6 +55,20 @@ variable "ghcr_token" {
   sensitive   = true
 }
 
+# Google OAuth2 Credentials
+variable "google_client_id" {
+  description = "Google OAuth2 Client ID"
+  type        = string
+  default     = ""  # Allow empty if not used
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth2 Client Secret"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
 variable "postgres_sku" {
   description = "PostgreSQL SKU (B1ms for 15 users, B2s for AI-heavy workloads)"
   type        = string

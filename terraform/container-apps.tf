@@ -118,6 +118,17 @@ resource "azurerm_container_app" "django_api" {
         name  = "APPLICATIONINSIGHTS_CONNECTION_STRING"
         value = azurerm_application_insights.main.connection_string
       }
+
+      # Google OAuth2 Credentials
+      env {
+        name  = "GOOGLE_OAUTH2_CLIENT_ID"
+        value = var.google_client_id
+      }
+
+      env {
+        name  = "GOOGLE_OAUTH2_CLIENT_SECRET"
+        value = var.google_client_secret
+      }
     }
   }
 
