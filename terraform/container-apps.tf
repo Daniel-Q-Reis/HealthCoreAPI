@@ -74,7 +74,7 @@ resource "azurerm_container_app" "django_api" {
 
       env {
         name  = "SECRET_KEY"
-        value = "azure-prod-8kJx2Lm9Np3Qr5Tv7Wz-healthcoreapi-2026"
+        value = var.secret_key
       }
 
       env {
