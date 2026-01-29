@@ -63,3 +63,14 @@ urlpatterns = [
     path("api/v1/orders/", include("src.apps.orders.urls")),
     # Add your apps' urls here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# WARNING: This is for serving user-uploaded media in Docker without S3/Azure Blob.
+# In a real production environment with high traffic, use a dedicated storage backend.
+if not settings.DEBUG:
+    from django.urls import re_path
+    from django.views.static import serve
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
