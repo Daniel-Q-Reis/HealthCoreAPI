@@ -121,13 +121,18 @@ resource "azurerm_container_app" "django_api" {
 
       # Google OAuth2 Credentials
       env {
-        name  = "GOOGLE_OAUTH2_CLIENT_ID"
+        name  = "GOOGLE_OAUTH_CLIENT_ID"
         value = var.google_client_id
       }
 
       env {
-        name  = "GOOGLE_OAUTH2_CLIENT_SECRET"
+        name  = "GOOGLE_OAUTH_CLIENT_SECRET"
         value = var.google_client_secret
+      }
+
+      env {
+        name  = "GOOGLE_OAUTH_REDIRECT_URI"
+        value = "https://api.danielqreis.com/api/auth/complete/google-oauth2/"
       }
     }
   }
