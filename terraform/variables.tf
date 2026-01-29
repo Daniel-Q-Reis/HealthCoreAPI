@@ -43,6 +43,12 @@ variable "db_admin_password" {
   }
 }
 
+variable "secret_key" {
+  description = "Django Secret Key"
+  type        = string
+  sensitive   = true
+}
+
 # GitHub Container Registry Credentials
 variable "ghcr_username" {
   description = "GitHub username for GHCR authentication"
