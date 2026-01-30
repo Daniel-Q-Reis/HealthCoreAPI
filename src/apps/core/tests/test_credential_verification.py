@@ -287,8 +287,8 @@ class TestRoleRequestAPI:
             {},
         )
 
-        # DRF returns 403 when permission_classes are checked on unauthenticated requests
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        # 401 Unauthorized for unauthenticated requests
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
     def test_list_role_requests_admin_only(self, user: Any, admin_user: Any) -> None:
         """Test that only admins can list role requests."""

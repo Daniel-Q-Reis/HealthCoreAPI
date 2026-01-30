@@ -149,8 +149,8 @@ class TestSchedulingAPI:
         url = "/api/v1/scheduling/appointments/"
         data = {"patient": str(patient.id), "slot": str(available_slot.id)}
         response = api_client.post(url, data=data, format="json")
-        # DRF returns 403 for unauthenticated requests with IsAuthenticated permission
-        assert response.status_code == 403
+        # 401 Unauthorized for unauthenticated requests
+        assert response.status_code == 401
 
     def test_create_appointment_with_booked_slot(
         self, authenticated_client, patient, practitioner

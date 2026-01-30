@@ -109,7 +109,7 @@ class TestPharmacyAIDrugInfo:
             {"medication_name": "Metformin"},
             format="json",
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_drug_info_missing_medication_name(self, authenticated_client):
         """Test request without medication_name returns 400."""
@@ -194,7 +194,7 @@ class TestExperienceAIFeedbackAnalysis:
             {"feedback_text": "Great service!"},
             format="json",
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_feedback_analysis_missing_text(self, user_client):
         """Test request without feedback_text returns 400."""
