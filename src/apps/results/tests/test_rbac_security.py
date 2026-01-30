@@ -101,9 +101,9 @@ class TestDiagnosticReportAccess:
     """Test RBAC for diagnostic report endpoints."""
 
     def test_anonymous_denied(self, api_client):
-        """Anonymous users should get 403 (DRF returns 403 for unauthenticated)."""
+        """Anonymous users should get 401 Unauthorized."""
         response = api_client.get("/api/v1/results/reports/")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_patient_denied_list(self, api_client, patient_user):
         """Patients should get 403 when listing reports."""

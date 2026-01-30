@@ -294,7 +294,8 @@ class TestOrderAPI:
         }
 
         response = api_client.post(url, data=data, format="json")
-        assert response.status_code == 403
+        # 401 Unauthorized for unauthenticated requests
+        assert response.status_code == 401
 
     def test_create_order_patient_user_denied(
         self,

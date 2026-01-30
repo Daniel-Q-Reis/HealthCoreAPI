@@ -116,7 +116,7 @@ class TestPostAPI:
 
         response = api_client.post("/api/posts/", data=post_data)
 
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_retrieve_post(self, authenticated_client, user_data):
         """Asserts that authenticated user can retrieve a post by its slug."""
