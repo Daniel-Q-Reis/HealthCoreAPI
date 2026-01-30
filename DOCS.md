@@ -45,21 +45,78 @@ Quick reference guide for all project documentation.
 | [KAFKA.md](./docs/KAFKA.md) | Event streaming setup and Kafka configuration |
 | [PROMETHEUS.md](./docs/PROMETHEUS.md) | Metrics collection and Prometheus setup |
 | [GRAFANA.md](./docs/GRAFANA.md) | Dashboard configuration and monitoring |
-| [Terraform](./terraform/) | Infrastructure as Code for Azure AKS |
 | [Helm Charts](./helm/) | Kubernetes deployment configuration |
+
+### Terraform (Azure Container Apps)
+
+| Document | Description |
+|----------|-------------|
+| [terraform/README.md](./terraform/README.md) | Terraform setup guide and deployment steps |
+| [terraform/terraform.tfvars.example](./terraform/terraform.tfvars.example) | Variables template with placeholders |
+| [terraform/setup.ps1.example](./terraform/setup.ps1.example) | PowerShell setup script |
+| [ADR-0007](./docs/adr/0007-terraform-for-infrastructure-as-code.md) | Terraform IaC decision |
+| [ADR-0018](./docs/adr/0018-azure-container-apps-deployment.md) | Azure Container Apps strategy |
+
+**Terraform Files:**
+- `providers.tf` - Azure provider configuration
+- `variables.tf` - Input variables with validation
+- `main.tf` - Resource Group, Container Apps Environment, Log Analytics
+- `managed-services.tf` - PostgreSQL, Redis, Event Hubs, Cosmos DB
+- `container-apps.tf` - Django, Go Audit, Celery, Grafana, Prometheus
+- `static-web-app.tf` - Frontend hosting (Azure Static Web Apps)
+- `outputs.tf` - Deployment URLs and connection strings
+
+### Terraform (Azure AKS - Legacy)
+
+| Document | Description |
+|----------|-------------|
+| [terraform/terraform-aks-old/](./terraform/terraform-aks-old/) | Legacy AKS configuration (preserved for reference) |
 
 ---
 
 ## Microservices Architecture
 
+### Go Audit Service (gRPC + MongoDB)
+
+The project implements a **polyglot microservice** alongside the Django monolith, using event-driven architecture with Kafka and gRPC.
+
+```
+┌─────────────┐   Kafka Event      ┌──────────────┐   Write    ┌──────────────┐
+│   Django    │──healthcore.events─►│ Go Consumer  │──────────►│   MongoDB    │
+│  (Python)   │                     │   (Kafka)    │           │ (Cosmos DB)  │
+└─────────────┘                     └──────────────┘           └──────────────┘
+       │                                    ▲                         │
+       │           gRPC Query               │                         │
+       └────────────────────────────────────┘                         │
+                              (Port 50051)  ◄─────────────────────────┘
+```
+
+**Technology Stack:**
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| Language | Go 1.24 | High concurrency, low memory footprint |
+| Database | MongoDB (Azure Cosmos DB) | Audit log storage (NoSQL) |
+| Ingestion | Apache Kafka | Event streaming |
+| API | gRPC (Port 50051) | Query audit logs by `target_id` |
+| Deployment | Azure Container Apps | Serverless containers |
+
+**Source Code & Documentation:**
+
 | Document | Description |
 |----------|-------------|
-| [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Log Microservice extraction (Go + DynamoDB + gRPC) |
-| [services/audit-service/](./services/audit-service/) | Go microservice source code and Protobuf definitions |
-| [gRPC Client](./src/apps/core/services/grpc_client.py) | Python gRPC client for audit service integration |
+| [services/audit-service/](./services/audit-service/) | Go microservice source code |
+| [services/audit-service/proto/](./services/audit-service/proto/) | Protobuf definitions (.proto) |
+| [gRPC Client](./src/apps/core/services/grpc_client.py) | Python gRPC client for Django integration |
 | [Kafka Producer](./src/apps/core/services/audit_logger.py) | Django audit event publisher |
-| [test_grpc.py](./scripts/test_grpc.py) | End-to-end gRPC integration test |
-| [test_kafka_integration.py](./scripts/test_kafka_integration.py) | End-to-end Kafka integration test |
+| [ADR-0016](./docs/adr/0016-audit-microservice-go.md) | Audit Microservice extraction decision |
+| [ADR-0019](./docs/adr/0019-mongodb-audit-service.md) | MongoDB for Audit Service (Cosmos DB) |
+
+**Integration Tests:**
+
+| Script | Description |
+|--------|-------------|
+| [test_grpc.py](./scripts/test_grpc.py) | E2E gRPC test (Python → Go → MongoDB) |
+| [test_kafka_integration.py](./scripts/test_kafka_integration.py) | E2E Kafka test (Django → Kafka → Go → MongoDB) |
 
 ---
 
