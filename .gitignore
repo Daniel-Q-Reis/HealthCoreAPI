@@ -287,6 +287,7 @@ terraform/tfplan
 terraform/*.tfplan
 terraform/crash.log
 terraform/setup.ps1
+terraform/fix_and_apply.ps1
 
 # Azure credentials
 .azure/
