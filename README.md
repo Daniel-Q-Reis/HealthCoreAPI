@@ -33,7 +33,7 @@
 | **Google Gemini** | 2.5 Flash | AI Integration |
 | **Go** | 1.24 | Audit Microservice |
 | **gRPC** | 1.60+ | Inter-service Communication |
-| **DynamoDB** | Local/AWS | Audit Log Storage (NoSQL) |
+| **MongoDB** | Cosmos DB | Audit Log Storage (NoSQL) |
 
 ### **Frontend**
 | Technology | Version | Purpose |
@@ -128,11 +128,23 @@ This project demonstrates **Enterprise-Grade Software Architecture** designed as
 ┌──────────────────────────┴──────────────────────────────────┐
 │                     Backend (Django/DRF)                     │
 │  12 Bounded Contexts • RBAC (6 Roles) • AI Services         │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-┌──────────────────────────┴──────────────────────────────────┐
+└───────────┬─────────────────────────────────┬───────────────┘
+            │                                 │
+            │ Kafka Events                    │ gRPC (50051)
+            ▼                                 ▼
+┌───────────────────────┐         ┌───────────────────────────┐
+│   Go Audit Service    │◄────────│    MongoDB (Cosmos DB)    │
+│  Kafka Consumer/gRPC  │  Write  │     Audit Logs (NoSQL)    │
+└───────────────────────┘         └───────────────────────────┘
+            │
+┌───────────┴─────────────────────────────────────────────────┐
 │                      Infrastructure                          │
 │  PostgreSQL • Redis • Kafka • Prometheus • Grafana          │
+└─────────────────────────────────────────────────────────────┘
+            │
+┌───────────┴─────────────────────────────────────────────────┐
+│                 Terraform (Azure Container Apps)             │
+│  Resource Group • Container Apps • Event Hubs • Cosmos DB   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -144,11 +156,13 @@ This project demonstrates **Enterprise-Grade Software Architecture** designed as
 - **Repository Pattern**: Data access abstraction enabling testability and flexibility
 - **Circuit Breaker Pattern**: Resilience and fault tolerance for external dependencies
 - **Infrastructure as Code**: Complete automation of cloud resources with Terraform
+- **Polyglot Microservices**: Go audit service alongside Python monolith
 
 ### **Cloud-Native Design Principles**
 
 - **Container-First**: Docker-native development and deployment
 - **Kubernetes-Ready**: Helm charts with enterprise production standards
+- **Azure Container Apps**: Serverless container hosting for production
 - **Observable**: Built-in health checks, metrics, and monitoring integration
 - **Scalable**: Horizontal scaling capabilities with load balancing support
 - **Resilient**: Circuit breakers, retry logic, and graceful degradation
@@ -162,6 +176,7 @@ This project demonstrates **Enterprise-Grade Software Architecture** designed as
 - **API Documentation**: Auto-generated OpenAPI specs with DRF Spectacular
 - **Backend Details**: Comprehensive guide in [docs/README_BACKEND.md](docs/README_BACKEND.md)
 - **Frontend Details**: FSD architecture guide in [docs/README_FRONTEND.md](docs/README_FRONTEND.md)
+- **Terraform Guide**: Azure deployment in [terraform/README.md](terraform/README.md)
 
 ---
 
@@ -172,26 +187,26 @@ The project demonstrates **polyglot microservices** alongside the Django monolit
 ### **Audit Log Microservice (Go)**
 
 ```
-┌─────────────┐   Kafka Event      ┌──────────────┐   Write    ┌──────────┐
-│   Django    │──healthcore.events─>│ Go Consumer  │──────────> │ DynamoDB │
-│  (Python)   │                     │   (Kafka)    │            │  (NoSQL) │
-└─────────────┘                     └──────────────┘            └──────────┘
+┌─────────────┐   Kafka Event      ┌──────────────┐   Write    ┌──────────────┐
+│   Django    │──healthcore.events─►│ Go Consumer  │──────────►│   MongoDB    │
+│  (Python)   │                     │   (Kafka)    │           │ (Cosmos DB)  │
+└─────────────┘                     └──────────────┘           └──────────────┘
        │                                    ▲                         │
        │           gRPC Query               │                         │
        └────────────────────────────────────┘                         │
-                             (Port 50051)  ◄─────────────────────────┘
+                              (Port 50051)  ◄─────────────────────────┘
 ```
 
 **Technology Stack:**
 - **Language**: Go 1.24 (high concurrency, low memory footprint)
-- **Database**: DynamoDB (infinite scaling for time-series logs)
-- **Storage**: Partition Key (`target_id`) + Sort Key (`timestamp`)
+- **Database**: MongoDB via Azure Cosmos DB (serverless, NoSQL)
+- **Storage**: Collection `events` with indexes on `target_id`, `timestamp`, `actor_id`
 - **Communication**: gRPC (queries) + Kafka (ingestion)
-- **Deployment**: Docker-ready for Azure Container Apps
+- **Deployment**: Azure Container Apps (serverless containers)
 
 **What It Does:**
-- Consumes audit events from `healthcore.events` Kafka topic
-- Stores immutable logs in DynamoDB (HIPAA-compliant)
+- Consumes audit events from `healthcore.events` Kafka topic (Azure Event Hubs)
+- Stores immutable logs in MongoDB/Cosmos DB (HIPAA-compliant)
 - Exposes gRPC API for querying logs by `target_id`
 - Scales independently from the Django monolith
 
