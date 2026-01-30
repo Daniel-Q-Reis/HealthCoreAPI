@@ -2,11 +2,21 @@
 # ==================================
 # INSTRUCTIONS:
 # 1. Copy this file: cp terraform.tfvars.example terraform.tfvars
-# 2. Edit terraform.tfvars and change the values below
+# 2. Edit terraform.tfvars and replace ALL placeholder values below
 # 3. NEVER commit terraform.tfvars (already in .gitignore)
+#
+# ALTERNATIVE: Use environment variables (TF_VAR_<name>)
+# Example: $env:TF_VAR_subscription_id = "your-subscription-id"
 
 # ============================================================
-# CRITICAL: Database Password
+# AZURE SUBSCRIPTION (REQUIRED)
+# ============================================================
+# Get your subscription ID: az account show --query id -o tsv
+
+subscription_id = "CHANGE_ME_SUBSCRIPTION_ID"  # ⚠️ REQUIRED
+
+# ============================================================
+# DATABASE CREDENTIALS (REQUIRED)
 # ============================================================
 # CHANGE THIS! Use strong password with:
 # - At least 8 characters
@@ -17,14 +27,47 @@ db_admin_username = "healthcoreapi_admin"
 db_admin_password = "CHANGE_ME_SecurePassword123!"  # ⚠️ CHANGE THIS!
 
 # ============================================================
-# Azure Configuration
+# GITHUB CONTAINER REGISTRY (REQUIRED for private images)
+# ============================================================
+# Required for Azure to pull private images from ghcr.io
+# Generate token at: https://github.com/settings/tokens
+# Required scopes: read:packages
+
+ghcr_username = "CHANGE_ME_GITHUB_USERNAME"  # ⚠️ REQUIRED
+ghcr_token    = "CHANGE_ME_ghp_xxxxxxxxxxxx"  # ⚠️ REQUIRED
+
+# ============================================================
+# DJANGO SECRET KEY (REQUIRED)
+# ============================================================
+# Generate with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+
+secret_key = "CHANGE_ME_django-secret-key-at-least-50-chars"  # ⚠️ REQUIRED
+
+# ============================================================
+# GOOGLE OAUTH CREDENTIALS (Optional)
+# ============================================================
+# Get from: https://console.developers.google.com/apis/credentials
+# Leave empty if not using Google OAuth
+
+google_client_id     = ""  # Optional
+google_client_secret = ""  # Optional
+
+# ============================================================
+# GRAFANA DASHBOARD (Optional - has default)
+# ============================================================
+# Admin password for Grafana monitoring dashboard
+
+grafana_admin_password = "admin123"  # Change for production
+
+# ============================================================
+# AZURE CONFIGURATION
 # ============================================================
 
 environment = "prod"
-location    = "centralus"  # Changed from eastus due to restrictions
+location    = "centralus"  # Changed from eastus due to PostgreSQL restrictions
 
 # ============================================================
-# Database Configuration
+# DATABASE CONFIGURATION
 # ============================================================
 # B1ms (2GB RAM) - Recommended for 15 concurrent users
 # B2s (4GB RAM) - Only if AI workload increases significantly
@@ -33,7 +76,7 @@ postgres_sku        = "B_Standard_B1ms"  # Cost: $30/month
 postgres_storage_mb = 32768               # 32GB
 
 # ============================================================
-# Redis Cache Configuration
+# REDIS CACHE CONFIGURATION
 # ============================================================
 # 0 = C0 (250MB) - NOT recommended (Celery may run out of memory)
 # 1 = C1 (1GB)   - Recommended for stability
@@ -41,7 +84,7 @@ postgres_storage_mb = 32768               # 32GB
 redis_capacity = 1  # Cost: $16/month
 
 # ============================================================
-# Django API Autoscaling
+# DJANGO API AUTOSCALING
 # ============================================================
 
 django_cpu          = 0.25     # 0.25 vCPU per container
@@ -50,16 +93,16 @@ django_min_replicas = 0        # Scale to zero (save costs during idle)
 django_max_replicas = 3        # Max 3 containers under load
 
 # ============================================================
-# Resource Tags (for cost tracking and organization)
+# RESOURCE TAGS (for cost tracking and organization)
 # ============================================================
 
 tags = {
   Project     = "HealthCoreAPI"
   Environment = "Production"
   ManagedBy   = "Terraform"
-  Owner       = "Daniel de Queiroz Reis"
-  Region      = "East US"
-  CostCenter  = "Azure-Credits-1000USD"
+  Owner       = "Your Name"
+  Region      = "Central US"
+  CostCenter  = "Azure-Credits"
 }
 
 # ============================================================
@@ -72,6 +115,4 @@ tags = {
 # Container Apps:         $30-50
 # --------------------------------
 # TOTAL:                  $110-150/month
-#
-# With $1000 credits: 6-7 months runway
 # ============================================================

@@ -18,8 +18,11 @@
 | `managed-services.tf` | PostgreSQL, Redis, Event Hubs, Cosmos DB |
 | `container-apps.tf` | Django, Go, Celery, Grafana, Prometheus |
 | `outputs.tf` | URLs, connection strings, deployment summary |
-| `terraform.tfvars.example` | Template for variable values |
+| `terraform.tfvars.example` | Template for variable values (copy to terraform.tfvars) |
+| `setup.ps1.example` | PowerShell setup script template |
 | `terraform-aks-old/` | Backup of previous AKS configuration |
+
+> **Note:** `terraform.tfvars` and `setup.ps1` are in `.gitignore` and should never be committed!
 
 ---
 
@@ -41,12 +44,34 @@ az account set --subscription "SUBSCRIPTION_ID"
 
 ### 2. Configure Variables
 
+**Option A: Using the setup script (Recommended for Windows)**
+
+```powershell
+# Copy and run the setup script
+Copy-Item setup.ps1.example setup.ps1
+.\setup.ps1
+# Edit terraform.tfvars with your values
+```
+
+**Option B: Manual copy**
+
 ```bash
 # Copy example file
 cp terraform.tfvars.example terraform.tfvars
 
 # Edit terraform.tfvars with your values
-# CRITICAL: Change db_admin_password!
+# CRITICAL: Replace ALL values marked with "CHANGE_ME"!
+```
+
+**Option C: Environment variables (CI/CD or security-conscious)**
+
+```powershell
+# Set TF_VAR_* environment variables instead of using tfvars file
+$env:TF_VAR_subscription_id = "your-subscription-id"
+$env:TF_VAR_db_admin_password = "YourSecurePassword123!"
+$env:TF_VAR_ghcr_token = "ghp_your_github_pat"
+$env:TF_VAR_secret_key = "your-django-secret-key"
+# ... etc
 ```
 
 ### 3. Initialize Terraform

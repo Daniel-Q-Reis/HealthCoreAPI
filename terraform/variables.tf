@@ -2,6 +2,20 @@
 # ==========================================
 # These variables configure the Azure infrastructure for HealthCoreAPI
 
+# Azure Subscription Configuration
+variable "subscription_id" {
+  description = "Azure Subscription ID (get with: az account show --query id -o tsv)"
+  type        = string
+}
+
+# Grafana Configuration
+variable "grafana_admin_password" {
+  description = "Grafana admin dashboard password"
+  type        = string
+  sensitive   = true
+  default     = "admin123"  # Default for dev, override in tfvars for production
+}
+
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
