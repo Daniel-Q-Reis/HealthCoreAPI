@@ -278,15 +278,15 @@ pyrightconfig.json
 *_grpc.pb.go
 
 # Terraform sensitive files - NEVER COMMIT!
-terraform/terraform.tfvars
+*.tfvars
+!*.tfvars.example
 terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/.terraform/
-terraform/.terraform.lock.hcl
 terraform/tfplan
 terraform/*.tfplan
 terraform/crash.log
-terraform/*.ps1
+terraform/setup.ps1
 
 # Azure credentials
 .azure/

@@ -1,0 +1,80 @@
+# ============================================================
+# Terraform Setup Script - Example Template
+# ============================================================
+# INSTRUCTIONS:
+# 1. Copy this file: Copy-Item setup.ps1.example setup.ps1
+# 2. Edit setup.ps1 with your actual values
+# 3. Run: .\setup.ps1
+# 4. Then run: terraform init && terraform plan
+#
+# NOTE: setup.ps1 is in .gitignore - never commit it!
+# ============================================================
+
+Write-Host "🔧 Terraform Environment Setup" -ForegroundColor Cyan
+Write-Host "===============================" -ForegroundColor Cyan
+
+# ============================================================
+# OPTION 1: Copy template file (Recommended)
+# ============================================================
+
+if (-not (Test-Path "terraform.tfvars")) {
+    Write-Host "📋 Creating terraform.tfvars from template..." -ForegroundColor Yellow
+    Copy-Item terraform.tfvars.example terraform.tfvars
+    Write-Host "✅ Created terraform.tfvars" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "⚠️  IMPORTANT: Edit terraform.tfvars and replace ALL placeholder values!" -ForegroundColor Red
+    Write-Host "   Look for 'CHANGE_ME' markers in the file." -ForegroundColor Red
+    Write-Host ""
+} else {
+    Write-Host "✅ terraform.tfvars already exists" -ForegroundColor Green
+}
+
+# ============================================================
+# OPTION 2: Use Environment Variables (Alternative)
+# ============================================================
+# Uncomment and set these if you prefer environment variables
+# over terraform.tfvars file. Terraform reads TF_VAR_* automatically.
+
+# $env:TF_VAR_subscription_id = "your-azure-subscription-id"
+# $env:TF_VAR_db_admin_username = "healthcoreapi_admin"
+# $env:TF_VAR_db_admin_password = "YourSecurePassword123!"
+# $env:TF_VAR_ghcr_username = "your-github-username"
+# $env:TF_VAR_ghcr_token = "ghp_your_github_pat_token"
+# $env:TF_VAR_secret_key = "your-django-secret-key-at-least-50-chars"
+# $env:TF_VAR_google_client_id = ""
+# $env:TF_VAR_google_client_secret = ""
+# $env:TF_VAR_grafana_admin_password = "admin123"
+
+# ============================================================
+# Verify Azure CLI Login
+# ============================================================
+
+Write-Host ""
+Write-Host "🔐 Checking Azure CLI login status..." -ForegroundColor Yellow
+
+try {
+    $account = az account show 2>$null | ConvertFrom-Json
+    if ($account) {
+        Write-Host "✅ Logged in as: $($account.user.name)" -ForegroundColor Green
+        Write-Host "   Subscription: $($account.name)" -ForegroundColor Gray
+        Write-Host "   Subscription ID: $($account.id)" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "💡 Use this subscription_id in your terraform.tfvars:" -ForegroundColor Cyan
+        Write-Host "   subscription_id = `"$($account.id)`"" -ForegroundColor White
+    }
+} catch {
+    Write-Host "❌ Not logged in to Azure CLI" -ForegroundColor Red
+    Write-Host "   Run: az login" -ForegroundColor Yellow
+}
+
+# ============================================================
+# Initialize Terraform
+# ============================================================
+
+Write-Host ""
+Write-Host "🚀 Next Steps:" -ForegroundColor Cyan
+Write-Host "   1. Edit terraform.tfvars with your values" -ForegroundColor White
+Write-Host "   2. Run: terraform init" -ForegroundColor White
+Write-Host "   3. Run: terraform plan" -ForegroundColor White
+Write-Host "   4. Run: terraform apply" -ForegroundColor White
+Write-Host ""

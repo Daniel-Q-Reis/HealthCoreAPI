@@ -359,7 +359,7 @@ resource "azurerm_container_app" "grafana" {
 
       env {
         name  = "GF_SECURITY_ADMIN_PASSWORD"
-        value = "admin123"  # Matches Django admin for easier demo access
+        value = var.grafana_admin_password
       }
 
       env {

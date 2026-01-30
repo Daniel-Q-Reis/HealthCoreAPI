@@ -24,8 +24,8 @@ terraform {
 }
 
 provider "azurerm" {
-  # Subscription ID from Azure account (az account show)
-  subscription_id = "a484436d-cc36-4f0b-8860-c065ae44e83d"
+  # Subscription ID from tfvars or TF_VAR_subscription_id env var
+  subscription_id = var.subscription_id
 
   features {
     # Enable soft-delete for Key Vault (recommended for production)
