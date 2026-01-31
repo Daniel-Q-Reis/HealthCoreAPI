@@ -2,6 +2,10 @@
 
 Quick reference guide for all project documentation.
 
+> 🚀 **Live Demo:** [https://app.danielqreis.com/dqr-health](https://app.danielqreis.com/dqr-health)
+>
+> 👨‍💻 **For Developers:** [https://app.danielqreis.com/dqr-health/developers](https://app.danielqreis.com/dqr-health/developers)
+
 ---
 
 ## Core Documentation
