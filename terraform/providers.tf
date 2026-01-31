@@ -13,14 +13,15 @@ terraform {
     }
   }
 
-  # Remote state configuration (will be created in Azure setup)
-  # Uncomment after creating storage account for Terraform state
-  # backend "azurerm" {
-  #   resource_group_name  = "rg-terraform-state"
-  #   storage_account_name = "healthcoretfstate"
-  #   container_name       = "tfstate"
-  #   key                  = "prod.terraform.tfstate"
-  # }
+  # Remote state configuration - Stores terraform.tfstate in Azure Storage
+  # Benefits: State versioning, team collaboration, disaster recovery
+  # To restore a previous state: Download from Azure Portal > Storage Account > Containers > tfstate
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-state"
+    storage_account_name = "healthcoretfstate"
+    container_name       = "tfstate"
+    key                  = "prod.terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
