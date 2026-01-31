@@ -98,13 +98,13 @@ class TestPractitionerAPI:
 
         # Test GET (list)
         list_response = api_client.get(list_url)
-        # 401 Unauthorized for unauthenticated requests
-        assert list_response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert list_response.status_code == 403
 
         # Test POST
         post_response = api_client.post(list_url, data={}, format="json")
-        # 401 Unauthorized for unauthenticated requests
-        assert post_response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert post_response.status_code == 403
 
     def test_create_practitioner_authenticated(
         self, authenticated_client, practitioner_data

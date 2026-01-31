@@ -116,7 +116,8 @@ class TestPostAPI:
 
         response = api_client.post("/api/posts/", data=post_data)
 
-        assert response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert response.status_code == 403
 
     def test_retrieve_post(self, authenticated_client, user_data):
         """Asserts that authenticated user can retrieve a post by its slug."""
