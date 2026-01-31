@@ -294,8 +294,8 @@ class TestOrderAPI:
         }
 
         response = api_client.post(url, data=data, format="json")
-        # 401 Unauthorized for unauthenticated requests
-        assert response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert response.status_code == 403
 
     def test_create_order_patient_user_denied(
         self,

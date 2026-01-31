@@ -62,8 +62,8 @@ class TestPatientAPIAuth:
         """Verify that write operations are denied for unauthenticated users."""
         url = "/api/v1/patients/"
         response = api_client.post(url, data=patient_data, format="json")
-        # 401 Unauthorized for unauthenticated requests
-        assert response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert response.status_code == 403
 
     def test_create_patient_authenticated(self, authenticated_client, patient_data):
         """Verify an authenticated medical staff user can create a patient."""
@@ -92,8 +92,8 @@ class TestPatientAPIAuth:
         services.register_new_patient(**patient_data)
         url = "/api/v1/patients/"
         response = api_client.get(url)
-        # 401 Unauthorized for unauthenticated requests
-        assert response.status_code == 401
+        # DRF with SessionAuth returns 403 for unauthenticated requests
+        assert response.status_code == 403
 
     def test_soft_delete_patient_authenticated(
         self, authenticated_client, patient_data
