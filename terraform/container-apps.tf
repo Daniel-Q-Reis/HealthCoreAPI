@@ -134,6 +134,22 @@ resource "azurerm_container_app" "django_api" {
         name  = "GOOGLE_OAUTH_REDIRECT_URI"
         value = "https://api.danielqreis.com/api/auth/complete/google-oauth2/"
       }
+
+      # Azure OpenAI Configuration (AI Integration)
+      env {
+        name  = "AZURE_OPENAI_API_KEY"
+        value = var.azure_openai_api_key
+      }
+
+      env {
+        name  = "AZURE_OPENAI_ENDPOINT"
+        value = var.azure_openai_endpoint
+      }
+
+      env {
+        name  = "AZURE_OPENAI_DEPLOYMENT_NAME"
+        value = var.azure_openai_deployment_name
+      }
     }
   }
 

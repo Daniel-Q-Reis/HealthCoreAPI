@@ -53,6 +53,16 @@ google_client_id     = ""  # Optional
 google_client_secret = ""  # Optional
 
 # ============================================================
+# AZURE OPENAI CONFIGURATION (AI Features)
+# ============================================================
+# Get from: Azure Portal > Azure OpenAI > Keys and Endpoint
+# Required for AI-powered features (drug analysis, health recommendations)
+
+azure_openai_api_key         = "CHANGE_ME_azure_openai_key"  # Get from Azure Portal
+azure_openai_endpoint        = "https://your-resource.openai.azure.com"  # Your endpoint URL
+azure_openai_deployment_name = "gpt-4o-mini"  # Your deployment name
+
+# ============================================================
 # GRAFANA DASHBOARD (Optional - has default)
 # ============================================================
 # Admin password for Grafana monitoring dashboard
