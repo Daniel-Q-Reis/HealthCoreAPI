@@ -89,6 +89,26 @@ variable "google_client_secret" {
   default     = ""
 }
 
+# Azure OpenAI Configuration (AI Integration)
+variable "azure_openai_api_key" {
+  description = "Azure OpenAI API Key for AI features"
+  type        = string
+  sensitive   = true
+  default     = ""  # Allow empty if not using AI
+}
+
+variable "azure_openai_endpoint" {
+  description = "Azure OpenAI Endpoint URL (e.g., https://your-resource.openai.azure.com)"
+  type        = string
+  default     = ""
+}
+
+variable "azure_openai_deployment_name" {
+  description = "Azure OpenAI Deployment Name (e.g., gpt-4o-mini)"
+  type        = string
+  default     = "gpt-4o-mini"
+}
+
 variable "postgres_sku" {
   description = "PostgreSQL SKU (B1ms for 15 users, B2s for AI-heavy workloads)"
   type        = string
