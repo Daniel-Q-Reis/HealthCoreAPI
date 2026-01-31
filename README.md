@@ -14,6 +14,10 @@
 
 **HealthCoreAPI** is an enterprise-grade, full-stack healthcare management platform demonstrating modern cloud-native architecture patterns, Domain-Driven Design, and production-ready deployment capabilities. Built with HIPAA-aligned security controls and comprehensive RBAC authorization.
 
+> 🚀 **Live Demo:** [https://app.danielqreis.com/dqr-health](https://app.danielqreis.com/dqr-health)
+>
+> 👨‍💻 **For Developers:** [https://app.danielqreis.com/dqr-health/developers](https://app.danielqreis.com/dqr-health/developers) — Technical overview, API docs, metrics dashboards & service endpoints
+
 ---
 
 ## 🛠️ Technology Stack
