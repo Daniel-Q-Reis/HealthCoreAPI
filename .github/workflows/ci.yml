@@ -2,7 +2,7 @@ name: Django CI/CD
 
 on:
   push:
-    branches: [ "main", "feat/azure-deployment" ]  # Added feat/azure-deployment for testing
+    branches: [ "main", "feat/azure-deployment", "fix/session-and-celery" ]  # Added for testing
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -161,7 +161,7 @@ jobs:
     name: Build and Push Docker Image
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/azure-deployment')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/azure-deployment' || github.ref == 'refs/heads/fix/session-and-celery')
     permissions:
       contents: read
       packages: write

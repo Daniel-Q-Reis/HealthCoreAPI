@@ -153,6 +153,7 @@ if SENTRY_DSN:
     )
 
 
+
 # Celery Production Settings (Senior-level optimizations)
 # ------------------------------------------------------------------------------
 CELERY_TASK_ALWAYS_EAGER = False
@@ -160,6 +161,8 @@ CELERY_TASK_EAGER_PROPAGATES = False
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+
 
 # Task retry configuration
 CELERY_TASK_RETRY_KWARGS = {
@@ -213,7 +216,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 CSRF_COOKIE_HTTPONLY = False  # Must be False so JavaScript can read it
 CSRF_COOKIE_SAMESITE = "None"  # Required for cross-domain CSRF protection
 CSRF_COOKIE_SECURE = True  # Force HTTPS (required when SameSite=None)
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default=[])
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default="")
 
 # Additional Security Headers
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -222,7 +225,7 @@ USE_X_FORWARDED_PORT = True
 
 # CORS Security for production
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv())
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv(), default="")
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 

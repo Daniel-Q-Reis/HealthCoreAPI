@@ -537,19 +537,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {"access_type": "offline"}
 # Sentry
 # ------------------------------------------------------------------------------
 SENTRY_DSN = config("SENTRY_DSN", default=None)
-if SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[
-            DjangoIntegration(),
-            CeleryIntegration(),
-            RedisIntegration(),
-        ],
-        traces_sample_rate=config("SENTRY_TRACES_SAMPLE_RATE", default=0.1, cast=float),
-        send_default_pii=True,
-        environment=config("SENTRY_ENVIRONMENT", default="development"),
-        release=VERSION,
-    )
+# Sentry initialization is handled in environment-specific settings (production.py)
+
 
 # AI Integration Configuration
 # ------------------------------------------------------------------------------
