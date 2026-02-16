@@ -4,7 +4,6 @@ Views for the Departments API.
 
 from typing import Any
 
-from typing import Any
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.request import Request
