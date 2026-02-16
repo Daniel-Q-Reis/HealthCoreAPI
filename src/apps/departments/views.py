@@ -4,8 +4,7 @@ Views for the Departments API.
 
 from typing import Any
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from typing import Any
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.request import Request
@@ -32,7 +31,6 @@ class DepartmentViewSet(viewsets.ModelViewSet[Department]):
     serializer_class = DepartmentSerializer
     permission_classes = [IsAdmin]
 
-    @method_decorator(cache_page(60 * 5))  # Cache for 5 minutes
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Any:
         return super().list(request, *args, **kwargs)
 

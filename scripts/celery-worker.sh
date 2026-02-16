@@ -25,26 +25,31 @@ log_warning() {
     echo -e "${YELLOW}[celery-worker] ⚠️${NC} $1"
 }
 
-wait_for_web_service() {
-    log "Waiting for web service to be ready..."
+# Database check function
+wait_for_postgres() {
+    if [ -n "${DATABASE_URL:-}" ]; then
+        DB_HOST=$(echo "$DATABASE_URL" | sed -n 's|.*@\([^:]*\):.*|\1|p')
+        DB_PORT=$(echo "$DATABASE_URL" | sed -n 's|.*:\([0-9]*\)/.*|\1|p')
+        DB_USER=$(echo "$DATABASE_URL" | sed -n 's|.*://\([^:]*\):.*|\1|p')
+    else
+        DB_HOST="${DB_HOST:-db}"
+        DB_PORT="${DB_PORT:-5432}"
+        DB_USER="${DB_USER:-postgres}"
+    fi
 
+    log "Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT}..."
     local max_attempts=60
     local attempt=0
 
     while [ $attempt -lt $max_attempts ]; do
-        if curl -f http://web:8000/admin/login/ >/dev/null 2>&1; then
-            log_success "Web service is ready!"
+        if pg_isready -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" >/dev/null 2>&1; then
+            log_success "PostgreSQL is ready!"
             return 0
         fi
-
         attempt=$((attempt + 1))
-        if [ $((attempt % 10)) -eq 0 ]; then
-            log "Still waiting for web service... (attempt $attempt/$max_attempts)"
-        fi
         sleep 2
     done
-
-    log_error "Timeout waiting for web service"
+    log_error "Timeout waiting for PostgreSQL"
     exit 1
 }
 
@@ -52,7 +57,7 @@ start_celery_worker() {
     log "Starting Celery worker..."
     log "Configuration: concurrency=2, loglevel=info"
 
-    exec celery -A config worker \
+    exec celery -A healthcoreapi worker \
         --loglevel=info \
         --concurrency=2 \
         --without-gossip \
@@ -63,28 +68,6 @@ start_celery_worker() {
 # Handle signals gracefully
 trap 'log_warning "Received shutdown signal, stopping Celery worker..."; exit 0' SIGTERM SIGINT
 
-# Wait for volume to be ready (prevents I/O errors on Windows/WSL2)
-wait_for_volume() {
-    log "Checking if volume is mounted..."
-    local max_attempts=30
-    local attempt=0
-
-    while [ $attempt -lt $max_attempts ]; do
-        if [ -d "/usr/src/app/src/templates" ] && [ -r "/usr/src/app/src/templates/.gitkeep" ]; then
-            log_success "Volume is ready!"
-            return 0
-        fi
-
-        attempt=$((attempt + 1))
-        log "Waiting for volume mount... (attempt $attempt/$max_attempts)"
-        sleep 1
-    done
-
-    log_error "Timeout waiting for volume mount"
-    exit 1
-}
-
 # Main execution
-wait_for_volume
-wait_for_web_service
+wait_for_postgres
 start_celery_worker
