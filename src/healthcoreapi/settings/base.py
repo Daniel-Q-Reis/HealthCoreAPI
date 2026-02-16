@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 # Enable runtime support for generic type parameters in Django
 import django_stubs_ext
 
-# django_stubs_ext.monkeypatch()
+django_stubs_ext.monkeypatch()
 
 import os  # noqa: E402
 from datetime import timedelta  # noqa: E402
