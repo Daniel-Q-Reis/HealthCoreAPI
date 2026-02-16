@@ -53,9 +53,10 @@ wait_for_postgres() {
     exit 1
 }
 
-start_celery_worker() {
     log "Starting Celery worker..."
     log "Configuration: concurrency=2, loglevel=info"
+
+    mkdir -p logs
 
     exec celery -A healthcoreapi worker \
         --loglevel=info \

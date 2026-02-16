@@ -64,8 +64,10 @@ run_celery_beat_migrations() {
 }
 
 start_celery_beat() {
-    log "Starting Celery beat scheduler..."
-    log "Using DatabaseScheduler for persistent schedules"
+    log "Starting Celery beat..."
+    log "Configuration: scheduler=django_celery_beat.schedulers:DatabaseScheduler"
+
+    mkdir -p logs
 
     exec celery -A healthcoreapi beat \
         --loglevel=info \
