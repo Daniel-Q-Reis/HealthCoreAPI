@@ -225,7 +225,7 @@ USE_X_FORWARDED_PORT = True
 
 # CORS Security for production
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv())
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv(), default="")
 CORS_ALLOW_CREDENTIALS = True
 CORS_EXPOSE_HEADERS = ["Content-Disposition"]
 
