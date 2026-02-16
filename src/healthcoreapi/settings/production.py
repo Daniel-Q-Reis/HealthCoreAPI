@@ -118,39 +118,39 @@ if SENTRY_DSN:
         event_level=logging.ERROR,  # Send errors as events
     )
 
-    # sentry_sdk.init(
-    #     dsn=SENTRY_DSN,
-    #     integrations=[
-    #         DjangoIntegration(
-    #             transaction_style="url",
-    #             middleware_spans=True,
-    #             signals_spans=False,
-    #         ),
-    #         CeleryIntegration(
-    #             monitor_beat_tasks=True,
-    #             propagate_traces=True,
-    #         ),
-    #         RedisIntegration(),
-    #         sentry_logging,
-    #     ],
-    #     # Performance Monitoring
-    #     traces_sample_rate=config("SENTRY_TRACES_SAMPLE_RATE", default=0.1, cast=float),
-    #     profiles_sample_rate=config(
-    #         "SENTRY_PROFILES_SAMPLE_RATE", default=0.1, cast=float
-    #     ),
-    #     # Privacy Settings
-    #     send_default_pii=False,
-    #     # Environment and Release Tracking
-    #     environment=config("ENVIRONMENT", default="production"),
-    #     release=VERSION,
-    #     # Custom Error Filtering
-    #     before_send=lambda event, hint: event
-    #     if event.get("level") != "debug"
-    #     else None,
-    #     # Performance tuning
-    #     max_breadcrumbs=50,
-    #     attach_stacktrace=True,
-    # )
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(
+                transaction_style="url",
+                middleware_spans=True,
+                signals_spans=False,
+            ),
+            CeleryIntegration(
+                monitor_beat_tasks=True,
+                propagate_traces=True,
+            ),
+            RedisIntegration(),
+            sentry_logging,
+        ],
+        # Performance Monitoring
+        traces_sample_rate=config("SENTRY_TRACES_SAMPLE_RATE", default=0.1, cast=float),
+        profiles_sample_rate=config(
+            "SENTRY_PROFILES_SAMPLE_RATE", default=0.1, cast=float
+        ),
+        # Privacy Settings
+        send_default_pii=False,
+        # Environment and Release Tracking
+        environment=config("ENVIRONMENT", default="production"),
+        release=VERSION,
+        # Custom Error Filtering
+        before_send=lambda event, hint: event
+        if event.get("level") != "debug"
+        else None,
+        # Performance tuning
+        max_breadcrumbs=50,
+        attach_stacktrace=True,
+    )
 
 
 
@@ -216,7 +216,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 CSRF_COOKIE_HTTPONLY = False  # Must be False so JavaScript can read it
 CSRF_COOKIE_SAMESITE = "None"  # Required for cross-domain CSRF protection
 CSRF_COOKIE_SECURE = True  # Force HTTPS (required when SameSite=None)
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default=[])
+CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv(), default="")
 
 # Additional Security Headers
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
