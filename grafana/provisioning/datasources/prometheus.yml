@@ -2,8 +2,9 @@ apiVersion: 1
 
 datasources:
   - name: Prometheus
+    uid: prometheus
     type: prometheus
     access: proxy
-    url: http://prometheus:9090
+    url: https://ca-prometheus.icyocean-8228f51c.centralus.azurecontainerapps.io
     isDefault: true
     editable: true

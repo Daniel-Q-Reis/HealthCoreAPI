@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { SiPython, SiDjango, SiGo, SiAmazon, SiDocker, SiPostgresql } from 'react-icons/si';
+import { SiPython, SiDjango, SiGo, SiDocker, SiPostgresql } from 'react-icons/si';
+import { FaAws } from 'react-icons/fa';
 
 const techStacks = [
     { name: 'Python & Django', icon: SiPython, color: 'from-blue-600 to-yellow-500', Icon2: SiDjango },
     { name: 'Golang', icon: SiGo, color: 'from-cyan-500 to-blue-600' },
-    { name: 'AWS Cloud', icon: SiAmazon, color: 'from-orange-500 to-yellow-600' },
+    { name: 'AWS Cloud', icon: FaAws, color: 'from-orange-500 to-yellow-600' },
     { name: 'Docker', icon: SiDocker, color: 'from-blue-500 to-cyan-400' },
     { name: 'PostgreSQL', icon: SiPostgresql, color: 'from-blue-600 to-white' },
 ];

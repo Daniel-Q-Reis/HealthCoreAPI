@@ -278,3 +278,22 @@ az eventhubs eventhub show \
 **Last Updated:** 2026-01-21
 **Terraform Version:** 1.14.3
 **Azure Provider:** 4.57.0
+
+## Monitoramento no Azure
+
+O Prometheus coleta `/metrics` da API a cada 15 segundos. O Grafana provisiona
+a fonte Prometheus e o dashboard **Django HealthCore Metrics**, com latências
+p50, p95 e p99, taxa de requisições, tempo médio, erros e endpoints mais acessados.
+As configurações ficam em Azure Files para sobreviver à troca de revisões.
+
+Após criar os compartilhamentos `grafana-config` e `prometheus-config` com
+Terraform, envie os arquivos versionados:
+
+```powershell
+./upload-monitoring-config.ps1 -SubscriptionId <subscription-id>
+```
+
+Em uma implantação nova, reinicie as revisões do Grafana e do Prometheus
+após o envio dos arquivos. A implantação atual já foi configurada e validada.
+O histórico de séries temporais do Prometheus ainda é efêmero; os arquivos
+de provisionamento do dashboard são persistentes.

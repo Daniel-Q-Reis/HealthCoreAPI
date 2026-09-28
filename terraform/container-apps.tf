@@ -17,6 +17,7 @@ resource "azurerm_container_app" "django_api" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -31,14 +32,19 @@ resource "azurerm_container_app" "django_api" {
   }
 
   template {
-    min_replicas = var.django_min_replicas  # Default: 0 (scale-to-zero)
-    max_replicas = var.django_max_replicas  # Default: 3
+    min_replicas = var.django_min_replicas # Default: 0 (scale-to-zero)
+    max_replicas = var.django_max_replicas # Default: 3
 
     container {
       name   = "django"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
-      cpu    = var.django_cpu     # Default: 0.25
-      memory = var.django_memory  # Default: 0.5Gi
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
+      cpu    = var.django_cpu    # Default: 0.25
+      memory = var.django_memory # Default: 0.5Gi
+
+      volume_mounts {
+        name = "media"
+        path = "/usr/src/app/src/media"
+      }
 
       env {
         name  = "DJANGO_SETTINGS_MODULE"
@@ -58,12 +64,12 @@ resource "azurerm_container_app" "django_api" {
 
       env {
         name  = "CORS_ALLOWED_ORIGINS"
-        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://${azurerm_static_web_app.frontend.default_host_name}"
       }
 
       env {
         name  = "CSRF_TRUSTED_ORIGINS"
-        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io"
+        value = "https://app.danielqreis.com,https://api.danielqreis.com,https://${azurerm_static_web_app.frontend.default_host_name}"
       }
 
       # Frontend URL for OAuth callback redirect
@@ -84,19 +90,24 @@ resource "azurerm_container_app" "django_api" {
 
       env {
         name  = "REDIS_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
 
       # Django cache uses CACHE_URL
       env {
         name  = "CACHE_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
 
       # Celery broker also needs Redis URL
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
@@ -151,6 +162,13 @@ resource "azurerm_container_app" "django_api" {
         value = var.azure_openai_deployment_name
       }
     }
+
+    volume {
+      name          = "media"
+      storage_name  = azurerm_container_app_environment_storage.media.name
+      storage_type  = "AzureFile"
+      mount_options = "uid=1000,gid=1000,dir_mode=0770,file_mode=0660"
+    }
   }
 
   ingress {
@@ -177,6 +195,7 @@ resource "azurerm_container_app" "audit_service" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -191,7 +210,7 @@ resource "azurerm_container_app" "audit_service" {
   }
 
   template {
-    min_replicas = 1  # Always-on for audit logs
+    min_replicas = 1 # Always-on for audit logs
     max_replicas = 2
 
     container {
@@ -223,7 +242,7 @@ resource "azurerm_container_app" "audit_service" {
   }
 
   ingress {
-    external_enabled = false  # Internal only (gRPC communication)
+    external_enabled = false # Internal only (gRPC communication)
     target_port      = 50051
 
     traffic_weight {
@@ -246,6 +265,7 @@ resource "azurerm_container_app" "celery_worker" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -260,12 +280,12 @@ resource "azurerm_container_app" "celery_worker" {
   }
 
   template {
-    min_replicas = 1  # Always-on for scheduled tasks
+    min_replicas = var.celery_min_replicas
     max_replicas = 2
 
     container {
       name   = "celery-worker"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -283,7 +303,7 @@ resource "azurerm_container_app" "celery_worker" {
 
       env {
         name  = "REDIS_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
 
       env {
@@ -298,12 +318,17 @@ resource "azurerm_container_app" "celery_worker" {
 
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
         name  = "CACHE_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
     }
   }
@@ -322,6 +347,7 @@ resource "azurerm_container_app" "celery_beat" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -336,12 +362,12 @@ resource "azurerm_container_app" "celery_beat" {
   }
 
   template {
-    min_replicas = 1  # Must be exactly 1 (no duplicates)
+    min_replicas = var.celery_min_replicas # Use 1 in production, 0 during migration
     max_replicas = 1
 
     container {
       name   = "celery-beat"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -359,7 +385,7 @@ resource "azurerm_container_app" "celery_beat" {
 
       env {
         name  = "REDIS_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
 
       env {
@@ -374,12 +400,17 @@ resource "azurerm_container_app" "celery_beat" {
 
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
         name  = "CACHE_URL"
-        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
     }
   }
@@ -397,14 +428,20 @@ resource "azurerm_container_app" "grafana" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   template {
-    min_replicas = 1  # Keep always on for monitoring
+    min_replicas = 1 # Keep always on for monitoring
     max_replicas = 1
 
     container {
-      name   = "grafana"
-      image  = "grafana/grafana:latest"
+      name  = "grafana"
+      image = "grafana/grafana:latest"
+
+      volume_mounts {
+        name = "grafana-config"
+        path = "/etc/grafana/provisioning"
+      }
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -425,8 +462,15 @@ resource "azurerm_container_app" "grafana" {
 
       env {
         name  = "GF_INSTALL_PLUGINS"
-        value = ""  # No additional plugins needed
+        value = "" # No additional plugins needed
       }
+    }
+
+    volume {
+      name          = "grafana-config"
+      storage_name  = azurerm_container_app_environment_storage.grafana_config.name
+      storage_type  = "AzureFile"
+      mount_options = "uid=472,gid=0,dir_mode=0555,file_mode=0444"
     }
   }
 
@@ -453,9 +497,10 @@ resource "azurerm_container_app" "prometheus" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   template {
-    min_replicas = 1  # Keep always on for metrics collection
+    min_replicas = 1 # Keep always on for metrics collection
     max_replicas = 1
 
     container {
@@ -464,13 +509,22 @@ resource "azurerm_container_app" "prometheus" {
       cpu    = 0.25
       memory = "0.5Gi"
 
-      # Note: Prometheus config will need to be provided via ConfigMap or volume
-      # For now using default config, update in future iteration
+      volume_mounts {
+        name = "prometheus-config"
+        path = "/etc/prometheus"
+      }
+    }
+
+    volume {
+      name          = "prometheus-config"
+      storage_name  = azurerm_container_app_environment_storage.prometheus_config.name
+      storage_type  = "AzureFile"
+      mount_options = "uid=65534,gid=65534,dir_mode=0555,file_mode=0444"
     }
   }
 
   ingress {
-    external_enabled = true  # Enable external access for testing/demos
+    external_enabled = true # Enable external access for testing/demos
     target_port      = 9090
 
     traffic_weight {
