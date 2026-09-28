@@ -17,6 +17,7 @@ resource "azurerm_container_app" "django_api" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -194,6 +195,7 @@ resource "azurerm_container_app" "audit_service" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -263,6 +265,7 @@ resource "azurerm_container_app" "celery_worker" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -344,6 +347,7 @@ resource "azurerm_container_app" "celery_beat" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   # GHCR Private Registry Authentication
   registry {
@@ -424,6 +428,7 @@ resource "azurerm_container_app" "grafana" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   template {
     min_replicas = 1 # Keep always on for monitoring
@@ -492,6 +497,7 @@ resource "azurerm_container_app" "prometheus" {
   container_app_environment_id = azurerm_container_app_environment.main.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
+  workload_profile_name        = "Consumption"
 
   template {
     min_replicas = 1 # Keep always on for metrics collection
