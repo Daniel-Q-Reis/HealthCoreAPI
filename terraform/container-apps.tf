@@ -36,7 +36,7 @@ resource "azurerm_container_app" "django_api" {
 
     container {
       name   = "django"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
       cpu    = var.django_cpu    # Default: 0.25
       memory = var.django_memory # Default: 0.5Gi
 
@@ -101,7 +101,12 @@ resource "azurerm_container_app" "django_api" {
       # Celery broker also needs Redis URL
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
@@ -277,7 +282,7 @@ resource "azurerm_container_app" "celery_worker" {
 
     container {
       name   = "celery-worker"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -310,7 +315,12 @@ resource "azurerm_container_app" "celery_worker" {
 
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
@@ -353,7 +363,7 @@ resource "azurerm_container_app" "celery_beat" {
 
     container {
       name   = "celery-beat"
-      image  = "ghcr.io/daniel-q-reis/healthcoreapi/django-api:latest"
+      image  = "ghcr.io/daniel-q-reis/healthcoreapi@sha256:c6954c77b566b0f7d93b196e17e7be1939fc875ab928af49f26bae69060cc3ec"
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -386,7 +396,12 @@ resource "azurerm_container_app" "celery_beat" {
 
       env {
         name  = "CELERY_BROKER_URL"
-        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
+      }
+
+      env {
+        name  = "CELERY_RESULT_BACKEND"
+        value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0?ssl_cert_reqs=required"
       }
 
       env {
