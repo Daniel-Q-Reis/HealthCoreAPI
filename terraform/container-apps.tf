@@ -327,6 +327,26 @@ resource "azurerm_container_app" "celery_worker" {
         name  = "CACHE_URL"
         value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
       }
+
+      env {
+        name  = "SECRET_KEY"
+        value = var.secret_key
+      }
+
+      env {
+        name  = "ALLOWED_HOSTS"
+        value = ".azurecontainerapps.io,.danielqreis.com,localhost,127.0.0.1"
+      }
+
+      env {
+        name  = "CELERY_BROKER_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+      }
+
+      env {
+        name  = "CACHE_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
+      }
     }
   }
 
@@ -407,6 +427,26 @@ resource "azurerm_container_app" "celery_beat" {
       env {
         name  = "CACHE_URL"
         value = "rediss://:${azurerm_managed_redis.main.default_database[0].primary_access_key}@${azurerm_managed_redis.main.hostname}:${azurerm_managed_redis.main.default_database[0].port}/0"
+      }
+
+      env {
+        name  = "SECRET_KEY"
+        value = var.secret_key
+      }
+
+      env {
+        name  = "ALLOWED_HOSTS"
+        value = ".azurecontainerapps.io,.danielqreis.com,localhost,127.0.0.1"
+      }
+
+      env {
+        name  = "CELERY_BROKER_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/0"
+      }
+
+      env {
+        name  = "CACHE_URL"
+        value = "rediss://:${azurerm_redis_cache.main.primary_access_key}@${azurerm_redis_cache.main.hostname}:6380/1"
       }
     }
   }
