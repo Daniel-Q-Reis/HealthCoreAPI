@@ -1,17 +1,16 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  external_labels:
-    monitor: 'healthcore-monitor'
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: prometheus
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'django'
-    metrics_path: '/metrics'
+  - job_name: django
+    scheme: https
+    metrics_path: /metrics
     static_configs:
-      - targets: ['web:8000']
+      - targets: ['ca-django-api.icyocean-8228f51c.centralus.azurecontainerapps.io']
         labels:
-          service: 'healthcore-api'
+          service: healthcore-api

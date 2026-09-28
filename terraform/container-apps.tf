@@ -430,8 +430,13 @@ resource "azurerm_container_app" "grafana" {
     max_replicas = 1
 
     container {
-      name   = "grafana"
-      image  = "grafana/grafana:latest"
+      name  = "grafana"
+      image = "grafana/grafana:latest"
+
+      volume_mounts {
+        name = "grafana-config"
+        path = "/etc/grafana/provisioning"
+      }
       cpu    = 0.25
       memory = "0.5Gi"
 
@@ -454,6 +459,13 @@ resource "azurerm_container_app" "grafana" {
         name  = "GF_INSTALL_PLUGINS"
         value = "" # No additional plugins needed
       }
+    }
+
+    volume {
+      name          = "grafana-config"
+      storage_name  = azurerm_container_app_environment_storage.grafana_config.name
+      storage_type  = "AzureFile"
+      mount_options = "uid=472,gid=0,dir_mode=0555,file_mode=0444"
     }
   }
 
@@ -491,8 +503,17 @@ resource "azurerm_container_app" "prometheus" {
       cpu    = 0.25
       memory = "0.5Gi"
 
-      # Note: Prometheus config will need to be provided via ConfigMap or volume
-      # For now using default config, update in future iteration
+      volume_mounts {
+        name = "prometheus-config"
+        path = "/etc/prometheus"
+      }
+    }
+
+    volume {
+      name          = "prometheus-config"
+      storage_name  = azurerm_container_app_environment_storage.prometheus_config.name
+      storage_type  = "AzureFile"
+      mount_options = "uid=65534,gid=65534,dir_mode=0555,file_mode=0444"
     }
   }
 
