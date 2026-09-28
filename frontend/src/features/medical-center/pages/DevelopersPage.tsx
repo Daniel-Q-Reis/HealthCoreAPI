@@ -43,14 +43,14 @@ export const DevelopersPage = () => {
         },
         {
             name: "Grafana Metrics Dashboard",
-            url: "https://ca-grafana.politebush-1e329a2d.centralus.azurecontainerapps.io/a/grafana-metricsdrilldown-app/drilldown",
+            url: "https://ca-grafana.icyocean-8228f51c.centralus.azurecontainerapps.io/d/django-healthcore/django-healthcore-metrics",
             desc: "Real-time observability dashboards with Prometheus metrics (p99 latency, throughput)",
             icon: <FaChartLine />,
             creds: "admin / admin123"
         },
         {
             name: "Prometheus",
-            url: "https://ca-prometheus.politebush-1e329a2d.centralus.azurecontainerapps.io",
+            url: "https://ca-prometheus.icyocean-8228f51c.centralus.azurecontainerapps.io",
             desc: "Metrics collection and monitoring system",
             icon: <FaChartLine />,
             creds: "-"
@@ -80,7 +80,7 @@ export const DevelopersPage = () => {
 
     const infrastructure = [
         { name: "PostgreSQL", url: "Azure Database for PostgreSQL", desc: "Primary Relational Database (Managed)", creds: "Configured via Terraform" },
-        { name: "Redis", url: "Azure Cache for Redis", desc: "Cache layer & Celery broker (Managed)", creds: "Configured via Terraform" },
+        { name: "Redis", url: "Azure Managed Redis", desc: "Cache layer & Celery broker (Managed)", creds: "Configured via Terraform" },
         { name: "MongoDB", url: "Azure CosmosDB (MongoDB API)", desc: "Document database for audit logs (append-only)", creds: "Configured via Terraform" },
         { name: "Event Hubs", url: "Azure Event Hubs (Kafka)", desc: "Event streaming platform", creds: "Configured via Terraform" }
     ];
