@@ -11,7 +11,7 @@
 resource "azurerm_static_web_app" "frontend" {
   name                = "swa-healthcoreapi-${var.environment}"
   resource_group_name = azurerm_resource_group.main.name
-  location            = "centralus"  # Static Web Apps has limited regions
+  location            = "centralus" # Static Web Apps has limited regions
   sku_tier            = "Free"
   sku_size            = "Free"
 
@@ -52,7 +52,7 @@ output "frontend_deployment_instructions" {
     3. Add GitHub variable:
        - Go to: https://github.com/daniel-q-reis/HealthCoreAPI/settings/variables/actions
        - Add variable: VITE_API_URL
-       - Value: https://ca-django-api.politebush-1e329a2d.centralus.azurecontainerapps.io
+       - Value: https://api.danielqreis.com/api
 
     4. Push to main branch to trigger deployment
 

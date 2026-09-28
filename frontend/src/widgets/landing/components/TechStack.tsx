@@ -1,11 +1,12 @@
-import { SiPython, SiDjango, SiGo, SiAmazon, SiDocker, SiPostgresql } from 'react-icons/si';
+import { SiPython, SiDjango, SiGo, SiDocker, SiPostgresql } from 'react-icons/si';
+import { FaAws } from 'react-icons/fa';
 
 export const TechStack = () => {
     const techs = [
         { name: 'Go (Golang)', icon: SiGo },
         { name: 'Python', icon: SiPython },
         { name: 'Django', icon: SiDjango },
-        { name: 'AWS', icon: SiAmazon },
+        { name: 'AWS', icon: FaAws },
         { name: 'Docker', icon: SiDocker },
         { name: 'PostgreSQL', icon: SiPostgresql },
     ];

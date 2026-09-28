@@ -13,7 +13,7 @@ variable "grafana_admin_password" {
   description = "Grafana admin dashboard password"
   type        = string
   sensitive   = true
-  default     = "admin123"  # Default for dev, override in tfvars for production
+  default     = "admin123" # Default for dev, override in tfvars for production
 }
 
 variable "environment" {
@@ -30,7 +30,7 @@ variable "environment" {
 variable "location" {
   description = "Azure region for resource deployment"
   type        = string
-  default     = "centralus"  # Changed from eastus due to PostgreSQL restrictions
+  default     = "centralus" # Changed from eastus due to PostgreSQL restrictions
 }
 
 variable "project_name" {
@@ -79,7 +79,7 @@ variable "ghcr_token" {
 variable "google_client_id" {
   description = "Google OAuth2 Client ID"
   type        = string
-  default     = ""  # Allow empty if not used
+  default     = "" # Allow empty if not used
 }
 
 variable "google_client_secret" {
@@ -94,7 +94,7 @@ variable "azure_openai_api_key" {
   description = "Azure OpenAI API Key for AI features"
   type        = string
   sensitive   = true
-  default     = ""  # Allow empty if not using AI
+  default     = "" # Allow empty if not using AI
 }
 
 variable "azure_openai_endpoint" {
@@ -112,7 +112,7 @@ variable "azure_openai_deployment_name" {
 variable "postgres_sku" {
   description = "PostgreSQL SKU (B1ms for 15 users, B2s for AI-heavy workloads)"
   type        = string
-  default     = "B_Standard_B1ms"  # 2GB RAM, $30/month
+  default     = "B_Standard_B1ms" # 2GB RAM, $30/month
 
   validation {
     condition     = contains(["B_Standard_B1ms", "B_Standard_B2s"], var.postgres_sku)
@@ -123,14 +123,14 @@ variable "postgres_sku" {
 variable "postgres_storage_mb" {
   description = "PostgreSQL storage in MB"
   type        = number
-  default     = 32768  # 32GB
+  default     = 32768 # 32GB
 }
 
 # Redis Configuration
 variable "redis_capacity" {
   description = "Redis cache capacity (0=250MB, 1=1GB)"
   type        = number
-  default     = 1  # C1 (1GB) for Celery worker stability
+  default     = 1 # C1 (1GB) for Celery worker stability
 
   validation {
     condition     = contains([0, 1, 2, 3, 4, 5, 6], var.redis_capacity)
@@ -154,7 +154,13 @@ variable "django_memory" {
 variable "django_min_replicas" {
   description = "Minimum Django API replicas (2 for high availability, prevents coldstart)"
   type        = number
-  default     = 2  # Changed from 0 to prevent session issues with concurrent users
+  default     = 2 # Changed from 0 to prevent session issues with concurrent users
+}
+
+variable "celery_min_replicas" {
+  description = "Minimum replicas for Celery worker and beat; use 0 until database cutover"
+  type        = number
+  default     = 1
 }
 
 variable "django_max_replicas" {

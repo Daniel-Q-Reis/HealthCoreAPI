@@ -47,13 +47,13 @@ output "postgres_connection_string" {
 }
 
 output "redis_hostname" {
-  value       = azurerm_redis_cache.main.hostname
+  value       = azurerm_managed_redis.main.hostname
   description = "Redis cache hostname"
   sensitive   = true
 }
 
 output "redis_primary_key" {
-  value       = azurerm_redis_cache.main.primary_access_key
+  value       = azurerm_managed_redis.main.default_database[0].primary_access_key
   description = "Redis primary access key"
   sensitive   = true
 }
@@ -124,7 +124,7 @@ output "container_app_environment_id" {
 # ============================================================
 
 output "deployment_summary" {
-  value = <<-EOT
+  value       = <<-EOT
 
   ========================================
   HealthCoreAPI Azure Deployment Summary

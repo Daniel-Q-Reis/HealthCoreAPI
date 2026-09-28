@@ -16,11 +16,11 @@ resource "azurerm_postgresql_flexible_server" "main" {
   administrator_login    = var.db_admin_username
   administrator_password = var.db_admin_password
 
-  sku_name   = var.postgres_sku  # Default: B_Standard_B1ms (2GB RAM)
-  storage_mb = var.postgres_storage_mb  # Default: 32GB
+  sku_name   = var.postgres_sku        # Default: B_Standard_B1ms (2GB RAM)
+  storage_mb = var.postgres_storage_mb # Default: 32GB
 
-  backup_retention_days = 7  # Automatic backups for 7 days
-  geo_redundant_backup_enabled = false  # Disable for cost savings (single region)
+  backup_retention_days        = 7     # Automatic backups for 7 days
+  geo_redundant_backup_enabled = false # Disable for cost savings (single region)
 
   tags = var.tags
 
@@ -47,23 +47,24 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "azure_services" {
 }
 
 # ============================================================
-# Azure Cache for Redis - Celery Broker & Django Cache
+# Azure Managed Redis - Celery broker and Django cache
 # ============================================================
-# C1: 1GB RAM - Sufficient for Celery worker/beat coordination
-# Cost: ~$16/month
+# New Azure Cache for Redis creation is retired. Balanced B0 replaces Basic C1.
+# NoCluster supports Celery and cache clients; both use database 0 with distinct keys.
 
-resource "azurerm_redis_cache" "main" {
-  name                = "redis-${var.project_name}-${var.environment}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  capacity            = var.redis_capacity  # Default: 1 (C1 = 1GB)
-  family              = "C"
-  sku_name            = "Basic"
-  non_ssl_port_enabled = false  # Force SSL for security
-  minimum_tls_version = "1.2"
+resource "azurerm_managed_redis" "main" {
+  name                      = "redis-${var.project_name}-${var.environment}"
+  resource_group_name       = azurerm_resource_group.main.name
+  location                  = azurerm_resource_group.main.location
+  sku_name                  = "Balanced_B0"
+  high_availability_enabled = false
+  public_network_access     = "Enabled"
 
-  redis_configuration {
-    maxmemory_policy = "allkeys-lru"  # Evict least recently used keys
+  default_database {
+    access_keys_authentication_enabled = true
+    client_protocol                    = "Encrypted"
+    clustering_policy                  = "NoCluster"
+    eviction_policy                    = "AllKeysLRU"
   }
 
   tags = var.tags
@@ -80,7 +81,7 @@ resource "azurerm_eventhub_namespace" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Standard"
-  capacity            = 1  # 1 Throughput Unit
+  capacity            = 1 # 1 Throughput Unit
 
   tags = var.tags
 }
@@ -90,8 +91,8 @@ resource "azurerm_eventhub" "healthcore_events" {
   name                = "healthcore.events"
   namespace_name      = azurerm_eventhub_namespace.main.name
   resource_group_name = azurerm_resource_group.main.name
-  partition_count     = 2  # 2 partitions for parallel processing
-  message_retention   = 1  # Retain messages for 1 day
+  partition_count     = 2 # 2 partitions for parallel processing
+  message_retention   = 1 # Retain messages for 1 day
 }
 
 # Event Hubs Authorization Rule - Connection string for Kafka clients
